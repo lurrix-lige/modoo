@@ -612,6 +612,11 @@
     "lesson4": "Brave Dialogue",
     "lesson5": "Good Night Blessing",
     "piece": "piece",
+    "getReady": "Get Ready",
+    "backgroundMusic": "Background Music",
+    "voiceGuide": "Voice Guide",
+    "guide": "Course Guide",
+    "breatheIn": "Breathe In",
     "level1": {
       "title": "Dim Light Adaptation",
       "desc": "Get to know the dark and understand it's not scary",

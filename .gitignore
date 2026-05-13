@@ -26,3 +26,8 @@ npm-debug.log*
 .DS_Store
 *.db
 * text=auto eol=lf
+* text=auto 
+*.tsx text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.md text

@@ -672,7 +672,12 @@
     "lesson3": "想象安全场景",
     "lesson4": "勇敢者对话",
     "lesson5": "晚安祝福",
-    "piece": "枚"
+    "piece": "枚",
+    "getReady": "准备开始",
+    "backgroundMusic": "背景音乐",
+    "voiceGuide": "语音引导",
+    "guide": "课程导览",
+    "breatheIn": "吸气"
   },
   "checkIn": {
     "dateFormat": "{{month}}月{{day}}日 {{weekDay}}",
