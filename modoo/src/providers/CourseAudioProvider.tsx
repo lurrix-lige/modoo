@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
 import { UnifiedAudioPlayer, setupAudioMode, validateUrl } from './AudioCore';
+import { audioFocusManager, FocusAction } from './AudioFocusManager';
 import { logger } from '../utils/logger';
 
 export interface CourseAudioTrack {
@@ -58,6 +59,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
 
     return () => {
       playerRef.current?.unloadAll();
+      audioFocusManager.release('course');
     };
   }, []);
 
@@ -109,6 +111,15 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
       });
 
       if (success) {
+        audioFocusManager.request('course', 'main', (action: FocusAction) => {
+          if (action === 'stop') {
+            playerRef.current?.unloadAll();
+            audioFocusManager.release('course');
+            setIsPlaying(false);
+            setProgress(0);
+            setDuration(0);
+          }
+        });
         setIsPlaying(true);
         setIsLoading(false);
         return true;
@@ -153,6 +164,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const stop = useCallback(() => {
+    audioFocusManager.release('course');
     playerRef.current?.unloadAll();
     setIsPlaying(false);
     setProgress(0);

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
 import { UnifiedAudioPlayer, setupAudioMode, validateUrl } from './AudioCore';
+import { audioFocusManager, FocusAction } from './AudioFocusManager';
 import { logger } from '../utils/logger';
 
 interface AudioContextType {
@@ -58,6 +59,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       playerRef.current?.unloadAll();
+      audioFocusManager.release('story');
     };
   }, []);
 
@@ -105,6 +107,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       logger.info('[AudioProvider] UnifiedAudioPlayer.play() returned', { success });
 
       if (success) {
+        audioFocusManager.request('story', 'main', (action: FocusAction) => {
+          if (action === 'stop') {
+            playerRef.current?.unloadAll();
+            audioFocusManager.release('story');
+            setIsPlaying(false);
+            setProgress(0);
+            setDuration(0);
+          }
+        });
         setIsPlaying(true);
         setIsLoading(false);
         logger.info('[AudioProvider] Audio playback started successfully');
@@ -155,6 +166,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const stop = useCallback(() => {
+    audioFocusManager.release('story');
     playerRef.current?.unloadAll();
     setIsPlaying(false);
     setProgress(0);

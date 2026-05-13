@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { UnifiedAudioPlayer, setupAudioMode } from '../providers/AudioCore';
+import { audioFocusManager, FocusAction } from '../providers/AudioFocusManager';
 import { logger } from '../utils/logger';
 
 export interface AudioPlayerState {
@@ -12,6 +13,10 @@ export interface AudioPlayerState {
 export function useAudioPlayer() {
   const playerRef = useRef<UnifiedAudioPlayer | null>(null);
   const volumeRef = useRef(1);
+  const focusIdRef = useRef('');
+  if (!focusIdRef.current) {
+    focusIdRef.current = `wn_${Math.random().toString(36).slice(2)}`;
+  }
   const [state, setState] = useState<AudioPlayerState>({
     isPlaying: false,
     currentTime: 0,
@@ -46,6 +51,7 @@ export function useAudioPlayer() {
 
     return () => {
       mounted = false;
+      audioFocusManager.release(focusIdRef.current);
       playerRef.current?.unloadAll();
     };
   }, []);
@@ -70,6 +76,21 @@ export function useAudioPlayer() {
       });
 
       if (success) {
+        audioFocusManager.request(focusIdRef.current, 'background', (action: FocusAction) => {
+          switch (action) {
+            case 'duck':
+              playerRef.current?.setVolume('main', 0.15);
+              break;
+            case 'restore':
+              playerRef.current?.setVolume('main', volumeRef.current);
+              break;
+            case 'stop':
+              playerRef.current?.unloadAll();
+              audioFocusManager.release(focusIdRef.current);
+              setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
+              break;
+          }
+        });
         setState((prev) => ({ ...prev, isPlaying: true }));
       }
       return success;
@@ -99,6 +120,7 @@ export function useAudioPlayer() {
 
   const stop = useCallback(() => {
     try {
+      audioFocusManager.release(focusIdRef.current);
       playerRef.current?.unloadAll();
       setState({ isPlaying: false, currentTime: 0, duration: 0, volume: volumeRef.current });
     } catch (error) {
