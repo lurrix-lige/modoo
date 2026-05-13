@@ -11,6 +11,7 @@ import ErrorBoundary from './src/components/ErrorBoundary';
 import { ErrorProvider } from './src/contexts/ErrorContext';
 import { AudioProvider } from './src/providers/AudioProvider';
 import { CourseAudioProvider } from './src/providers/CourseAudioProvider';
+import { UnifiedAudioProvider } from './src/providers/UnifiedAudioProvider';
 import { NavigationCallbackProvider } from './src/contexts';
 import { logger } from './src/utils/logger';
 import './src/i18n';
@@ -103,17 +104,19 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider>
           <NavigationCallbackProvider>
-            <AudioProvider>
-              <CourseAudioProvider>
-                <ErrorProvider>
-                  <ErrorBoundary>
-                    <ActivityProvider>
-                      <AppContent />
-                    </ActivityProvider>
-                  </ErrorBoundary>
-                </ErrorProvider>
-              </CourseAudioProvider>
-            </AudioProvider>
+            <UnifiedAudioProvider>
+              <AudioProvider>
+                <CourseAudioProvider>
+                  <ErrorProvider>
+                    <ErrorBoundary>
+                      <ActivityProvider>
+                        <AppContent />
+                      </ActivityProvider>
+                    </ErrorBoundary>
+                  </ErrorProvider>
+                </CourseAudioProvider>
+              </AudioProvider>
+            </UnifiedAudioProvider>
           </NavigationCallbackProvider>
         </ThemeProvider>
       </SafeAreaProvider>

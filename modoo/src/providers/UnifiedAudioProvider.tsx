@@ -6,11 +6,12 @@ export interface UnifiedAudioContextType {
   isPlaying: boolean;
   progress: number;
   duration: number;
+  isBuffering: boolean;
   isLoading: boolean;
   error: string | null;
   play: (config: AudioPlayerConfig) => Promise<boolean>;
   pause: () => void;
-  resume: () => void;
+  resume: () => Promise<boolean>;
   stop: () => void;
   seekTo: (position: number) => Promise<void>;
   setVolume: (trackId: string, volume: number) => void;
@@ -24,19 +25,23 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setupAudioMode();
     playerRef.current = new UnifiedAudioPlayer();
-    playerRef.current.setProgressUpdateCallback((progressVal, durationVal) => {
+    playerRef.current.addProgressListener((progressVal, durationVal) => {
       setProgress(progressVal);
       setDuration(durationVal);
     });
-    playerRef.current.setCompletionCallback(() => {
+    playerRef.current.addCompletionListener(() => {
       setIsPlaying(false);
       setProgress(0);
+    });
+    playerRef.current.addBufferingListener((buffering) => {
+      setIsBuffering(buffering);
     });
 
     return () => {
@@ -60,7 +65,7 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
     }
 
     const success = await playerRef.current?.play(config) ?? false;
-    
+
     if (success) {
       setIsPlaying(true);
       setIsLoading(false);
@@ -78,11 +83,12 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
     setIsPlaying(false);
   }, []);
 
-  const resume = useCallback(async () => {
+  const resume = useCallback(async (): Promise<boolean> => {
     const success = await playerRef.current?.resume() ?? false;
     if (success) {
       setIsPlaying(true);
     }
+    return success;
   }, []);
 
   const stop = useCallback(() => {
@@ -110,6 +116,7 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
         isPlaying,
         progress,
         duration,
+        isBuffering,
         isLoading,
         error,
         play,

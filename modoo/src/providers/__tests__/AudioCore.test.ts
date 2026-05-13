@@ -143,7 +143,7 @@ describe('UnifiedAudioPlayer', () => {
 
     test('reports progress through callback', async () => {
       const progressCb = jest.fn();
-      player.setProgressUpdateCallback(progressCb);
+      player.addProgressListener(progressCb);
 
       await player.play({
         tracks: [{ id: 'main', url: 'https://example.com/audio.mp3', role: 'main' }],
@@ -165,7 +165,7 @@ describe('UnifiedAudioPlayer', () => {
 
     test('notifies playing state callback', async () => {
       const playingCb = jest.fn();
-      player.setPlayingStateCallback(playingCb);
+      player.addPlayingStateListener(playingCb);
 
       await player.play({
         tracks: [{ id: 'main', url: 'https://example.com/audio.mp3', role: 'main' }],
@@ -233,7 +233,7 @@ describe('UnifiedAudioPlayer', () => {
   describe('seekTo', () => {
     test('does not emit completion when seeking to end', async () => {
       const completionCb = jest.fn();
-      player.setCompletionCallback(completionCb);
+      player.addCompletionListener(completionCb);
 
       await player.play({
         tracks: [{ id: 'main', url: 'https://example.com/audio.mp3', role: 'main' }],
@@ -261,7 +261,7 @@ describe('UnifiedAudioPlayer', () => {
       const progressCb = jest.fn();
 
       // First play
-      player.setProgressUpdateCallback(progressCb);
+      player.addProgressListener(progressCb);
       const player1 = mockPlayer();
       expoAudio.createAudioPlayer.mockReturnValue(player1);
 
@@ -379,7 +379,7 @@ describe('UnifiedAudioPlayer', () => {
   describe('buffering callback', () => {
     test('notifies buffering state changes', async () => {
       const bufferingCb = jest.fn();
-      player.setBufferingCallback(bufferingCb);
+      player.addBufferingListener(bufferingCb);
 
       await player.play({
         tracks: [{ id: 'main', url: 'https://example.com/audio.mp3', role: 'main' }],

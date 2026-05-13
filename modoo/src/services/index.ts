@@ -1,4 +1,3 @@
-export { audioService } from './AudioService';
 export { healthCheckService, useHealthStore } from './HealthCheckService';
 export { errorHandler } from './ErrorHandler';
 export { NotificationService } from './NotificationService';

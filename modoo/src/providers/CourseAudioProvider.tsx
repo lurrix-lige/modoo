@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import { UnifiedAudioPlayer, setupAudioMode, validateUrl } from './AudioCore';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import { validateUrl } from './AudioCore';
 import { audioFocusManager, FocusAction } from './AudioFocusManager';
+import { useUnifiedAudio } from './UnifiedAudioProvider';
 import { logger } from '../utils/logger';
 
 export interface CourseAudioTrack {
@@ -32,48 +33,19 @@ interface CourseAudioContextType {
 const CourseAudioContext = createContext<CourseAudioContextType | undefined>(undefined);
 
 export function CourseAudioProvider({ children }: { children: React.ReactNode }) {
-  const playerRef = useRef<UnifiedAudioPlayer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isBuffering, setIsBuffering] = useState(false);
+  const unifiedAudio = useUnifiedAudio();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backgroundVolume, setBackgroundVolumeState] = useState(0.5);
   const [voiceVolume, setVoiceVolumeState] = useState(1.0);
   const currentTrackRef = useRef<CourseAudioTrack | null>(null);
 
-  useEffect(() => {
-    setupAudioMode();
-    playerRef.current = new UnifiedAudioPlayer();
-    playerRef.current.setProgressUpdateCallback((progressVal, durationVal) => {
-      setProgress(progressVal);
-      setDuration(durationVal);
-    });
-    playerRef.current.setCompletionCallback(() => {
-      setIsPlaying(false);
-    });
-    playerRef.current.setBufferingCallback((buffering) => {
-      setIsBuffering(buffering);
-    });
-
-    return () => {
-      playerRef.current?.unloadAll();
-      audioFocusManager.release('course');
-    };
-  }, []);
-
   const play = useCallback(async (track: CourseAudioTrack): Promise<boolean> => {
     logger.debug('CourseAudioProvider.play called with track', { track });
 
-    if (playerRef.current?.isCompletedState() && currentTrackRef.current?.id === track.id) {
-      logger.debug('Attempting to replay completed course audio');
-      const success = await playerRef.current.replay();
-      if (success) {
-        setIsPlaying(true);
-        setError(null);
-        return true;
-      }
+    if (currentTrackRef.current?.id === track.id && unifiedAudio.isPlaying) {
+      logger.debug('Same track already playing');
+      return true;
     }
 
     setIsLoading(true);
@@ -91,7 +63,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     }
 
     try {
-      const success = await playerRef.current?.play({
+      const success = await unifiedAudio.play({
         tracks: [
           {
             id: 'background',
@@ -113,89 +85,75 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
       if (success) {
         audioFocusManager.request('course', 'main', (action: FocusAction) => {
           if (action === 'stop') {
-            playerRef.current?.unloadAll();
+            unifiedAudio.stop();
             audioFocusManager.release('course');
-            setIsPlaying(false);
-            setProgress(0);
-            setDuration(0);
+            setError(null);
           }
         });
-        setIsPlaying(true);
         setIsLoading(false);
         return true;
       } else {
         setError('Failed to play course audio');
         setIsLoading(false);
-        setIsPlaying(false);
         return false;
       }
     } catch (err) {
       logger.error('Failed to play course audio', { err });
       setError('Playback failed');
       setIsLoading(false);
-      setIsPlaying(false);
       return false;
     }
-  }, [backgroundVolume, voiceVolume]);
+  }, [unifiedAudio, backgroundVolume, voiceVolume]);
 
   const pause = useCallback(() => {
-    playerRef.current?.pause();
-    setIsPlaying(false);
-  }, []);
+    unifiedAudio.pause();
+  }, [unifiedAudio]);
 
   const resume = useCallback(async (): Promise<boolean> => {
     logger.debug('CourseAudioProvider.resume called');
 
-    if (playerRef.current?.isCompletedState()) {
-      logger.debug('Resume detected completed state, attempting replay');
-      const success = await playerRef.current.replay();
-      if (success) {
-        setIsPlaying(true);
-        return true;
-      }
-      return false;
+    if (unifiedAudio.isPlaying) {
+      return true;
     }
 
-    const success = await playerRef.current?.resume() ?? false;
+    const success = await unifiedAudio.resume();
     if (success) {
-      setIsPlaying(true);
+      return true;
     }
-    return success;
-  }, []);
+    return false;
+  }, [unifiedAudio]);
 
   const stop = useCallback(() => {
     audioFocusManager.release('course');
-    playerRef.current?.unloadAll();
-    setIsPlaying(false);
-    setProgress(0);
-    setDuration(0);
+    unifiedAudio.stop();
     currentTrackRef.current = null;
-  }, []);
+    setError(null);
+  }, [unifiedAudio]);
 
   const seekTo = useCallback(async (position: number) => {
     logger.debug('CourseAudioProvider.seekTo called with position', { position });
-    await playerRef.current?.seekTo(position);
-  }, []);
+    await unifiedAudio.seekTo(position);
+  }, [unifiedAudio]);
 
   const setBackgroundVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
     setBackgroundVolumeState(clampedVolume);
-    playerRef.current?.setVolume('background', clampedVolume);
-  }, []);
+    unifiedAudio.setVolume('background', clampedVolume);
+  }, [unifiedAudio]);
 
   const setVoiceVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
     setVoiceVolumeState(clampedVolume);
-    playerRef.current?.setVolume('voice', clampedVolume);
-  }, []);
+    unifiedAudio.setVolume('voice', clampedVolume);
+  }, [unifiedAudio]);
 
   return (
     <CourseAudioContext.Provider
       value={{
-        isPlaying,
-        progress,
-        duration,
-        isBuffering,
+        isPlaying: unifiedAudio.isPlaying,
+        progress: unifiedAudio.progress,
+        duration: unifiedAudio.duration,
+        isBuffering: unifiedAudio.isBuffering,
         isLoading,
         error,
         backgroundVolume,

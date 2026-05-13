@@ -30,6 +30,12 @@ export interface PlaybackState {
   error: string | null;
 }
 
+export interface PlaybackMetrics {
+  playLatencyMs: number;
+  bufferEventCount: number;
+  errorMessage?: string;
+}
+
 const SUPPORTED_EXTENSIONS_IOS = ['.mp3', '.aac', '.m4a', '.wav'];
 const SUPPORTED_EXTENSIONS_ANDROID = ['.mp3', '.aac', '.m4a', '.wav', '.webm', '.ogg'];
 
@@ -112,25 +118,63 @@ export class UnifiedAudioPlayer {
   private lastSeekPosition = 0;
   private suppressProgressUpdate = false;
   private generation = 0;
-  private progressUpdateCallback?: (progress: number, duration: number) => void;
-  private completionCallback?: () => void;
-  private playingStateCallback?: (isPlaying: boolean) => void;
-  private bufferingCallback?: (isBuffering: boolean) => void;
+  private progressUpdateListeners = new Set<(progress: number, duration: number) => void>();
+  private completionListeners = new Set<() => void>();
+  private playingStateListeners = new Set<(isPlaying: boolean) => void>();
+  private bufferingListeners = new Set<(isBuffering: boolean) => void>();
+  private metricsCallback?: (metrics: PlaybackMetrics) => void;
 
-  setProgressUpdateCallback(callback: (progress: number, duration: number) => void): void {
-    this.progressUpdateCallback = callback;
+  // Per-session metrics
+  private playStartTime = 0;
+  private firstPlayingRecorded = false;
+  private bufferEventCount = 0;
+
+  addProgressListener(cb: (progress: number, duration: number) => void): void {
+    this.progressUpdateListeners.add(cb);
   }
 
-  setCompletionCallback(callback: () => void): void {
-    this.completionCallback = callback;
+  removeProgressListener(cb: (progress: number, duration: number) => void): void {
+    this.progressUpdateListeners.delete(cb);
   }
 
-  setPlayingStateCallback(callback: (isPlaying: boolean) => void): void {
-    this.playingStateCallback = callback;
+  addCompletionListener(cb: () => void): void {
+    this.completionListeners.add(cb);
   }
 
-  setBufferingCallback(callback: (isBuffering: boolean) => void): void {
-    this.bufferingCallback = callback;
+  removeCompletionListener(cb: () => void): void {
+    this.completionListeners.delete(cb);
+  }
+
+  addPlayingStateListener(cb: (isPlaying: boolean) => void): void {
+    this.playingStateListeners.add(cb);
+  }
+
+  removePlayingStateListener(cb: (isPlaying: boolean) => void): void {
+    this.playingStateListeners.delete(cb);
+  }
+
+  addBufferingListener(cb: (isBuffering: boolean) => void): void {
+    this.bufferingListeners.add(cb);
+  }
+
+  removeBufferingListener(cb: (isBuffering: boolean) => void): void {
+    this.bufferingListeners.delete(cb);
+  }
+
+  setMetricsCallback(cb: (metrics: PlaybackMetrics) => void): void {
+    this.metricsCallback = cb;
+  }
+
+  private emitMetrics(errorMessage?: string): void {
+    if (!this.metricsCallback) return;
+    const latency = this.firstPlayingRecorded
+      ? this.playStartTime > 0 ? Date.now() - this.playStartTime : 0
+      : -1;
+    this.metricsCallback({
+      playLatencyMs: latency,
+      bufferEventCount: this.bufferEventCount,
+      errorMessage,
+    });
   }
 
   isPlaying(): boolean {
@@ -142,6 +186,11 @@ export class UnifiedAudioPlayer {
     this.generation++;
     const currentGen = this.generation;
     this.isProcessing = true;
+
+    // Reset per-session metrics
+    this.playStartTime = Date.now();
+    this.firstPlayingRecorded = false;
+    this.bufferEventCount = 0;
 
     try {
       // 先清理所有旧播放器
@@ -205,6 +254,7 @@ export class UnifiedAudioPlayer {
 
             if ((status as any).error) {
               logger.error('Audio playback error detected', { error: (status as any).error });
+              this.emitMetrics((status as any).error);
             }
 
             const progress = sanitizeTimeValue(status.currentTime);
@@ -215,26 +265,36 @@ export class UnifiedAudioPlayer {
 
             if (isActuallyPlaying !== this.isPlayingInternal) {
               this.isPlayingInternal = isActuallyPlaying;
-              this.playingStateCallback?.(this.isPlayingInternal);
+              this.playingStateListeners.forEach((cb) => cb(this.isPlayingInternal));
+
+              if (isActuallyPlaying && !this.firstPlayingRecorded) {
+                this.firstPlayingRecorded = true;
+                const latency = Date.now() - this.playStartTime;
+                logger.debug('First playing status reached', { latencyMs: latency });
+              }
             }
 
             const isBuffering = status.isBuffering === true;
             if (isBuffering !== this.isBufferingInternal) {
               this.isBufferingInternal = isBuffering;
-              this.bufferingCallback?.(isBuffering);
+              this.bufferingListeners.forEach((cb) => cb(isBuffering));
+              if (isBuffering) {
+                this.bufferEventCount++;
+              }
             }
 
             if (!this.suppressProgressUpdate) {
-              this.progressUpdateCallback?.(progress, duration);
+              this.progressUpdateListeners.forEach((cb) => cb(progress, duration));
             }
 
             // Seek 期间抑制 didJustFinish，防止快进到末尾被误判为播放完成
             if (status.didJustFinish && !status.loop && !this.isCompleted && !this.isSeeking) {
               this.isCompleted = true;
               this.isPlayingInternal = false;
-              this.progressUpdateCallback?.(duration, duration);
-              this.completionCallback?.();
-              this.playingStateCallback?.(false);
+              this.progressUpdateListeners.forEach((cb) => cb(duration, duration));
+              this.completionListeners.forEach((cb) => cb());
+              this.playingStateListeners.forEach((cb) => cb(false));
+              this.emitMetrics();
             }
           });
         }
@@ -258,17 +318,18 @@ export class UnifiedAudioPlayer {
       }
 
       this.isPlayingInternal = true;
-      this.playingStateCallback?.(true);
+      this.playingStateListeners.forEach((cb) => cb(true));
       this.isProcessing = false;
       return true;
     } catch (err) {
       logger.error('Failed to play audio', { err });
+      this.emitMetrics(String(err));
       for (const player of this.players.values()) {
         try { player.remove(); } catch (e) { /* ignore */ }
       }
       this.players.clear();
       this.isPlayingInternal = false;
-      this.playingStateCallback?.(false);
+      this.playingStateListeners.forEach((cb) => cb(false));
       this.isProcessing = false;
       return false;
     }
@@ -305,7 +366,7 @@ export class UnifiedAudioPlayer {
         player.pause();
       }
       this.isPlayingInternal = false;
-      this.playingStateCallback?.(false);
+      this.playingStateListeners.forEach((cb) => cb(false));
     } catch (err) {
       logger.debug('Pause failed', { error: err });
     }
@@ -317,7 +378,7 @@ export class UnifiedAudioPlayer {
         await player.play();
       }
       this.isPlayingInternal = true;
-      this.playingStateCallback?.(true);
+      this.playingStateListeners.forEach((cb) => cb(true));
       return true;
     } catch (err) {
       logger.debug('Resume failed', { error: err });
@@ -354,7 +415,7 @@ export class UnifiedAudioPlayer {
       await Promise.all(seekPromises);
       
       this.lastSeekPosition = clampedPosition;
-      this.progressUpdateCallback?.(clampedPosition, this.currentDuration);
+      this.progressUpdateListeners.forEach((cb) => cb(clampedPosition, this.currentDuration));
     } catch (err) {
       logger.debug('Seek failed', { error: err });
     } finally {

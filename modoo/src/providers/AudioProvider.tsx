@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import { UnifiedAudioPlayer, setupAudioMode, validateUrl } from './AudioCore';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import { validateUrl } from './AudioCore';
 import { audioFocusManager, FocusAction } from './AudioFocusManager';
+import { useUnifiedAudio } from './UnifiedAudioProvider';
 import { logger } from '../utils/logger';
 
 interface AudioContextType {
@@ -21,63 +22,13 @@ interface AudioContextType {
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  const playerRef = useRef<UnifiedAudioPlayer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isBuffering, setIsBuffering] = useState(false);
+  const unifiedAudio = useUnifiedAudio();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isInitializedRef = useRef(false);
   const volumeRef = useRef(1.0);
-  const currentUrlRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const initAudio = async () => {
-      logger.debug('Initializing audio provider');
-      await setupAudioMode();
-      playerRef.current = new UnifiedAudioPlayer();
-      playerRef.current.setProgressUpdateCallback((progressVal, durationVal) => {
-        setProgress(progressVal);
-        setDuration(durationVal);
-      });
-      playerRef.current.setCompletionCallback(() => {
-        setIsPlaying(false);
-      });
-      playerRef.current.setPlayingStateCallback((playing) => {
-        logger.debug('Audio playing state changed', { playing });
-        setIsPlaying(playing);
-      });
-      playerRef.current.setBufferingCallback((buffering) => {
-        setIsBuffering(buffering);
-      });
-      isInitializedRef.current = true;
-      logger.info('AudioProvider initialized successfully');
-    };
-
-    initAudio();
-
-    return () => {
-      playerRef.current?.unloadAll();
-      audioFocusManager.release('story');
-    };
-  }, []);
 
   const play = useCallback(async (url: string, retryCount: number = 0): Promise<boolean> => {
-    logger.info('[AudioProvider] play called with URL', { url, isInitialized: isInitializedRef.current, playerExists: !!playerRef.current });
-
-    if (!isInitializedRef.current) {
-      logger.info('[AudioProvider] Waiting for initialization...');
-      await new Promise(resolve => setTimeout(resolve, 100));
-      return play(url, retryCount);
-    }
-
-    if (!playerRef.current) {
-      logger.error('[AudioProvider] Player reference is null');
-      return false;
-    }
-
-    currentUrlRef.current = url;
+    logger.info('[AudioProvider] play called with URL', { url });
 
     setIsLoading(true);
     setError(null);
@@ -87,13 +38,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       const errorMsg = validationResult.message || 'Invalid audio URL';
       setError(errorMsg);
       setIsLoading(false);
-      setIsPlaying(false);
       return false;
     }
 
     try {
       logger.info('[AudioProvider] Calling UnifiedAudioPlayer.play()', { url });
-      const success = await playerRef.current?.play({
+      const success = await unifiedAudio.play({
         tracks: [{
           id: 'main',
           url,
@@ -109,16 +59,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       if (success) {
         audioFocusManager.request('story', 'main', (action: FocusAction) => {
           if (action === 'stop') {
-            playerRef.current?.unloadAll();
+            unifiedAudio.stop();
             audioFocusManager.release('story');
-            setIsPlaying(false);
-            setProgress(0);
-            setDuration(0);
+            setError(null);
           }
         });
-        setIsPlaying(true);
         setIsLoading(false);
-        logger.info('[AudioProvider] Audio playback started successfully');
         return true;
       } else {
         if (retryCount < 2) {
@@ -128,70 +74,58 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         }
         setError('Failed to play audio after retries');
         setIsLoading(false);
-        setIsPlaying(false);
         return false;
       }
     } catch (err) {
       logger.error('[AudioProvider] Exception caught during playback', { err });
       setError('Playback failed');
       setIsLoading(false);
-      setIsPlaying(false);
       return false;
     }
-  }, []);
+  }, [unifiedAudio]);
 
   const pause = useCallback(() => {
-    playerRef.current?.pause();
-    setIsPlaying(false);
-  }, []);
+    unifiedAudio.pause();
+  }, [unifiedAudio]);
 
   const resume = useCallback(async (): Promise<boolean> => {
     logger.debug('AudioProvider.resume called');
 
-    if (playerRef.current?.isCompletedState()) {
-      logger.debug('Resume detected completed state, attempting replay');
-      const success = await playerRef.current.replay();
-      if (success) {
-        setIsPlaying(true);
-        return true;
-      }
-      return false;
+    if (unifiedAudio.isPlaying) {
+      return true;
     }
 
-    const success = await playerRef.current?.resume() ?? false;
+    const success = await unifiedAudio.resume();
     if (success) {
-      setIsPlaying(true);
+      return true;
     }
-    return success;
-  }, []);
+    return false;
+  }, [unifiedAudio]);
 
   const stop = useCallback(() => {
     audioFocusManager.release('story');
-    playerRef.current?.unloadAll();
-    setIsPlaying(false);
-    setProgress(0);
-    setDuration(0);
-    currentUrlRef.current = null;
-  }, []);
+    unifiedAudio.stop();
+    setError(null);
+  }, [unifiedAudio]);
 
   const seekTo = useCallback(async (position: number) => {
     logger.debug('AudioProvider.seekTo called with position', { position });
-    await playerRef.current?.seekTo(position);
-  }, []);
+    await unifiedAudio.seekTo(position);
+  }, [unifiedAudio]);
 
   const setVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
     volumeRef.current = clampedVolume;
-    playerRef.current?.setVolume('main', clampedVolume);
-  }, []);
+    unifiedAudio.setVolume('main', clampedVolume);
+  }, [unifiedAudio]);
 
   return (
     <AudioContext.Provider
       value={{
-        isPlaying,
-        progress,
-        duration,
-        isBuffering,
+        isPlaying: unifiedAudio.isPlaying,
+        progress: unifiedAudio.progress,
+        duration: unifiedAudio.duration,
+        isBuffering: unifiedAudio.isBuffering,
         play,
         pause,
         resume,

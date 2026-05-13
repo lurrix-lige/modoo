@@ -32,15 +32,15 @@ export function useAudioPlayer() {
       if (!mounted) return;
 
       const player = new UnifiedAudioPlayer();
-      player.setProgressUpdateCallback((progress, duration) => {
+      player.addProgressListener((progress, duration) => {
         if (!mounted) return;
         setState((prev) => ({ ...prev, currentTime: progress, duration }));
       });
-      player.setPlayingStateCallback((playing) => {
+      player.addPlayingStateListener((playing) => {
         if (!mounted) return;
         setState((prev) => ({ ...prev, isPlaying: playing }));
       });
-      player.setCompletionCallback(() => {
+      player.addCompletionListener(() => {
         if (!mounted) return;
         setState((prev) => ({ ...prev, isPlaying: false }));
       });
