@@ -1,0 +1,915 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model I18nResource {
+  id            String    @id @default(uuid())
+  resourceKey   String
+  language      String
+  value         String
+  type          String    @default("TEXT")
+  status        String    @default("PUBLISHED")
+  version       Int       @default(1)
+  author        String?
+  notes         String?
+  lastPublished DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@unique([resourceKey, language])
+  @@index([language])
+  @@index([status])
+  @@index([lastPublished])
+  @@map("i18n_resources")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  phone         String    @unique
+  nickname      String?
+  avatar        String?
+  role          String    @default("USER")
+  appleUserId   String?   @unique
+  appleEmail    String?
+  wechatOpenid  String?   @unique
+  wechatUnionid String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  child              Child?
+  sessions           Session[]
+  checkIns           CheckIn[]
+  playHistory        PlayHistory[]
+  subscriptions      Subscription[]
+  orders             Order[]
+  refreshTokens      RefreshToken[]
+  lessonProgress     LessonProgress[]
+  bookings           Booking[]
+  favorites          Favorite[]
+  shares             Share[]
+
+  notificationSettings NotificationSettings?
+  privacySettings       PrivacySettings?
+
+  @@index([phone])
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Child {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  nickname         String
+  birthday         DateTime
+  gender           String    @default("MALE")
+  avatarUrl        String?
+  guardianSpiritId String?
+  sleepProblems    String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guardianSpirit  GuardianSpirit?  @relation(fields: [guardianSpiritId], references: [id])
+  checkIns        CheckIn[]
+  playHistory     PlayHistory[]
+  lessonProgress  LessonProgress[]
+  favorites       Favorite[]
+  shares          Share[]
+
+  @@index([userId])
+  @@index([guardianSpiritId])
+  @@index([deletedAt])
+  @@map("children")
+}
+
+model GuardianSpirit {
+  id          String    @id @default(uuid())
+  nameKey     String
+  descriptionKey String?
+  icon        String
+  color       String
+  type        String    @default("MOON")
+  isDefault   Boolean   @default(false)
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  children    Child[]
+
+  @@index([type])
+  @@index([isDefault])
+  @@index([isActive])
+  @@map("guardian_spirits")
+}
+
+model Story {
+  id              String    @id @default(uuid())
+  title           String
+  titleKey        String?
+  coverUrl        String
+  audioUrl        String
+  duration        Int
+  category        String
+  description     String?
+  descriptionKey  String?
+  isPremium       Boolean   @default(false)
+  accessTier      String    @default("STANDARD")
+  previewContent  String?
+  previewDuration Int?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  playHistory PlayHistory[]
+  favorites   Favorite[]
+  shares      Share[]
+
+  @@index([category])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@index([deletedAt])
+  @@map("stories")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId      String
+  token        String    @unique
+  deviceInfo   String?
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model CheckIn {
+  id          String   @id @default(uuid())
+  userId      String?
+  childId     String?
+  anonymousId String?
+  date        String
+  sleepTime   String
+  wakeTime    String
+  quality     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child     Child?    @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, date])
+  @@index([userId, date])
+  @@index([userId])
+  @@index([childId])
+  @@index([anonymousId])
+  @@map("check_ins")
+}
+
+model PlayHistory {
+  id            String    @id @default(uuid())
+  userId        String?
+  childId       String?
+  anonymousId   String?
+  storyId       String
+  progress      Float     @default(0)
+  completed     Boolean   @default(false)
+  lastPlayedAt  DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child   Child?  @relation(fields: [childId], references: [id], onDelete: Cascade)
+  story   Story   @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, storyId])
+  @@unique([anonymousId, storyId])
+  @@index([userId])
+  @@index([childId])
+  @@index([anonymousId])
+  @@map("play_history")
+}
+
+model PricingPlan {
+  id             String    @id @default(uuid())
+  planKey        String    @unique
+  nameKey        String
+  descriptionKey String?
+  originalPrice  Float
+  currentPrice   Float
+  currency       String    @default("CNY")
+  durationDays   Int
+  sortOrder      Int       @default(0)
+  isActive       Boolean   @default(true)
+  isRecommended  Boolean   @default(false)
+  savingPercent  Int?
+  features       String?
+  notIncluded    String?
+  metadata       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  subscriptions Subscription[]
+  orderItems    OrderItem[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("pricing_plans")
+}
+
+model Benefit {
+  id             String    @id @default(uuid())
+  benefitKey     String    @unique
+  nameKey        String
+  descriptionKey String?
+  type           String
+  scope          String    @default("ALL_USERS")
+  value          String?c
+  isStackable    Boolean   @default(false)
+  sortOrder      Int       @default(0)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  productBenefits      ProductBenefit[]
+  subscriptionBenefits SubscriptionBenefit[]
+
+  @@index([type])
+  @@index([scope])
+  @@index([isActive])
+  @@map("benefits")
+}
+
+model ProductBenefit {
+  id                String    @id @default(uuid())
+  benefitId         String
+  productType       String
+  productId         String?
+  accessLevel       String    @default("FULL")
+  limitQuantity     Int?
+  limitPeriod       String?
+  isGrantByDefault  Boolean   @default(true)
+  conditions        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  benefit Benefit @relation(fields: [benefitId], references: [id], onDelete: Cascade)
+
+  @@unique([benefitId, productType, productId])
+  @@index([productType, productId])
+  @@map("product_benefits")
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  userId               String
+  planId               String
+  status               String    @default("ACTIVE")
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  autoRenew            Boolean   @default(true)
+  cancelAtPeriodEnd    Boolean   @default(false)
+  cancelledAt          DateTime?
+  terminationReason    String?
+  externalSubId        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user        User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        PricingPlan            @relation(fields: [planId], references: [id])
+  orders      Order[]
+  benefits    SubscriptionBenefit[]
+  transactions PaymentTransaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([externalSubId])
+  @@index([currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+model SubscriptionBenefit {
+  id              String    @id @default(uuid())
+  subscriptionId  String
+  benefitId       String
+  grantedAt       DateTime  @default(now())
+  expiresAt       DateTime?
+  usageCount      Int       @default(0)
+  usageLimit      Int?
+  usagePeriod     String?
+  lastUsedAt      DateTime?
+  metadata        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  benefit      Benefit      @relation(fields: [benefitId], references: [id])
+
+  @@unique([subscriptionId, benefitId])
+  @@index([subscriptionId])
+  @@map("subscription_benefits")
+}
+
+model PaymentTransaction {
+  id               String    @id @default(uuid())
+  orderId          String?
+  subscriptionId   String?
+  userId           String
+  type             String
+  status           String    @default("PENDING")
+  amount           Float
+  currency         String    @default("CNY")
+  paymentMethod    String?
+  transactionId    String?
+  gatewayResponse  String?
+  failureReason    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  order        Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([subscriptionId])
+  @@index([userId])
+  @@index([transactionId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payment_transactions")
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  orderNo         String    @unique
+  userId          String
+  subscriptionId  String?
+  status          String    @default("PENDING")
+  totalAmount     Float
+  discountAmount  Float     @default(0)
+  finalAmount     Float
+  currency        String    @default("CNY")
+  paymentMethod   String?
+  paymentChannel  String?
+  transactionId   String?
+  paidAt          DateTime?
+  expiredAt       DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  cancelReason    String?
+  refundAmount    Float?
+  refundedAt      DateTime?
+  refundReason    String?
+  metadata        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription?       @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  items        OrderItem[]
+  transactions PaymentTransaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([subscriptionId])
+  @@index([orderNo])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String   @id @default(uuid())
+  orderId         String
+  planId          String
+  planSnapshot    String
+  quantity        Int      @default(1)
+  unitPrice       Float
+  discountAmount  Float    @default(0)
+  finalPrice      Float
+  currency        String   @default("CNY")
+  createdAt       DateTime @default(now())
+
+  order Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  plan  PricingPlan @relation(fields: [planId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Promotion {
+  id               String    @id @default(uuid())
+  nameKey          String
+  descriptionKey   String?
+  code             String?   @unique
+  type             String
+  value            Float
+  minPurchase      Float?
+  maxDiscount      Float?
+  startDate        DateTime
+  endDate          DateTime
+  usageLimit       Int?
+  usageCount       Int       @default(0)
+  perUserLimit     Int       @default(1)
+  isActive         Boolean   @default(true)
+  applicablePlans  String?
+  metadata         String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([code])
+  @@index([isActive, startDate, endDate])
+  @@map("promotions")
+}
+
+model Article {
+  id           String    @id @default(uuid())
+  title        String
+  titleKey     String?
+  categoryKey  String?
+  category     String
+  coverUrl     String?
+  content      String
+  contentKey   String?
+  summary      String
+  summaryKey   String?
+  readTime     Int
+  views        Int       @default(0)
+  likes        Int       @default(0)
+  isFavorited  Boolean   @default(false)
+  isPremium    Boolean   @default(false)
+  accessTier   String    @default("STANDARD")
+  publishDate  DateTime  @default(now())
+  tagsJson     String?
+  author       String?
+  publishedAt  DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  favorites Favorite[]
+  shares    Share[]
+
+  @@index([category])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@index([publishedAt])
+  @@index([deletedAt])
+  @@map("articles")
+}
+
+model Favorite {
+  id         String    @id @default(uuid())
+  userId     String?
+  childId    String?
+  anonymousId String?
+  storyId    String?
+  articleId  String?
+  dialogueId String?
+  type       String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child    Child?    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  story    Story?    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  article  Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  dialogue Dialogue? @relation(fields: [dialogueId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, storyId])
+  @@unique([childId, articleId])
+  @@unique([childId, dialogueId])
+  @@unique([anonymousId, storyId])
+  @@unique([anonymousId, articleId])
+  @@unique([anonymousId, dialogueId])
+  @@index([userId])
+  @@index([childId])
+  @@index([anonymousId])
+  @@map("favorites")
+}
+
+model Share {
+  id        String    @id @default(uuid())
+  userId    String?
+  childId   String?
+  anonymousId String?
+  storyId   String?
+  articleId String?
+  type      String
+  platform  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user    User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child   Child?    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  story   Story?    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  article Article?  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, storyId])
+  @@unique([childId, articleId])
+  @@unique([anonymousId, storyId])
+  @@unique([anonymousId, articleId])
+  @@index([userId])
+  @@index([childId])
+  @@index([anonymousId])
+  @@map("shares")
+}
+
+model VerificationCode {
+  id        String    @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  @@index([phone])
+  @@index([expiresAt])
+  @@map("verification_codes")
+}
+
+model Course {
+  id               String    @id @default(uuid())
+  level            Int
+  name             String
+  nameKey          String?
+  description      String
+  descriptionKey   String?
+  imageUrl         String
+  totalLessons     Int
+  completedLessons Int       @default(0)
+  isUnlocked       Boolean   @default(true)
+  estimatedDuration String?
+  difficulty       String    @default("easy")
+  isPremium        Boolean   @default(false)
+  accessTier       String    @default("STANDARD")
+  previewLessons   Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  lessons Lesson[]
+
+  @@index([difficulty])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@index([deletedAt])
+  @@map("courses")
+}
+
+model Lesson {
+  id          String    @id @default(uuid())
+  courseId    String
+  order       Int
+  title       String
+  titleKey    String?
+  description String?
+  descriptionKey String?
+  duration    Int
+  type        String
+  contentUrl  String
+  isCompleted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
+
+  @@index([courseId])
+  @@map("lessons")
+}
+
+model LessonProgress {
+  id           String    @id @default(uuid())
+  userId       String?
+  childId      String?
+  anonymousId  String?
+  lessonId     String
+  isCompleted  Boolean   @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child  Child? @relation(fields: [childId], references: [id], onDelete: Cascade)
+  lesson Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, lessonId])
+  @@unique([anonymousId, lessonId])
+  @@index([userId])
+  @@index([childId])
+  @@index([anonymousId])
+  @@map("lesson_progress")
+}
+
+model BreathingExercise {
+  id              String    @id @default(uuid())
+  nameKey         String
+  descriptionKey  String
+  difficulty      String
+  phasesJson      String
+  icon            String?
+  color           String?
+  isPremium       Boolean   @default(false)
+  accessTier      String    @default("STANDARD")
+  previewDuration Int?
+  createdAt       DateTime  @default(now())
+
+  @@index([difficulty])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@map("breathing_exercises")
+}
+
+model WhiteNoise {
+  id               String    @id @default(uuid())
+  nameKey          String
+  name             String?
+  category         String
+  audioUrl         String
+  icon             String?
+  color            String?
+  isPremium        Boolean   @default(false)
+  accessTier       String    @default("STANDARD")
+  duration         Int?
+  isLoopable       Boolean   @default(true)
+  previewDuration  Int?
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([category])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@map("white_noises")
+}
+
+model Dialogue {
+  id           String    @id @default(uuid())
+  titleKey     String
+  scenarioKey  String?
+  responseKey  String
+  title        String?
+  scenario     String?
+  response     String?
+  category     String
+  tagsJson     String
+  isPremium    Boolean   @default(false)
+  accessTier   String    @default("STANDARD")
+  useCount     Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  favorites Favorite[]
+
+  @@index([category])
+  @@index([isPremium])
+  @@index([accessTier])
+  @@map("dialogues")
+}
+
+model Expert {
+  id                  String    @id @default(uuid())
+  nameKey             String
+  titleKey            String
+  avatarUrl           String
+  hospitalKey         String
+  specialtyKeysJson   String
+  experience         Int
+  consultationPrice   Int
+  rating              Float
+  reviewCount         Int
+  availableTimesJson  String?
+  accessTier          String    @default("PREMIUM")
+  consultationLimit   Int       @default(5)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  bookings Booking[]
+
+  @@index([accessTier])
+  @@index([rating])
+  @@index([deletedAt])
+  @@map("experts")
+}
+
+model Booking {
+  id        String    @id @default(uuid())
+  expertId  String
+  userId    String
+  date      String
+  time      String
+  status    String    @default("PENDING")
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  expert Expert @relation(fields: [expertId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expertId])
+  @@index([status])
+  @@index([date])
+  @@map("bookings")
+}
+
+model NotificationSettings {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  sleepReminder         Boolean @default(true)
+  checkInReminder       Boolean @default(true)
+  reportNotification    Boolean @default(true)
+  expertReminder        Boolean @default(false)
+  activityReminder      Boolean @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+model PrivacySettings {
+  id                              String  @id @default(uuid())
+  userId                          String  @unique
+  dataCollection                   Boolean @default(true)
+  analytics                        Boolean @default(true)
+  personalizedRecommendations     Boolean @default(true)
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("privacy_settings")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(uuid())
+  eventName   String
+  eventType   String
+  userId      String?
+  deviceId    String
+  sessionId   String?
+
+  screenName  String?
+  screenPath  String?
+  screenParams String?
+  elementId   String?
+  elementType String?
+
+  eventData   String?
+
+  platform    String?
+  deviceModel String?
+  osVersion   String?
+  appVersion  String?
+  timezone    String?
+  locale      String?
+
+  occurredAt  DateTime
+  receivedAt  DateTime @default(now())
+
+  durationMs  Int?
+  success     Boolean?
+  errorType   String?
+
+  isAnonymous Boolean  @default(false)
+
+  session     AnalyticsSession? @relation(fields: [sessionId], references: [id])
+  batch       AnalyticsBatch?   @relation(fields: [batchId], references: [id])
+  batchId     String?
+
+  @@index([eventName])
+  @@index([userId])
+  @@index([deviceId])
+  @@index([occurredAt])
+  @@index([screenName])
+  @@index([sessionId])
+  @@index([batchId])
+
+  @@map("analytics_events")
+}
+
+model AnalyticsSession {
+  id          String   @id @default(uuid())
+  userId      String?
+  deviceId    String
+  startTime   DateTime
+  endTime     DateTime?
+  durationMs  Int?
+  screensVisited String?
+
+  events      AnalyticsEvent[]
+
+  @@index([userId])
+  @@index([deviceId])
+  @@index([startTime])
+
+  @@map("analytics_sessions")
+}
+
+model AnalyticsUserProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  deviceId    String?
+
+  firstVisitAt DateTime @default(now())
+  lastVisitAt  DateTime
+  totalVisits  Int      @default(1)
+  totalSessions Int    @default(1)
+  totalTimeMs  Int      @default(0)
+
+  preferredLanguage String?
+  preferredTheme    String?
+
+  signupStep Int @default(0)
+  onboardingComplete Boolean @default(false)
+
+  featuresUsed String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@map("analytics_user_profiles")
+}
+
+model AnalyticsFeatureUsage {
+  id          String   @id @default(uuid())
+  userId      String
+  featureKey  String
+  count       Int      @default(1)
+  lastUsedAt  DateTime
+  totalDurationMs Int @default(0)
+
+  @@unique([userId, featureKey])
+  @@index([userId])
+  @@index([featureKey])
+
+  @@map("analytics_feature_usage")
+}
+
+model AnalyticsError {
+  id          String   @id @default(uuid())
+  errorType   String
+  message     String
+  stackTrace  String?
+  userId      String?
+  deviceId    String?
+  screenName  String?
+  occurredAt  DateTime @default(now())
+
+  @@index([errorType])
+  @@index([userId])
+
+  @@map("analytics_errors")
+}
+
+model AnalyticsBatch {
+  id          String   @id @default(uuid())
+  batchId     String   @unique
+  deviceId    String
+  eventCount  Int
+  status      String
+  firstEventAt DateTime
+  lastEventAt DateTime
+  createdAt   DateTime @default(now())
+  sentAt      DateTime?
+
+  events      AnalyticsEvent[]
+
+  @@index([batchId])
+  @@index([deviceId])
+  @@index([status])
+
+  @@map("analytics_batches")
+}

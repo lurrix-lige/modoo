@@ -1,0 +1,1283 @@
+{
+  "locale": "en-US",
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "code": "Code",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "close": "Close",
+    "retry": "Retry",
+    "backToHome": "Back to Home",
+    "errorMessage": "Sorry, the app encountered some issues. Please try refreshing or return to home",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "finish": "Finish",
+    "tryAgain": "Please try again",
+    "unknownError": "Unknown error",
+    "hint": "Hint",
+    "version": "Version",
+    "storyList": "Story List",
+    "loadingSkeleton": "Story List",
+    "start": "Start",
+    "stop": "Stop",
+    "seconds": "seconds",
+    "minutes": " mins",
+    "cycles": "cycles",
+    "completed": "Completed",
+    "loadFailed": "Load failed",
+    "loadFailedDesc": "Network request failed, please retry",
+    "noData": "No data",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "systemMode": "System",
+    "inhale": "Inhale",
+    "hold": "Hold",
+    "exhale": "Exhale",
+    "storyCompleted": "Stories Completed",
+    "checkInDays": "Check-in Days",
+    "totalRecords": "Total Records",
+    "sleepQuality": "Sleep Quality",
+    "getStarted": "Get Started",
+    "moonGuardian": "Moon Guardian",
+    "moonGuardianDesc": "Gentle Moon Spirit, accompanying you through every night",
+    "fireflyGuardian": "Firefly Guardian",
+    "fireflyGuardianDesc": "Shining Firefly, dispelling fears with light",
+    "starGuardian": "Star Guardian",
+    "starGuardianDesc": "Dazzling Star Spirit, illuminating children's sweet dreams",
+    "weekdays": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "themeToggle": {
+      "accessibilityHint": "Tap to cycle between light mode, dark mode, and system"
+    },
+    "growthRecord": {
+      "courseProgress": "Course Progress",
+      "growthEveryStep": "Record every step of growth",
+      "milestones": "Growth Milestones",
+      "firstCheckIn": "First Check-in",
+      "firstCheckInDesc": "Completed first sleep check-in",
+      "sevenDayStreak": "7-Day Streak",
+      "sevenDayStreakDesc": "Maintained sleep records for a week",
+      "tenStories": "10 Stories Completed",
+      "tenStoriesDesc": "Listened to 10 bedtime stories",
+      "noCourseRecord": "No course records"
+    },
+    "premium": "Premium",
+    "viewDetails": "View Details",
+    "hideDetails": "Hide Details",
+    "errorCode": "Error Code"
+  },
+  "connection": {
+    "checking": "Checking network connection...",
+    "checkingSubtext": "Please wait",
+    "offline": "Network connection lost",
+    "offlineSubtext": "Please check network settings",
+    "online": "Network connection normal"
+  },
+  "healthCheck": {
+    "serverError": "Server error",
+    "timeout": "Request timeout",
+    "networkError": "Network connection failed"
+  },
+  "audio": {
+    "initFailed": "Audio initialization failed",
+    "invalidAudio": "Invalid audio resource, please check network",
+    "playbackFailed": "Audio playback failed, please check network",
+    "audioNotFound": "Audio file not found",
+    "loadTimeout": "Audio loading timeout, please try again later",
+    "playbackError": "Playback error, please retry",
+    "whiteNoiseFailed": "White noise loading failed",
+    "emptyUrl": "Audio URL is empty",
+    "invalidUrl": "Invalid audio URL",
+    "unsupportedFormat": "{{format}} format may not be supported on {{platform}}",
+    "playFailedRetry": "Playback failed, please try again later",
+    "playFailed": "Playback failed",
+    "unableToAccess": "Unable to access audio file, please check network connection or try again later",
+    "networkUnavailable": "Network connection unavailable, please check network",
+    "unsupportedFile": "Audio file format not supported or file is corrupted, please try another audio",
+    "decodeFailed": "Audio decoding failed (error code: {{code}}), please try another audio"
+  },
+  "api": {
+    "timeout": "Request timeout, please try again later",
+    "networkError": "Network connection failed, please check network",
+    "requestFailed": "Network request failed",
+    "unknownError": "Unknown error"
+  },
+  "auth": {
+    "noRefreshToken": "No refresh token available",
+    "tokenRefreshFailed": "Token refresh failed",
+    "login": "Login",
+    "logout": "Logout",
+    "phonePlaceholder": "Enter phone number",
+    "codePlaceholder": "Enter verification code",
+    "sendCode": "Get code",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed, please try again",
+    "codeSent": "Verification code sent",
+    "codeSendFailed": "Failed to send code, please try again",
+    "invalidPhone": "Please enter a valid phone number",
+    "invalidCode": "Please enter a valid verification code",
+    "invalidPhoneAndCode": "Please enter a valid phone number and code",
+    "codeResend": "Resend",
+    "countdownSeconds": "{{count}}s to resend",
+    "title": "Goodnight Baby",
+    "subtitle": "A peaceful night for your baby",
+    "or": "Or",
+    "wechatLogin": "WeChat Login",
+    "appleLogin": "Apple Login",
+    "agreement": "By logging in you agree to",
+    "userAgreement": "User Agreement",
+    "privacyPolicy": "Privacy Policy",
+    "and": "and",
+    "unlockContent": "Unlock Exciting Content",
+    "loginToExperience": "Login to enjoy full content experience",
+    "storyAudio": "Complete Story Audio",
+    "professionalCourses": "Professional Sleep Courses",
+    "exclusiveGuardian": "Exclusive Guardian",
+    "loginNow": "Login Now",
+    "later": "Maybe Later",
+    "appleLoginFailed": "Apple login failed, please try again",
+    "wechatLoginFailed": "WeChat login failed, please try again",
+    "appleNotAvailable": "Apple Sign In is only available on iOS",
+    "wechatNotInstalled": "WeChat is not installed",
+    "wechatNotImplemented": "WeChat login is under development",
+    "downloadWeChat": "Download WeChat",
+    "loginRequired": "Please login first",
+    "loginRequiredDesc": "Login to view more content"
+  },
+  "welcome": {
+    "appTitle": "Goodnight Baby",
+    "firstVisit": "Welcome to the dreamy bedtime world",
+    "returnVisit": "Good to see you again, pretty one",
+    "featureSection": "Great Content",
+    "storyTitle": "Featured Stories",
+    "storyDesc": "Thousands of high-quality bedtime stories",
+    "courseTitle": "Professional Courses",
+    "courseDesc": "Scientific desensitization training system",
+    "breathingTitle": "Breathing Exercises",
+    "breathingDesc": "Relax and fall asleep",
+    "guardianTitle": "Guardian Spirit",
+    "guardianDesc": "Accompany baby to sleep",
+    "upgradeTitle": "Unlock More Greatness",
+    "upgradeDesc": "Unlimited stories, exclusive courses",
+    "upgradeButton": "Learn More",
+    "exploreButton": "Action",
+    "footer": "Make every night filled with warmth and peace",
+    "discoverContent": "Discover Great Content",
+    "valueTitle": "Membership Benefits",
+    "valueSubtitle": "See what membership can bring you",
+    "value": {
+      "content": "Rich Content",
+      "contentDesc": "Unlimited stories to enjoy",
+      "breathing": "Breathing Exercises",
+      "breathingDesc": "Professional training to help you relax",
+      "courses": "Professional Courses",
+      "coursesDesc": "Systematic learning programs",
+      "support": "Dedicated Support",
+      "supportDesc": "24/7 personalized service"
+    },
+    "inviteTitle": "Start Your Journey",
+    "inviteDesc": "Let's give your baby a peaceful night together",
+    "featuredStory1Title": "Moon Spirit's Magic House",
+    "featuredStory1Desc": "The brave little rabbit learned not to be afraid of the dark in Moon Spirit's magic house",
+    "featuredStory2Title": "Star Guardian",
+    "featuredStory2Desc": "Every star is a little guardian, watching over the children at night",
+    "story1Title": "Friends in the Dark",
+    "story1Desc": "It turns out there are so many lovely friends living in the dark",
+    "story2Title": "Firefly's Light of Courage",
+    "story2Desc": "Little Firefly helped little bear overcome fear with its faint light"
+  },
+  "home": {
+    "welcomeChild": "Welcome back, {{childName}}!",
+    "stories": "Stories",
+    "courses": "Courses",
+    "breathing": "Breathing",
+    "checkIn": "Check In",
+    "goodEvening": "Good evening~",
+    "babyNickname": "Little baby",
+    "moonGuardian": "Moon Spirit",
+    "fireflyGuardian": "Firefly Guardian",
+    "starGuardian": "Star Guardian",
+    "guardianSpeech": "I'm {{guardianName}}, here to sleep with you~",
+    "guardianHint": "Tap me for bedtime magic",
+    "storyList": "Stories",
+    "parentHint": "Hello parent, tap the person icon in the top right to switch to parent mode",
+    "allCategory": "All",
+    "braveCategory": "Brave",
+    "dreamCategory": "Dreams",
+    "recommendedCategory": "Recommended",
+    "noStories": "No stories yet, come explore"
+  },
+  "story": {
+    "play": "Play",
+    "pause": "Pause",
+    "resume": "Resume",
+    "rewind": "Rewind",
+    "forward": "Forward",
+    "volume": "Volume",
+    "minutes": " mins",
+    "memberOnly": "VIP Only",
+    "freePreview": "Free Preview",
+    "playing": "Story Playing",
+    "story1Title": "Story Under the Stars",
+    "story1Desc": "A beautiful story about the starry sky",
+    "story2Title": "Brave Adventure",
+    "story2Desc": "A story of courage and adventure",
+    "story3Title": "Sweet Dreams",
+    "story3Desc": "A story about beautiful dreams",
+    "braveRabbit": {
+      "title": "The Brave Little Rabbit",
+      "desc": "A story of a little rabbit overcoming fear"
+    },
+    "sweetDream": {
+      "title": "Sweet Dreams",
+      "desc": "A story about beautiful dreams"
+    },
+    "braveAdventure": {
+      "title": "Brave Adventure",
+      "desc": "A story of courage and adventure"
+    },
+    "starNight": {
+      "title": "Story Under the Stars",
+      "desc": "A beautiful story about the starry sky"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "themeAndLanguage": "Theme and Language",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "displaySettings": "Display Settings",
+    "about": "About",
+    "chinese": "简体中文",
+    "english": "English",
+    "themePreview": "Theme Preview",
+    "sleepReminder": "Sleep Reminder",
+    "checkInReminder": "Check-in Reminder",
+    "reportNotification": "Report Notification",
+    "serviceNotification": "Service Notifications",
+    "expertReminder": "Expert Reminder",
+    "expertReminderDesc": "Expert replies and booking reminders",
+    "activityReminder": "Activity Reminder",
+    "activityReminderDesc": "New stories and course notifications",
+    "notificationFooter": "You won't receive any push notifications when turned off",
+    "sleepReminderDesc": "Daily bedtime reminder",
+    "checkInReminderDesc": "Daily check-in reminder",
+    "reportNotificationDesc": "Weekly sleep report notification",
+    "themeMode": "Theme Mode",
+    "textSize": "Text Size",
+    "dataCollection": "Data Collection",
+    "shareData": "Share Data",
+    "lightMode": "Light Mode",
+    "lightModeDesc": "Bright light theme",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Eye-friendly dark theme",
+    "systemMode": "System Default",
+    "systemModeDesc": "Auto-follow device settings",
+    "userAgreement": "User Agreement",
+    "privacyPolicy": "Privacy Policy",
+    "analytics": "Analytics",
+    "analyticsDesc": "Help us understand app usage",
+    "personalizedRecommendations": "Personalized Recommendations",
+    "personalizedRecommendationsDesc": "Recommend content based on your preferences",
+    "legal": "Legal",
+    "account": "Account Security",
+    "exportData": "Export Data",
+    "exportDataDesc": "Export your personal data",
+    "exportSuccess": "Data export request submitted, please check your email",
+    "exportFailed": "Data export failed, please try again later",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDesc": "Permanently delete your account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone",
+    "deleteSuccess": "Account deleted",
+    "deleteFailed": "Account deletion failed",
+    "contactSupport": "Contact Support",
+    "contactSupportDesc": "Get help and support",
+    "visitWebsite": "Visit Website",
+    "rateApp": "Rate Us",
+    "rateAppDesc": "Your feedback drives our improvement",
+    "company": "Company Information",
+    "companyName": "Company Name",
+    "companyNameValue": "Dozoo Technology Co., Ltd.",
+    "businessLicense": "Business License",
+    "businessLicenseValue": "91310120MA1XXXXXX",
+    "allRightsReserved": "All Rights Reserved"
+  },
+  "parentHome": {
+    "sleepReport": "Baby Sleep Report",
+    "thisWeek": "This Week",
+    "childMode": "Child Mode",
+    "avgDuration": "Avg Duration",
+    "hours": "hrs",
+    "vsLastWeek": "{{change}}h vs last week",
+    "bedtime": "Bedtime",
+    "stability": "{{stability}}% stable",
+    "nightWakes": "Night Wakes",
+    "times": "times",
+    "checkInDays": "Check-in Days",
+    "days": "days",
+    "longestStreak": "Longest streak {{streak}} days",
+    "bedtimeTrend": "Bedtime Trend",
+    "7Days": "7 Days",
+    "30Days": "30 Days",
+    "recommendations": "Recommendations based on this week's data",
+    "minutesRead": "{{minutes}} min read",
+    "expertConsult": "Expert Consulting",
+    "dialogues": "Dialogues",
+    "growthFile": "Growth File",
+    "quickComfort": "Quick Comfort",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun",
+    "home": "Home",
+    "knowledge": "Knowledge",
+    "services": "Services",
+    "profile": "Profile",
+    "relaxSpace": "Relax Space"
+  },
+  "storyPlayer": {
+    "autoSleepNoise": "Auto-play sleep sounds when playback ends",
+    "playbackFailed": "Playback failed, please retry",
+    "loginToUnlock": "Login to unlock full story",
+    "loginMessage": "Login to enjoy full story audio experience",
+    "trialEnded": "Trial ended",
+    "upgradeMessage": "Upgrade to unlock full story content",
+    "unlimitedStories": "Unlimited access to all stories",
+    "professionalCourses": "Professional sleep courses",
+    "exclusiveGuardian": "Exclusive guardian spirit",
+    "upgradeNow": "Upgrade Now",
+    "later": "Later",
+    "timerTitle": "Set Sleep Timer",
+    "cancelTimer": "Cancel Timer"
+  },
+  "membership": {
+    "center": "Membership Center",
+    "unlockAll": "Unlock All Premium Content",
+    "everyNightPeace": "Make every night filled with warmth and peace",
+    "popular": "Most Popular",
+    "monthlyPlan": "Monthly Plan",
+    "quarterlyPlan": "Quarterly Plan",
+    "yearlyPlan": "Yearly Plan",
+    "perQuarter": "per quarter",
+    "perYear": "per year",
+    "aboutPerMonth": "~{{price}}/month",
+    "unlimitedAccess": "Unlimited access to all stories",
+    "proBreathing": "Professional breathing training courses",
+    "basicSleep": "Basic sleep guidance",
+    "adFree": "Ad-free experience",
+    "allCourses": "All professional courses",
+    "exclusiveAdvisor": "Exclusive sleep advisor",
+    "prioritySupport": "Priority customer support",
+    "offlineContent": "Save offline content",
+    "unlimitedStories": "Unlimited Stories",
+    "proCourses": "Professional Courses",
+    "breathing": "Breathing Exercises",
+    "exclusive": "Exclusive Content",
+    "offline": "Offline Save",
+    "noAds": "No Ads",
+    "subscribeNote1": "Subscription will be charged to your Apple ID account upon purchase confirmation",
+    "subscribeNote2": "Subscription auto-renews unless cancelled at least 24 hours before current subscription period ends",
+    "subscribeNote3": "You can manage and cancel subscriptions in App Store account settings",
+    "needLogin": "Login Required",
+    "needLoginDesc": "Please login first to purchase membership",
+    "goLogin": "Go to Login",
+    "purchaseFailed": "Purchase Failed",
+    "purchaseError": "An error occurred during purchase, please try again later",
+    "purchaseSuccess": "Purchase Successful",
+    "congratsVIP": "Congratulations! You are now a VIP member!",
+    "processing": "Processing...",
+    "subscribeNow": "Subscribe Now",
+    "trustBadge": "7-day free trial · Cancel anytime",
+    "openSuccess": "Upgrade Successful",
+    "openSuccessDesc": "Congratulations! You are now a member, enjoy your exclusive benefits",
+    "openFailed": "Upgrade Failed",
+    "openFailedDesc": "Please try again later",
+    "payableAmount": "Total",
+    "openMembership": "Upgrade",
+    "membershipBenefits": "Membership Benefits",
+    "selectPlan": "Select Plan",
+    "noPlansAvailable": "No plans available, please try again later",
+    "recommended": "Recommended",
+    "perMonth": "/month",
+    "heroTitle": "Start Your Quality Sleep Journey",
+    "heroDesc": "Member exclusive, the best bedtime experience for your baby",
+    "benefits": {
+      "stories": "Unlimited Stories",
+      "storiesDesc": "Thousands of quality bedtime stories",
+      "courses": "Professional Courses",
+      "coursesDesc": "Scientific desensitization training system",
+      "expert": "Expert Consultation",
+      "expertDesc": "One-on-one professional guidance",
+      "guardian": "Exclusive Guardian",
+      "guardianDesc": "Personalized guardian companion"
+    },
+    "agreement": {
+      "prefix": "By subscribing, you agree to the",
+      "terms": "Membership Service Agreement",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "plan": {
+      "monthly": "Monthly Plan",
+      "quarterly": "Quarterly Plan",
+      "yearly": "Yearly Plan"
+    },
+    "period": {
+      "monthly": "/month",
+      "quarterly": "/quarter",
+      "yearly": "/year"
+    }
+  },
+  "benefit": {
+    "allStories": "Unlimited access to all stories",
+    "allStoriesDesc": "Listen to all story content without restrictions",
+    "adFree": "Ad-free experience",
+    "adFreeDesc": "Clean user experience without ads",
+    "unlimitedBreathing": "Unlock all breathing exercises",
+    "unlimitedBreathingDesc": "Use all breathing training without restrictions",
+    "premiumSupport": "Priority customer support",
+    "premiumSupportDesc": "7x24 exclusive customer support",
+    "familySharing": "Family Sharing",
+    "familySharingDesc": "Share membership benefits with up to 5 people",
+    "exclusiveContent": "Exclusive VIP content",
+    "exclusiveContentDesc": "Early access to exclusive member content",
+    "all_stories": "Unlimited access to all stories",
+    "ad_free": "Ad-free experience",
+    "unlimited_breathing": "Unlock all breathing exercises",
+    "white_noise_premium": "Premium white noise",
+    "dialogue_access": "Dialogue library access",
+    "course_access": "Course access",
+    "sleep_analysis": "Sleep analysis",
+    "white_noise_basic": "Basic white noise",
+    "expert_consultation": "Expert consultation",
+    "premium_support": "Priority customer support",
+    "exclusive_content": "Exclusive VIP content",
+    "family_sharing": "Family Sharing"
+  },
+  "relaxSpace": {
+    "title": "Relax Space",
+    "subtitle": "Take a moment to relax",
+    "heroText": "Take a deep breath and relax",
+    "breathingExercises": "Breathing Exercises",
+    "whiteNoise": "White Noise",
+    "sleepMusic": "Sleep Music",
+    "sleepMusicDesc": "Curated sleep tracks to help you sleep",
+    "exploreMusic": "Explore More",
+    "loadError": "Failed to load, please try again later",
+    "audioPlayError": "Audio playback failed, please check network",
+    "breathing": {
+      "478": {
+        "name": "4-7-8 Breathing",
+        "desc": "Inhale 4s, Hold 7s, Exhale 8s"
+      },
+      "box": {
+        "name": "Box Breathing",
+        "desc": "Inhale 4s, Hold 4s, Exhale 4s"
+      },
+      "calm": {
+        "name": "Calm Breathing",
+        "desc": "Inhale 3s, Hold 2s, Exhale 4s"
+      }
+    }
+  },
+  "breathing": {
+    "title": "Breathing Relaxation",
+    "subtitle": "Breathe with me, relax your body and mind",
+    "tapToStart": "Tap to start practice",
+    "exercises": "Breathing Exercises",
+    "whiteNoise": "White Noise",
+    "balanceBreathing": "Balance Breathing",
+    "balanceDesc": "Inhale 4s, hold 4s, exhale 4s, hold 4s",
+    "balanced": "Balance Breathing",
+    "balancedDesc": "Inhale 4s, hold 4s, exhale 4s, hold 4s",
+    "relaxBreathing": "Relax Breathing",
+    "relax": "Relax Breathing",
+    "relaxDesc": "Inhale 4s, hold 7s, exhale 8s",
+    "sleepBreathing": "Sleep Breathing",
+    "sleep": "Sleep Breathing",
+    "sleepDesc": "Inhale 6s, hold 3s, exhale 10s, hold 3s",
+    "energyBreathing": "Energy Breathing",
+    "energy": "Energy Breathing",
+    "energyDesc": "Quick inhale and exhale to boost energy",
+    "inhale": "Inhale",
+    "hold": "Hold",
+    "exhale": "Exhale",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart",
+    "complete": "Practice Complete",
+    "greatJob": "Great job! You did well",
+    "rain": "Rain",
+    "ocean": "Ocean",
+    "wind": "Wind",
+    "stream": "Stream",
+    "forest": "Forest",
+    "bird": "Birds",
+    "white": "White Noise",
+    "pink": "Pink Noise",
+    "fan": "Fan",
+    "city": "City",
+    "cafe": "Cafe",
+    "loadError": "Failed to load, please try again later",
+    "audioPlayError": "Audio playback failed, please check your network",
+    "emptyState": "No data available"
+  },
+  "childLock": {
+    "parentVerification": "Parent Verification",
+    "verificationDesc": "Please complete {{type}} verification to verify parent identity",
+    "correct": "Correct",
+    "tryAgain": "Try Again",
+    "cancel": "Cancel",
+    "enterAnswer": "Please enter your answer",
+    "correctAnswer": "Correct Answer",
+    "wrongAnswer": "Wrong Answer",
+    "switchGraphical": "Switch to Graph",
+    "switchCalculation": "Switch to Math",
+    "calculation": "Math",
+    "graphical": "Graph",
+    "retryCalculation": "Recalculate",
+    "retryAdjustment": "Readjust"
+  },
+  "course": {
+    "title": "Desensitization Training",
+    "subtitle": "Step by step, overcome fears",
+    "currentProgress": "Current Progress",
+    "earnedBadges": "Earned Badges",
+    "desensitizationLevels": "Desensitization Levels",
+    "unlockCourse": "Unlock Higher Level Courses",
+    "lockedCourseMessage": "Complete current course to unlock the next one, keep going!",
+    "loginToAccess": "Login to Access Course",
+    "loginMessage": "Login to enjoy complete desensitization training courses",
+    "level": "Level {{level}}",
+    "completed": "Completed",
+    "lessons": "lessons",
+    "startLesson": "Start Course",
+    "startLearning": "Start Learning",
+    "continue": "Continue",
+    "continueLearning": "Continue Learning",
+    "courseDetail": "Course Detail",
+    "courseDuration": "Course Duration",
+    "courseDifficulty": "Difficulty Level",
+    "courseObjective": "Course Objective",
+    "lessonList": "Lesson List",
+    "courseContent": "Course Content",
+    "lesson": "Lesson {{num}}",
+    "lessonTitle": "{{title}}",
+    "complete": "Completed",
+    "locked": "Locked",
+    "inProgress": "In Progress",
+    "intro": "Course Introduction",
+    "tips": "Tips",
+    "difficultyEasy": "Easy",
+    "difficultyMedium": "Medium",
+    "difficultyHard": "Hard",
+    "level1Name": "Dim Light Adaptation",
+    "level1Desc": "Get to know the dark and understand it's not scary",
+    "level2Name": "Brave Diary",
+    "level2Desc": "Learn small tips to face the dark bravely",
+    "level3Name": "Power of Imagination",
+    "level3Desc": "Use your imagination to create your own safe space",
+    "level4Name": "Friends in the Dark",
+    "level4Desc": "Discover beauty and wonder in the dark",
+    "level5Name": "Sleep Well Little Warrior",
+    "level5Desc": "Become a brave warrior who's not afraid of the dark",
+    "minutes": "min",
+    "lesson1": "Deep Breathing Relaxation",
+    "lesson2": "Darkness Cognitive Restructuring",
+    "lesson3": "Imagining Safe Scenarios",
+    "lesson4": "Brave Dialogue",
+    "lesson5": "Good Night Blessing",
+    "piece": "piece",
+    "level1": {
+      "title": "Dim Light Adaptation",
+      "desc": "Get to know the dark and understand it's not scary",
+      "lesson1": {
+        "title": "Understanding Our Eyes",
+        "desc": "Learn how our eyes see things"
+      },
+      "lesson2": {
+        "title": "Day and Night",
+        "desc": "Understand why there's day and night"
+      },
+      "lesson3": {
+        "title": "What's in the Dark",
+        "desc": "Explore things in the dark"
+      },
+      "lesson4": {
+        "title": "Magic of Night Light",
+        "desc": "Learn to use night lights"
+      },
+      "lesson5": {
+        "title": "Safe Little Corner",
+        "desc": "Create your own safe corner"
+      },
+      "lesson6": {
+        "title": "Dark Exploration Game",
+        "desc": "Treasure hunt in the dark"
+      },
+      "lesson7": {
+        "title": "Bedtime Relaxation",
+        "desc": "Learn relaxation techniques"
+      },
+      "lesson8": {
+        "title": "Level 1 Graduation",
+        "desc": "Congratulations on completing Level 1"
+      },
+      "lesson9": {
+        "title": "Quiz Time",
+        "desc": "Test what you've learned"
+      },
+      "lesson10": {
+        "title": "Brave Badge",
+        "desc": "Earn your brave badge"
+      }
+    },
+    "level2": {
+      "title": "Brave Diary",
+      "desc": "Learn small tips to face the dark bravely",
+      "lesson1": {
+        "title": "Brave Role Models",
+        "desc": "Meet brave role models"
+      },
+      "lesson2": {
+        "title": "What Am I Afraid Of",
+        "desc": "Express your fears"
+      },
+      "lesson3": {
+        "title": "Mom and Dad Are Near",
+        "desc": "Know someone is protecting you"
+      },
+      "lesson4": {
+        "title": "Brave Slogans",
+        "desc": "Learn brave slogans"
+      },
+      "lesson5": {
+        "title": "Dark Challenge",
+        "desc": "First dark challenge"
+      },
+      "lesson6": {
+        "title": "Brave Diary",
+        "desc": "Record your brave moments"
+      },
+      "lesson7": {
+        "title": "Little Helper",
+        "desc": "Help other scared friends"
+      },
+      "lesson8": {
+        "title": "Bigger Challenge",
+        "desc": "Stay longer in the dark"
+      },
+      "lesson9": {
+        "title": "Level 2 Graduation",
+        "desc": "Congratulations on completing Level 2"
+      },
+      "lesson10": {
+        "title": "Brave Badge Upgrade",
+        "desc": "Earn advanced brave badge"
+      }
+    },
+    "level3": {
+      "title": "Power of Imagination",
+      "desc": "Use your imagination to create your own safe space",
+      "lesson1": {
+        "title": "Imagination Journey",
+        "desc": "Start a wonderful imagination journey"
+      },
+      "lesson2": {
+        "title": "My Safe Corner",
+        "desc": "Build a safe corner in your mind"
+      },
+      "lesson3": {
+        "title": "Magic Shield",
+        "desc": "Imagine a protective shield"
+      },
+      "lesson4": {
+        "title": "Brave Companion",
+        "desc": "Create a brave companion"
+      },
+      "lesson5": {
+        "title": "Starlight Navigation",
+        "desc": "Learn to navigate by starlight"
+      },
+      "lesson6": {
+        "title": "Dream Adventure",
+        "desc": "Explore in your dreams"
+      },
+      "lesson7": {
+        "title": "Imagination Games",
+        "desc": "Play imagination games"
+      },
+      "lesson8": {
+        "title": "Level 3 Graduation",
+        "desc": "Congratulations on completing Level 3"
+      },
+      "lesson9": {
+        "title": "Imagination Test",
+        "desc": "Test your imagination"
+      },
+      "lesson10": {
+        "title": "Imagination Badge",
+        "desc": "Earn imagination badge"
+      }
+    },
+    "level4": {
+      "title": "Friends in the Dark",
+      "desc": "Discover beauty and wonder in the dark",
+      "lesson1": {
+        "title": "Nocturnal Animals",
+        "desc": "Meet animals that live at night"
+      },
+      "lesson2": {
+        "title": "Secrets of Stars",
+        "desc": "Learn stories about stars"
+      },
+      "lesson3": {
+        "title": "World Under Moonlight",
+        "desc": "Explore the beautiful world under moonlight"
+      },
+      "lesson4": {
+        "title": "Magic of Sounds",
+        "desc": "Listen to night sounds"
+      },
+      "lesson5": {
+        "title": "Colors in Darkness",
+        "desc": "Discover colors in the dark"
+      },
+      "lesson6": {
+        "title": "Gifts in the Night Sky",
+        "desc": "Find gifts in the night sky"
+      },
+      "lesson7": {
+        "title": "Friends with Darkness",
+        "desc": "Learn to be friends with darkness"
+      },
+      "lesson8": {
+        "title": "Level 4 Graduation",
+        "desc": "Congratulations on completing Level 4"
+      },
+      "lesson9": {
+        "title": "Dark Adventure Test",
+        "desc": "Test your adventure skills"
+      },
+      "lesson10": {
+        "title": "Explorer Badge",
+        "desc": "Earn explorer badge"
+      }
+    },
+    "level5": {
+      "title": "Sleep Well Little Warrior",
+      "desc": "Become a brave warrior who's not afraid of the dark",
+      "lesson1": {
+        "title": "Warrior's Oath",
+        "desc": "Make a vow to become a warrior"
+      },
+      "lesson2": {
+        "title": "Bedtime Preparation",
+        "desc": "Prepare for bedtime"
+      },
+      "lesson3": {
+        "title": "Deep Breathing Relaxation",
+        "desc": "Learn bedtime deep breathing"
+      },
+      "lesson4": {
+        "title": "Warrior Meditation",
+        "desc": "Practice warrior meditation"
+      },
+      "lesson5": {
+        "title": "Goodnight Ritual",
+        "desc": "Create your own bedtime ritual"
+      },
+      "lesson6": {
+        "title": "Conquer Nightmares",
+        "desc": "Learn to conquer nightmares"
+      },
+      "lesson7": {
+        "title": "Guardian Spirit",
+        "desc": "Summon your guardian spirit"
+      },
+      "lesson8": {
+        "title": "Ultimate Challenge",
+        "desc": "Complete the ultimate dark challenge"
+      },
+      "lesson9": {
+        "title": "Graduation Ceremony",
+        "desc": "Attend graduation ceremony"
+      },
+      "lesson10": {
+        "title": "Sleep Well Warrior Badge",
+        "desc": "Earn the highest honor badge"
+      }
+    }
+  },
+  "checkIn": {
+    "dateFormat": "{{month}}/{{day}} {{weekDay}}",
+    "noHistory": "No check-in records",
+    "weekdays": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "history": "Check-in History",
+    "title": "Sleep Check-in",
+    "subtitle": "Keep checking in, build good habits",
+    "todayCheckIn": "Today Check-in",
+    "sleepTime": "Sleep Time",
+    "wakeTime": "Wake Time",
+    "sleepQuality": "Sleep Quality",
+    "selectSleepTime": "Select Sleep Time",
+    "selectWakeTime": "Select Wake Time",
+    "streak": "Streak",
+    "thisWeek": "This Week",
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "expertConsult": {
+    "title": "Expert Consultation",
+    "selectExpert": "Select Expert",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "consultationFee": "Consultation Fee",
+    "bookNow": "Book Now",
+    "loginToBook": "Login to Book Expert Consultation",
+    "loginMessage": "Login to book expert one-on-one consultation service",
+    "bookingSuccess": "Booking Successful",
+    "bookingSuccessMessage": "Please keep your phone on, the expert will contact you at the scheduled time",
+    "perSession": "/session",
+    "reviews": "{{count}} reviews",
+    "weekday": "{{day}}",
+    "experts": {
+      "liDoctor": "Dr. Li",
+      "liTitle": "Child Psychology Counselor",
+      "liHospital": "Child Mental Health Center",
+      "liSpecialties": [
+        "Separation Anxiety",
+        "Sleep Problems",
+        "Behavior Correction"
+      ],
+      "wangProfessor": "Prof. Wang",
+      "wangTitle": "Developmental Psychology Expert",
+      "wangHospital": "Psychology Research Institute",
+      "wangSpecialties": [
+        "Cognitive Development",
+        "Emotional Management",
+        "Family Education"
+      ],
+      "zhangTeacher": "Teacher Zhang",
+      "zhangTitle": "Senior Psychological Counselor",
+      "zhangHospital": "Family Education Guidance Center",
+      "zhangSpecialties": [
+        "Parent-Child Communication",
+        "Habit Building",
+        "Psychological Counseling"
+      ]
+    }
+  },
+  "expertBookings": {
+    "title": "My Bookings",
+    "emptyTitle": "No Bookings",
+    "emptyDesc": "You haven't booked any expert consultation services yet",
+    "bookNow": "Book Now",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "cancel": "Cancel",
+    "confirmCancel": "Confirm Cancel",
+    "cancelWarning": "Are you sure you want to cancel this booking?",
+    "cancelSuccess": "Booking cancelled",
+    "cancelFailed": "Failed to cancel booking",
+    "loadError": "Failed to load bookings",
+    "note": "Note"
+  },
+  "dialogue": {
+    "title": "Dialogue Library",
+    "all": "All",
+    "fear": "Fear",
+    "sleep": "Sleep",
+    "suggestedResponse": "Suggested Response",
+    "copy": "Copy",
+    "favorite": "Favorite",
+    "nightmare": "Nightmare",
+    "category": {
+      "fear": "Fear",
+      "fearDesc": "Dialogues for handling children's fear scenarios",
+      "nightmare": "Nightmare",
+      "nightmareDesc": "Comforting dialogues after nightmares",
+      "sleep": "Bedtime",
+      "sleepDesc": "Dialogues for bedtime and building sense of security",
+      "discipline": "Discipline",
+      "disciplineDesc": "Gentle but firm parenting guidance",
+      "emotion": "Emotions",
+      "emotionDesc": "Dialogues to help children manage emotions"
+    },
+    "tags": {
+      "fear": "Fear",
+      "nightmare": "Nightmare",
+      "sleep": "Bedtime",
+      "comfort": "Comfort",
+      "security": "Security",
+      "encourage": "Encouragement",
+      "emotion": "Emotions",
+      "calm": "Calm",
+      "reject": "Refusal",
+      "separation": "Separation Anxiety",
+      "brave": "Brave",
+      "growth": "Growth",
+      "angry": "Angry",
+      "discipline": "Discipline",
+      "dark": "Dark"
+    },
+    "title1": "Response to fear of dark",
+    "scenario1": "Mommy, I'm scared of the dark!",
+    "response1": "Baby, Mommy is right here, let's look at the stars outside the window together",
+    "title2": "Comforting after a nightmare",
+    "scenario2": "I had a nightmare...",
+    "response2": "Come, tell Mommy what you dreamed about? It was just a dream",
+    "title3": "Building bedtime security",
+    "scenario3": "Mommy, I can't sleep...",
+    "response3": "Baby, close your eyes and imagine your favorite safe place, Mommy and Daddy are always here protecting you",
+    "title4": "Gentle refusal",
+    "scenario4": "I don't want to go to bed!",
+    "response4": "I understand you want to keep playing, but we agreed, it's time to rest now. How about we read this book and then turn off the lights?",
+    "title5": "Encouraging exploration",
+    "scenario5": "Mommy, what's in the dark?",
+    "response5": "There are lots of interesting things in the dark! Fireflies dancing, stars twinkling, and little crickets singing",
+    "title6": "Emotion management",
+    "scenario6": "I'm so angry!",
+    "response6": "Mommy sees you're really angry, because... Come, let's take deep breaths together, blow the air out like blowing up a balloon",
+    "title7": "Bedtime story",
+    "scenario7": "Tell me one more story...",
+    "response7": "That's all for tonight's story, close your eyes, we'll continue our new adventure tomorrow night. Good night, my little warrior",
+    "title8": "Separation anxiety",
+    "scenario8": "Mommy don't go!",
+    "response8": "Mommy is in the next room, I can hear you anytime. Close your eyes and imagine Mommy giving you a big hug",
+    "items": {
+      "afraid": {
+        "scenario": "Fear of darkness scenario",
+        "title": "Response when afraid of darkness",
+        "response": "Sweetheart, Mommy is right here. Let's look at the stars outside together. Darkness is like a gentle blanket, softly covering us and protecting us as we sleep"
+      },
+      "nightmare": {
+        "scenario": "Nightmare scenario",
+        "title": "Comfort after nightmares",
+        "response": "Come, tell Mommy what you dreamed about? That was just a dream, you are safe now, Mommy will always be with you"
+      },
+      "sleepalone": {
+        "scenario": "Sleeping alone scenario",
+        "title": "Building bedtime security",
+        "response": "Sweetheart, close your eyes and imagine your favorite safe place. Mommy and Daddy are always here protecting you"
+      },
+      "angry": {
+        "scenario": "Angry emotion scenario",
+        "title": "Handling child anger",
+        "response": "Mommy sees you're angry, that's okay. Come, let's take deep breaths together, blow the air out like blowing up a balloon"
+      },
+      "discipline": {
+        "scenario": "Discipline guidance scenario",
+        "title": "Gentle and firm guidance",
+        "response": "I understand you want to play more, but we agreed it's time to rest. Let's read one more book and then turn off the lights, okay?"
+      },
+      "separation": {
+        "scenario": "Separation anxiety scenario",
+        "title": "Easing separation anxiety",
+        "response": "Mommy is in the next room, I can hear you anytime. Close your eyes and imagine Mommy giving you a big hug"
+      }
+    },
+    "usedCount": "{{count}} uses"
+  },
+  "knowledge": {
+    "title": "Parenting Knowledge",
+    "searchPlaceholder": "Search parenting knowledge",
+    "all": "All",
+    "psychology": "Psychology",
+    "communication": "Communication",
+    "pitfalls": "Common Pitfalls",
+    "dialogue": "Dialogue Library",
+    "favorites": "My Favorites",
+    "minutes": "min",
+    "categories": {
+      "儿童心理": "Child Psychology",
+      "睡眠问题": "Sleep Problems",
+      "儿童行为": "Child Behavior",
+      "睡眠障碍": "Sleep Disorders",
+      "家庭治疗": "Family Therapy",
+      "情绪管理": "Emotion Management"
+    }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "No favorites yet",
+    "emptyHint": "Go collect your favorite content"
+  },
+  "comfort": {
+    "speech": "Don't be afraid, Moon Spirit is here~",
+    "story": "Gentle Stories",
+    "storyDesc": "Listen to a gentle story",
+    "breathing": "Deep Breathing",
+    "breathingDesc": "Relax with me",
+    "whitenoise": "Rain Sounds",
+    "whitenoiseDesc": "Listen to rain sounds to relax",
+    "exitHint": "Tap with three fingers to exit",
+    "exitConfirm": "Hold on a little longer, want to leave?"
+  },
+  "register": {
+    "title": "Register",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Please enter phone number",
+    "code": "Verification Code",
+    "codePlaceholder": "Please enter verification code",
+    "getCode": "Get Code",
+    "register": "Register",
+    "agreement": "By registering, you agree to",
+    "userAgreement": "User Agreement",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "hint": "Hint",
+    "phoneError": "Please enter a valid phone number",
+    "codeSent": "Verification code sent",
+    "validationError": "Please enter correct phone number and verification code"
+  },
+  "guide": {
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Get Started",
+    "steps": [
+      {
+        "title": "Hello, I'm the Moon Spirit",
+        "description": "I will be with you every night, chasing away all the scary monsters"
+      },
+      {
+        "title": "Warm Protection",
+        "description": "The moon and stars will always watch over you, helping you sleep peacefully"
+      },
+      {
+        "title": "Brave Adventure",
+        "description": "Learn with me and you'll become the bravest little warrior"
+      }
+    ]
+  },
+  "childProfile": {
+    "title": "Baby Profile",
+    "nickname": "Baby Nickname",
+    "nicknamePlaceholder": "Enter baby's name",
+    "birthday": "Birthday",
+    "birthdayPlaceholder": "Example: 2019-06-01",
+    "birthdayFormatHint": "Date format: YYYY-MM-DD, e.g., 2019-06-01",
+    "gender": "Gender",
+    "male": "Boy",
+    "female": "Girl",
+    "guardianTitle": "Choose Baby's Guardian Spirit",
+    "sleepProblemsTitle": "Main Sleep Issues (Multiple Choice)",
+    "complete": "Complete",
+    "hint": "Hint",
+    "nicknameError": "Please enter baby's name",
+    "birthdayError": "Please enter baby's birthday",
+    "selectBirthday": "Select Baby's Birthday",
+    "birthdayFormatError": "Invalid date format. Please enter date in YYYY-MM-DD format, e.g., 2019-06-01",
+    "birthdayFutureError": "Birthday cannot be in the future. Please enter a valid date",
+    "genderError": "Please select baby's gender",
+    "error": "Error",
+    "success": "Success",
+    "createError": "Creation failed, please try again",
+    "updateError": "Update failed, please try again",
+    "createSuccess": "Baby profile created successfully!",
+    "updateSuccess": "Baby profile updated successfully!",
+    "defaultAvatar": "B",
+    "baby": "Baby",
+    "sleepProblems": {
+      "dark": "Fear of the dark",
+      "alone": "Fear of being alone",
+      "nightmare": "Nightmares",
+      "wake": "Night waking",
+      "late": "Difficulty falling asleep"
+    }
+  },
+  "articleDetail": {
+    "loadError": "Failed to load article",
+    "readTime": "{{minutes}} min read",
+    "share": "Share",
+    "favorite": "Favorite",
+    "favorited": "Favorited",
+    "favoriteError": "Failed to favorite"
+  },
+  "consultation": {
+    "expert1": "Dr. Li",
+    "expert1Title": "Chief Physician",
+    "expert1Hospital": "Children's Hospital",
+    "expert1Spec1": "Separation Anxiety",
+    "expert1Spec2": "Sleep Problems",
+    "expert2": "Prof. Wang",
+    "expert2Title": "Associate Chief Physician",
+    "expert2Hospital": "Maternal and Child Health Hospital",
+    "expert2Spec1": "Cognitive Development",
+    "expert2Spec2": "Emotional Management",
+    "expert3": "Dr. Zhang",
+    "expert3Title": "Attending Physician",
+    "expert3Hospital": "Family Education Guidance Center",
+    "expert3Spec1": "Parent-Child Communication",
+    "expert3Spec2": "Psychological Counseling",
+    "expert4": "Teacher Liu",
+    "expert4Title": "Psychological Counselor",
+    "expert4Hospital": "Mental Health Center",
+    "expert4Spec1": "Behavior Correction",
+    "expert4Spec2": "Habit Building"
+  },
+  "expert": {
+    "drLi": {
+      "name": "Dr. Li",
+      "title": "Chief Physician",
+      "hospital": "Children's Hospital"
+    },
+    "drWang": {
+      "name": "Prof. Wang",
+      "title": "Associate Chief Physician",
+      "hospital": "Maternal and Child Health Hospital"
+    },
+    "drZhang": {
+      "name": "Dr. Zhang",
+      "title": "Attending Physician",
+      "hospital": "Psychological Counseling Center"
+    },
+    "consultation": {
+      "expert1": "Dr. Li",
+      "expert1Title": "Chief Physician",
+      "expert1Hospital": "Children's Hospital",
+      "expert1Spec1": "Separation Anxiety",
+      "expert1Spec2": "Sleep Problems",
+      "expert2": "Prof. Wang",
+      "expert2Title": "Associate Chief Physician",
+      "expert2Hospital": "Maternal and Child Health Hospital",
+      "expert2Spec1": "Cognitive Development",
+      "expert2Spec2": "Emotional Management",
+      "expert3": "Dr. Zhang",
+      "expert3Title": "Attending Physician",
+      "expert3Hospital": "Family Education Guidance Center",
+      "expert3Spec1": "Parent-Child Communication",
+      "expert3Spec2": "Psychological Counseling",
+      "expert4": "Teacher Liu",
+      "expert4Title": "Psychological Counselor",
+      "expert4Hospital": "Mental Health Center",
+      "expert4Spec1": "Behavior Correction",
+      "expert4Spec2": "Habit Building"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Choose the best growth plan for your baby",
+    "expert": "Expert Consultation",
+    "expertDesc": "One-on-one professional guidance",
+    "course": "Desensitization Course",
+    "courseDesc": "Systematic training program",
+    "report": "Detailed Report",
+    "reportDesc": "In-depth data analysis",
+    "membershipTitle": "Membership Benefits",
+    "membershipSubtitle": "Every warrior's adventure starts for free",
+    "trustBadge": "7-day free trial · Cancel anytime",
+    "manageBookings": "Manage Bookings",
+    "manageBookingsDesc": "View and manage your bookings",
+    "comingSoon": "This feature is coming soon, stay tuned!"
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome Back",
+    "welcomeVip": "Welcome Back, VIP Member",
+    "parentMode": "Parent Mode",
+    "unlockContent": "Unlock All Premium Content",
+    "unlockDesc": "Unlimited stories, professional courses, exclusive features",
+    "upgradeNow": "Upgrade Now",
+    "recommendedForYou": "Recommended For You",
+    "excitingContent": "Exciting Content",
+    "featuredStories": "Featured Stories",
+    "breathingExercises": "Breathing Exercises",
+    "professionalCourses": "Professional Courses",
+    "knowledgeArticles": "Knowledge Articles"
+  },
+  "profile": {
+    "title": "Profile",
+    "defaultNickname": "Parent User",
+    "membershipBadge": "Growth Package Member",
+    "childModeTitle": "Enter Child Mode",
+    "childModeDesc": "Enter the goodnight world with your baby",
+    "childProfile": "Baby Profile",
+    "checkIn": "Sleep Check-in",
+    "expertBookings": "Expert Bookings",
+    "notificationSettings": "Notification Settings",
+    "privacySettings": "Privacy Settings",
+    "aboutUs": "About Us",
+    "logout": "Log Out",
+    "loadError": "Failed to load profile"
+  },
+  "article": {
+    "overcomeFear": {
+      "title": "How to Help Children Overcome Fear of Darkness",
+      "summary": "Understand the psychological reasons behind children's fear of darkness and scientific coping methods"
+    },
+    "bedtimeRitual": {
+      "title": "The Importance of Bedtime Rituals",
+      "summary": "Establish good bedtime rituals to help children fall asleep better"
+    },
+    "nightWakes": {
+      "title": "Common Reasons for Night Waking and How to Deal with Them",
+      "summary": "Analyze the reasons for children's night waking and provide practical coping strategies"
+    },
+    "fearResponse": {
+      "title": "How to Respond When Your Child Says 'Mommy I'm Scared'",
+      "summary": "Respond to your child's fears in the right way to make them feel safe"
+    },
+    "parentMistakes": {
+      "title": "5 Common Mistakes Parents Make",
+      "summary": "Avoid these common mistakes to better help your child overcome fears"
+    },
+    "nightLight": {
+      "title": "How to Choose the Right Night Light",
+      "summary": "Selection principles and recommendations for night lights"
+    },
+    "desensitization": {
+      "title": "Step-by-Step Desensitization Training",
+      "summary": "Scientific desensitization methods to help children gradually adapt to darkness"
+    },
+    "sleepEnvironment": {
+      "title": "Creating a Safe Sleep Environment",
+      "summary": "How to create a safe and comfortable sleep environment for your child"
+    }
+  }
+}

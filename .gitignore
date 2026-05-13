@@ -1,0 +1,25 @@
+# 依赖
+backend/node_modules/
+modoo/node_modules/
+
+# 编译输出
+dist/
+build/
+
+# 环境配置文件
+.env
+.env.local
+
+# 日志文件
+npm-debug.log*
+
+# 编辑器配置
+.vscode/
+.idea/
+.git/
+.vscode/
+.cladue/
+
+# 操作系统文件
+.DS_Store
+*.db

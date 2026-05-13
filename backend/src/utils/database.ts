@@ -1,0 +1,74 @@
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { PrismaClient } from '@prisma/client';
+import { customError } from './errors';
+
+export const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
+
+export interface AuthenticatedRequest extends FastifyRequest {
+  userId?: string;
+  childId?: string;
+  anonymousId?: string;
+}
+
+export const authenticate = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    await request.jwtVerify();
+    const userId = (request.user as any).userId;
+    
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    
+    if (!user) {
+      throw customError('UNAUTHORIZED', '用户不存在或已被删除，请重新登录', 401);
+    }
+    
+    (request as AuthenticatedRequest).userId = userId;
+  } catch (err) {
+    throw customError('UNAUTHORIZED', '未授权，请重新登录', 401);
+  }
+};
+
+export const optionalAuth = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    await request.jwtVerify();
+    (request as AuthenticatedRequest).userId = (request.user as any).userId;
+  } catch {
+    // Ignore error for optional auth
+  }
+  // 检查是否有匿名用户ID
+  const anonymousId = request.headers['x-anonymous-id'] as string;
+  if (anonymousId) {
+    (request as AuthenticatedRequest).anonymousId = anonymousId;
+  }
+};
+
+export async function getChildId(request: FastifyRequest): Promise<string | null> {
+  const userId = (request as AuthenticatedRequest).userId;
+  if (!userId) {
+    return null;
+  }
+
+  const child = await prisma.child.findFirst({
+    where: { userId },
+    select: { id: true },
+  });
+
+  return child?.id || null;
+}
+
+// 生成匿名用户ID
+export function generateAnonymousId(): string {
+  const randomStr = Math.random().toString(36).substring(2, 15) + 
+                    Math.random().toString(36).substring(2, 15);
+  return `anonymous_${randomStr}`;
+}

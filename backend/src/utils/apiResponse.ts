@@ -1,0 +1,179 @@
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: ApiError;
+  meta?: ResponseMeta;
+  timestamp: string;
+}
+
+export interface ResponseMeta {
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  totalPages?: number;
+  nextCursor?: string;
+  hasMore?: boolean;
+  count?: number;
+}
+
+export interface ApiError {
+  code: ErrorCodeType;
+  message: string;
+  details?: ValidationError[];
+  requestId?: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  value?: any;
+}
+
+export const ErrorCodes = {
+  AUTH_TOKEN_MISSING: 'AUTH_TOKEN_MISSING',
+  AUTH_TOKEN_INVALID: 'AUTH_TOKEN_INVALID',
+  AUTH_TOKEN_EXPIRED: 'AUTH_TOKEN_EXPIRED',
+  AUTH_REFRESH_TOKEN_INVALID: 'AUTH_REFRESH_TOKEN_INVALID',
+  AUTH_REFRESH_TOKEN_EXPIRED: 'AUTH_REFRESH_TOKEN_EXPIRED',
+  AUTH_PERMISSION_DENIED: 'AUTH_PERMISSION_DENIED',
+  AUTH_REQUIRE_MEMBERSHIP: 'AUTH_REQUIRE_MEMBERSHIP',
+  AUTH_USER_NOT_FOUND: 'AUTH_USER_NOT_FOUND',
+  AUTH_CREDENTIALS_INVALID: 'AUTH_CREDENTIALS_INVALID',
+  AUTH_ACCOUNT_LOCKED: 'AUTH_ACCOUNT_LOCKED',
+  AUTH_ACCOUNT_DISABLED: 'AUTH_ACCOUNT_DISABLED',
+  AUTH_MFA_REQUIRED: 'AUTH_MFA_REQUIRED',
+
+  VALIDATION_REQUIRED_FIELD: 'VALIDATION_REQUIRED_FIELD',
+  VALIDATION_INVALID_FORMAT: 'VALIDATION_INVALID_FORMAT',
+  VALIDATION_INVALID_PHONE: 'VALIDATION_INVALID_PHONE',
+  VALIDATION_INVALID_EMAIL: 'VALIDATION_INVALID_EMAIL',
+  VALIDATION_INVALID_CODE: 'VALIDATION_INVALID_CODE',
+  VALIDATION_CODE_EXPIRED: 'VALIDATION_CODE_EXPIRED',
+  VALIDATION_CODE_USED: 'VALIDATION_CODE_USED',
+  VALIDATION_OUT_OF_RANGE: 'VALIDATION_OUT_OF_RANGE',
+  VALIDATION_MIN_LENGTH: 'VALIDATION_MIN_LENGTH',
+  VALIDATION_MAX_LENGTH: 'VALIDATION_MAX_LENGTH',
+  VALIDATION_UNIQUE_CONSTRAINT: 'VALIDATION_UNIQUE_CONSTRAINT',
+  VALIDATION_ARRAY_EMPTY: 'VALIDATION_ARRAY_EMPTY',
+
+  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
+  RESOURCE_ALREADY_EXISTS: 'RESOURCE_ALREADY_EXISTS',
+  RESOURCE_DELETED: 'RESOURCE_DELETED',
+  RESOURCE_CONFLICT: 'RESOURCE_CONFLICT',
+  RESOURCE_FORBIDDEN: 'RESOURCE_FORBIDDEN',
+
+  BIZ_SUBSCRIPTION_NOT_FOUND: 'BIZ_SUBSCRIPTION_NOT_FOUND',
+  BIZ_SUBSCRIPTION_EXPIRED: 'BIZ_SUBSCRIPTION_EXPIRED',
+  BIZ_SUBSCRIPTION_CANCELLED: 'BIZ_SUBSCRIPTION_CANCELLED',
+  BIZ_PLAN_NOT_FOUND: 'BIZ_PLAN_NOT_FOUND',
+  BIZ_PLAN_INACTIVE: 'BIZ_PLAN_INACTIVE',
+  BIZ_ORDER_NOT_FOUND: 'BIZ_ORDER_NOT_FOUND',
+  BIZ_ORDER_PAID: 'BIZ_ORDER_PAID',
+  BIZ_ORDER_EXPIRED: 'BIZ_ORDER_EXPIRED',
+  BIZ_ORDER_CANCELLED: 'BIZ_ORDER_CANCELLED',
+  BIZ_BENEFIT_NOT_FOUND: 'BIZ_BENEFIT_NOT_FOUND',
+  BIZ_ACCESS_DENIED: 'BIZ_ACCESS_DENIED',
+  BIZ_LIMIT_EXCEEDED: 'BIZ_LIMIT_EXCEEDED',
+  BIZ_PROMOTION_INVALID: 'BIZ_PROMOTION_INVALID',
+  BIZ_PROMOTION_EXPIRED: 'BIZ_PROMOTION_EXPIRED',
+  BIZ_PROMOTION_USED: 'BIZ_PROMOTION_USED',
+  BIZ_CHILD_ALREADY_EXISTS: 'BIZ_CHILD_ALREADY_EXISTS',
+  BIZ_WECHAT_NOT_BIND: 'BIZ_WECHAT_NOT_BIND',
+  BIZ_NO_ACTIVE_SUBSCRIPTION: 'BIZ_NO_ACTIVE_SUBSCRIPTION',
+  BIZ_PAYMENT_FAILED: 'BIZ_PAYMENT_FAILED',
+
+  SYS_INTERNAL_ERROR: 'SYS_INTERNAL_ERROR',
+  SYS_DATABASE_ERROR: 'SYS_DATABASE_ERROR',
+  SYS_THIRD_PARTY_ERROR: 'SYS_THIRD_PARTY_ERROR',
+  SYS_SERVICE_UNAVAILABLE: 'SYS_SERVICE_UNAVAILABLE',
+  SYS_CONFIG_ERROR: 'SYS_CONFIG_ERROR',
+  SYS_RATE_LIMITED: 'SYS_RATE_LIMITED',
+  SYS_MAINTENANCE: 'SYS_MAINTENANCE',
+  SYS_TIMEOUT: 'SYS_TIMEOUT',
+
+  WECHAT_CODE_INVALID: 'WECHAT_CODE_INVALID',
+  WECHAT_API_ERROR: 'WECHAT_API_ERROR',
+  WECHAT_CONFIG_MISSING: 'WECHAT_CONFIG_MISSING',
+
+  APPLE_TOKEN_INVALID: 'APPLE_TOKEN_INVALID',
+  APPLE_API_ERROR: 'APPLE_API_ERROR',
+  APPLE_CONFIG_MISSING: 'APPLE_CONFIG_MISSING',
+
+  UNKNOWN_ERROR: 'UNKNOWN_ERROR',
+} as const;
+
+export type ErrorCodeType = typeof ErrorCodes[keyof typeof ErrorCodes];
+
+export function successResponse<T>(data: T, meta?: ResponseMeta): ApiResponse<T> {
+  return {
+    success: true,
+    data,
+    meta,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function paginatedResponse<T>(
+  data: T[],
+  page: number,
+  pageSize: number,
+  total: number
+): ApiResponse<T[]> {
+  return {
+    success: true,
+    data,
+    meta: {
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+      hasMore: page * pageSize < total,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function cursorPaginatedResponse<T>(
+  data: T[],
+  nextCursor?: string,
+  hasMore?: boolean
+): ApiResponse<T[]> {
+  return {
+    success: true,
+    data,
+    meta: {
+      nextCursor,
+      hasMore: hasMore ?? !!nextCursor,
+      count: data.length,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function errorResponse(
+  code: ErrorCodeType,
+  message: string,
+  details?: ValidationError[],
+  requestId?: string
+): ApiResponse<undefined> {
+  return {
+    success: false,
+    error: {
+      code,
+      message,
+      details,
+      requestId,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function validationErrorResponse(
+  errors: ValidationError[]
+): ApiResponse<undefined> {
+  return errorResponse(
+    ErrorCodes.VALIDATION_INVALID_FORMAT,
+    '请求参数验证失败',
+    errors
+  );
+}

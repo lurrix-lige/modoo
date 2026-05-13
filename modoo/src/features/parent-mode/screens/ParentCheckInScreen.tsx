@@ -1,0 +1,249 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaContainer, useCheckIn, CheckInStatsCard, CheckInCalendar, CheckInHistoryList, TimePickerModal } from '../../../components';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { Star, Moon, Sun, Footprints, Stamp } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import { ParentStackParamList } from '../../../navigation/types';
+
+type CheckInNavigationProp = NativeStackNavigationProp<ParentStackParamList, 'ParentCheckIn'>;
+
+export default function CheckInScreen() {
+  const navigation = useNavigation<CheckInNavigationProp>();
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+
+  const [showSleepTimePicker, setShowSleepTimePicker] = useState(false);
+  const [showWakeTimePicker, setShowWakeTimePicker] = useState(false);
+
+  const {
+    checkInData: { sleepTime, wakeTime, quality },
+    setSleepTime,
+    setWakeTime,
+    setQuality,
+    stats: { streak, thisWeekCount, todayChecked, checkInHistory, historyRecords },
+    currentMonth,
+    isLoading,
+    actions: { handleCheckIn, goToPrevMonth, goToNextMonth },
+  } = useCheckIn({
+    onSuccess: () => {
+      console.log('[ParentCheckInScreen] Check-in successful');
+    },
+    onError: (error) => {
+      console.error('[ParentCheckInScreen] Check-in failed', error);
+    },
+    enableValidation: true,
+    showAlerts: true,
+  });
+
+  const weekDays = t('checkIn.weekdays', { returnObjects: true }) as string[];
+
+  return (
+    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>
+          {t('checkIn.title')}
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          {t('checkIn.subtitle')}
+        </Text>
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <CheckInStatsCard streak={streak} thisWeekCount={thisWeekCount} colors={colors} />
+
+        <View style={[styles.checkInCard, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.checkInTitle, { color: colors.textPrimary }]}>
+            {t('checkIn.todayCheckIn')}
+          </Text>
+
+          {todayChecked && (
+            <View style={[styles.checkedBadge, { backgroundColor: colors.surface, borderColor: colors.error }]}>
+              <Footprints size={24} color={colors.error} />
+            </View>
+          )}
+
+          <View style={styles.timeRow}>
+            <View style={styles.timeItem}>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.sleepTime')}</Text>
+              <TouchableOpacity
+                style={[styles.timeButton, { backgroundColor: colors.background }]}
+                onPress={() => setShowSleepTimePicker(true)}
+              >
+                <Moon size={20} color={colors.primary} />
+                <Text style={[styles.timeValue, { color: colors.textPrimary }]}>{sleepTime}</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.timeItem}>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.wakeTime')}</Text>
+              <TouchableOpacity
+                style={[styles.timeButton, { backgroundColor: colors.background }]}
+                onPress={() => setShowWakeTimePicker(true)}
+              >
+                <Sun size={20} color={colors.warning} />
+                <Text style={[styles.timeValue, { color: colors.textPrimary }]}>{wakeTime}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.qualitySection}>
+            <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.sleepQuality')}</Text>
+            <View style={styles.starsRow}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity key={star} onPress={() => setQuality(star)}>
+                  <Star
+                    size={32}
+                    color={star <= quality ? colors.warning : colors.border}
+                    fill={star <= quality ? colors.warning : 'none'}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.checkInButton, styles.stampButton, { backgroundColor: colors.primary }]}
+            onPress={handleCheckIn}
+            activeOpacity={0.8}
+            disabled={todayChecked || isLoading}
+          >
+            <Stamp size={32} color={commonColors.white} />
+          </TouchableOpacity>
+        </View>
+
+        <CheckInCalendar
+          currentMonth={currentMonth}
+          onPrevMonth={goToPrevMonth}
+          onNextMonth={goToNextMonth}
+          weekDays={weekDays}
+          checkInHistory={checkInHistory}
+          todayChecked={todayChecked}
+          colors={colors}
+        />
+
+        <CheckInHistoryList records={historyRecords} colors={colors} />
+      </ScrollView>
+
+      <TimePickerModal
+        visible={showSleepTimePicker}
+        onClose={() => setShowSleepTimePicker(false)}
+        onConfirm={(time) => {
+          setSleepTime(time);
+          setShowSleepTimePicker(false);
+        }}
+        initialTime={sleepTime}
+        title={t('checkIn.selectSleepTime') || 'Select Sleep Time'}
+      />
+
+      <TimePickerModal
+        visible={showWakeTimePicker}
+        onClose={() => setShowWakeTimePicker(false)}
+        onConfirm={(time) => {
+          setWakeTime(time);
+          setShowWakeTimePicker(false);
+        }}
+        initialTime={wakeTime}
+        title={t('checkIn.selectWakeTime') || 'Select Wake Time'}
+      />
+    </SafeAreaContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+  },
+  title: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: typography.fontWeight.bold,
+  },
+  subtitle: {
+    fontSize: typography.fontSize.sm,
+    marginTop: spacing.xs,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing.xl,
+  },
+  checkInCard: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xxl,
+    ...shadows.medium,
+    position: 'relative',
+  },
+  checkInTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.lg,
+  },
+  timeRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  timeItem: {
+    flex: 1,
+  },
+  timeLabel: {
+    fontSize: typography.fontSize.xs,
+    marginBottom: spacing.sm,
+  },
+  timeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    gap: spacing.sm,
+  },
+  timeValue: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
+  },
+  qualitySection: {
+    marginBottom: spacing.lg,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  checkedBadge: {
+    position: 'absolute',
+    top: spacing.lg,
+    right: spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkInButton: {
+    position: 'absolute',
+    bottom: spacing.lg,
+    right: spacing.lg,
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.xl,
+    ...shadows.large,
+  },
+  stampButton: {
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
