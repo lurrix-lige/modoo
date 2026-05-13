@@ -1,33 +1,140 @@
-# 依赖
+# ===========================================
+# 项目: Modoo (Monorepo: backend + mobile app)
+# ===========================================
+# 路径说明: 本文件位于仓库根目录，适用于所有子项目
+# React Native 特有路径 (modoo/ 下)
+# ===========================================
+
+# ===========================================
+# 依赖目录
+# ===========================================
 backend/node_modules/
+backend/dist/
+backend/build/
+backend/coverage/
+
 modoo/node_modules/
+modoo/.expo/
 
-# 编译输出
-dist/
-build/
-
+# ===========================================
 # 环境配置文件
+# ===========================================
 .env
 .env.local
+.env.*.local
+*.pem
+backend/.env
 
+# ===========================================
+# 编译输出
+# ===========================================
+dist/
+build/
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ===========================================
 # 日志文件
+# ===========================================
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
 
+# ===========================================
+# 测试覆盖率
+# ===========================================
+coverage/
+.nyc_output/
+
+# ===========================================
+# React Native / Expo (modoo 子项目)
+# ===========================================
+# Xcode (Expo prebuild 生成)
+modoo/ios/build/
+modoo/ios/Pods/
+modoo/ios/DerivedData/
+modoo/ios/*.xcworkspace
+!modoo/ios/*.xcworkspace/
+modoo/ios/*.xcodeproj
+modoo/ios/*.pbxuser
+modoo/ios/*.mode1v3
+modoo/ios/*.mode2v3
+modoo/ios/*.perspectivev3
+modoo/ios/**/*.[hm]
+!modoo/ios/**/Podfile
+
+# Android (Expo prebuild 生成)
+modoo/android/app/build/
+modoo/android/build/
+modoo/android/.gradle/
+modoo/android/app/release/
+*.jks
+*.apk
+*.aab
+
+# Metro bundler
+.metro-health-check*
+
+# Jest
+modoo/jest.config.js
+modoo/jest.setup.ts
+modoo/coverage/
+
+# ===========================================
 # 编辑器配置
-.expo/   
-
+# ===========================================
 .vscode/
 .idea/
-.git/
-.vscode/
-.cladue/
+.expo/
+.claude/
 
+# ===========================================
 # 操作系统文件
+# ===========================================
 .DS_Store
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+*.lnk
+
+# ===========================================
+# 数据库文件
+# ===========================================
 *.db
-* text=auto eol=lf
-* text=auto 
-*.tsx text eol=lf
-*.ts text eol=lf
-*.json text eol=lf
-*.md text
+*.sqlite
+*.sqlite3
+
+# ===========================================
+# 临时文件
+# ===========================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+.tmp/
+temp/
+
+# ===========================================
+# 设计/文档
+# ===========================================
+design/
+*.psd
+*.sketch
+*.fig
+
+# ===========================================
+# 证书和密钥
+# ===========================================
+*.p12
+*.mobileprovision
+*.keystore
