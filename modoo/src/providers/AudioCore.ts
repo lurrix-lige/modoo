@@ -93,6 +93,7 @@ export const setupAudioMode = async (): Promise<void> => {
     await setAudioModeAsync({
       allowsRecording: false,
       playsInSilentMode: true,
+      shouldPlayInBackground: true,
       interruptionMode: 'duckOthers',
     });
   } catch (err) {
@@ -106,6 +107,7 @@ export class UnifiedAudioPlayer {
   private isSeeking = false;
   private isCompleted = false;
   private isPlayingInternal = false;
+  private isBufferingInternal = false;
   private currentDuration = 0;
   private lastSeekPosition = 0;
   private suppressProgressUpdate = false;
@@ -113,6 +115,7 @@ export class UnifiedAudioPlayer {
   private progressUpdateCallback?: (progress: number, duration: number) => void;
   private completionCallback?: () => void;
   private playingStateCallback?: (isPlaying: boolean) => void;
+  private bufferingCallback?: (isBuffering: boolean) => void;
 
   setProgressUpdateCallback(callback: (progress: number, duration: number) => void): void {
     this.progressUpdateCallback = callback;
@@ -124,6 +127,10 @@ export class UnifiedAudioPlayer {
 
   setPlayingStateCallback(callback: (isPlaying: boolean) => void): void {
     this.playingStateCallback = callback;
+  }
+
+  setBufferingCallback(callback: (isBuffering: boolean) => void): void {
+    this.bufferingCallback = callback;
   }
 
   isPlaying(): boolean {
@@ -209,6 +216,12 @@ export class UnifiedAudioPlayer {
             if (isActuallyPlaying !== this.isPlayingInternal) {
               this.isPlayingInternal = isActuallyPlaying;
               this.playingStateCallback?.(this.isPlayingInternal);
+            }
+
+            const isBuffering = status.isBuffering === true;
+            if (isBuffering !== this.isBufferingInternal) {
+              this.isBufferingInternal = isBuffering;
+              this.bufferingCallback?.(isBuffering);
             }
 
             if (!this.suppressProgressUpdate) {
@@ -298,15 +311,17 @@ export class UnifiedAudioPlayer {
     }
   }
 
-  resume(): void {
+  async resume(): Promise<boolean> {
     try {
       for (const player of this.players.values()) {
-        player.play();
+        await player.play();
       }
       this.isPlayingInternal = true;
       this.playingStateCallback?.(true);
+      return true;
     } catch (err) {
       logger.debug('Resume failed', { error: err });
+      return false;
     }
   }
 

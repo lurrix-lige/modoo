@@ -14,6 +14,7 @@ interface CourseAudioContextType {
   isPlaying: boolean;
   progress: number;
   duration: number;
+  isBuffering: boolean;
   isLoading: boolean;
   error: string | null;
   backgroundVolume: number;
@@ -34,6 +35,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backgroundVolume, setBackgroundVolumeState] = useState(0.5);
@@ -49,6 +51,9 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     });
     playerRef.current.setCompletionCallback(() => {
       setIsPlaying(false);
+    });
+    playerRef.current.setBufferingCallback((buffering) => {
+      setIsBuffering(buffering);
     });
 
     return () => {
@@ -129,7 +134,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
 
   const resume = useCallback(async (): Promise<boolean> => {
     logger.debug('CourseAudioProvider.resume called');
-    
+
     if (playerRef.current?.isCompletedState()) {
       logger.debug('Resume detected completed state, attempting replay');
       const success = await playerRef.current.replay();
@@ -137,11 +142,14 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
         setIsPlaying(true);
         return true;
       }
+      return false;
     }
-    
-    playerRef.current?.resume();
-    setIsPlaying(true);
-    return true;
+
+    const success = await playerRef.current?.resume() ?? false;
+    if (success) {
+      setIsPlaying(true);
+    }
+    return success;
   }, []);
 
   const stop = useCallback(() => {
@@ -175,6 +183,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
         isPlaying,
         progress,
         duration,
+        isBuffering,
         isLoading,
         error,
         backgroundVolume,

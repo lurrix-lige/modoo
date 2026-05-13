@@ -7,6 +7,7 @@ import { Story } from '../../../types';
 
 export interface UsePlayerReturn {
   isPlaying: boolean;
+  isBuffering: boolean;
   progress: number;
   duration: number;
   isLoading: boolean;
@@ -22,6 +23,7 @@ export interface UsePlayerReturn {
   skipBackward: (seconds: number) => void;
   saveProgress: () => void;
   toggleFavorite: () => void;
+  clearError: () => void;
 }
 
 export function usePlayer(storyId: string | undefined): UsePlayerReturn {
@@ -44,6 +46,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     isPlaying,
     progress: audioProgress,
     duration: audioDuration,
+    isBuffering: audioBuffering,
     play: audioPlay,
     pause: audioPause,
     resume: audioResume,
@@ -211,8 +214,13 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     [audioProgress, audioSeekTo]
   );
 
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
   return {
     isPlaying,
+    isBuffering: audioBuffering,
     progress: audioProgress,
     duration: audioDuration,
     isLoading,
@@ -228,5 +236,6 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     skipBackward,
     saveProgress,
     toggleFavorite,
+    clearError,
   };
 }

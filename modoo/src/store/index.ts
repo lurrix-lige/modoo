@@ -23,8 +23,6 @@ interface PlayerState {
   progress: number;
   duration: number;
   volume: number;
-  isMuted: boolean;
-  playbackSpeed: number;
   isMiniPlayerVisible: boolean;
   error: PlayerError | null;
 }
@@ -62,8 +60,6 @@ interface PlayerActions {
   stop: () => void;
   seekTo: (position: number) => void;
   setVolume: (volume: number) => void;
-  toggleMute: () => void;
-  setPlaybackSpeed: (speed: number) => void;
   next: () => void;
   previous: () => void;
   showMiniPlayer: () => void;
@@ -158,8 +154,6 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   progress: 0,
   duration: 0,
   volume: 1,
-  isMuted: false,
-  playbackSpeed: 1,
   isMiniPlayerVisible: false,
   error: null,
 
@@ -191,10 +185,6 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   },
 
   setVolume: (volume) => set({ volume }),
-
-  toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
-
-  setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
 
   next: () => set((state) => ({
     currentTrackIndex: state.currentTrackIndex + 1

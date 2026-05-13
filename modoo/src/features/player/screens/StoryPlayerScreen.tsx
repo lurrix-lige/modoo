@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import {
   ArrowLeft,
@@ -53,12 +53,14 @@ export default function StoryPlayerScreen() {
   const currentSpirit = getGuardianSpiritById(child?.guardianSpiritId || 'moon');
 
   const { isLandscape, toggleOrientation, lockToPortrait } = useOrientation();
-  const { isPlaying, progress, duration, isLoading, story, error: playerError, resume, pause, seekTo, skipForward, skipBackward, toggleFavorite } = usePlayer(route.params?.storyId);
+  const { isPlaying, isBuffering, progress, duration, isLoading, story, error: playerError, resume, pause, seekTo, skipForward, skipBackward, toggleFavorite, clearError } = usePlayer(route.params?.storyId);
   const { isNightMode, toggleBrightness } = useBrightness();
 
   const [showTimerModal, setShowTimerModal] = useState(false);
   const [timerDuration, setTimerDuration] = useState<number | null>(null);
+  const [timerRemainingSeconds, setTimerRemainingSeconds] = useState<number | null>(null);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isAvailable: isPiPAvailable, isActive: isPiPActive, togglePiP } = usePictureInPicture({
     onEnterPiP: () => logger.info('Entered Picture-in-Picture mode'),
@@ -99,26 +101,63 @@ export default function StoryPlayerScreen() {
 
   const handleTimerSelect = useCallback((minutes: number) => {
     setTimerDuration(minutes);
+    setTimerRemainingSeconds(minutes * 60);
     setShowTimerModal(false);
     logger.info(`Sleep timer set for ${minutes} minutes`);
   }, []);
 
-  const handleCancelTimer = useCallback(() => {
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     setTimerDuration(null);
-    setShowTimerModal(false);
-    logger.info('Sleep timer cancelled');
+    setTimerRemainingSeconds(null);
   }, []);
 
-  const getTimerRemaining = useCallback(() => {
-    if (!timerDuration) return null;
-    const remaining = timerDuration * 60 - Math.floor(progress);
-    if (remaining <= 0) {
-      pause();
-      setTimerDuration(null);
-      return null;
+  const handleCancelTimer = useCallback(() => {
+    clearTimer();
+    setShowTimerModal(false);
+    logger.info('Sleep timer cancelled');
+  }, [clearTimer]);
+
+  useEffect(() => {
+    if (!timerDuration) {
+      return;
     }
-    return formatTime(remaining);
-  }, [timerDuration, progress, pause]);
+
+    timerRef.current = setInterval(() => {
+      setTimerRemainingSeconds((prev) => {
+        if (prev === null || prev <= 0) {
+          return null;
+        }
+        const next = prev - 1;
+        if (next <= 0) {
+          pause();
+          logger.info('Sleep timer expired');
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [timerDuration, pause]);
+
+  useEffect(() => {
+    if (timerRemainingSeconds !== null && timerRemainingSeconds <= 0) {
+      clearTimer();
+    }
+  }, [timerRemainingSeconds, clearTimer]);
+
+  const formatTimerRemaining = useCallback(() => {
+    if (timerRemainingSeconds === null) return null;
+    return formatTime(Math.max(0, timerRemainingSeconds));
+  }, [timerRemainingSeconds]);
 
   const handlePrevStory = useCallback(() => {
     logger.info('Navigate to previous story');
@@ -209,6 +248,11 @@ export default function StoryPlayerScreen() {
               thumbTintColor={colors.primary}
               onSlidingComplete={seekTo}
             />
+            {isBuffering && (
+              <Text style={[styles.bufferingText, { color: colors.primary }]}>
+                {t('common.loading')}
+              </Text>
+            )}
             <View style={styles.timeRow}>
               <Text style={[styles.timeText, { color: colors.textSecondary }]}>
                 {formatTime(currentProgress)}
@@ -251,7 +295,7 @@ export default function StoryPlayerScreen() {
                 />
                 {timerDuration && (
                   <Text style={[styles.timerText, { color: colors.textSecondary }]}>
-                    {getTimerRemaining()}
+                    {formatTimerRemaining()}
                   </Text>
                 )}
               </View>
@@ -311,7 +355,7 @@ export default function StoryPlayerScreen() {
         <ErrorToast
           visible={true}
           message={playerError}
-          onDismiss={() => {}}
+          onDismiss={clearError}
         />
       )}
     </SafeAreaContainer>
@@ -395,6 +439,12 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: responsive.verticalScale(40),
+  },
+  bufferingText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    textAlign: 'center',
+    marginTop: spacing.xs,
+    fontWeight: typography.fontWeight.medium,
   },
   timeRow: {
     flexDirection: 'row',

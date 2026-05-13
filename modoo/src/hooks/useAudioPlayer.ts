@@ -1,8 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { createAudioPlayer, setAudioModeAsync, AudioStatus, AudioPlayer } from 'expo-audio';
+import { UnifiedAudioPlayer, setupAudioMode } from '../providers/AudioCore';
 import { logger } from '../utils/logger';
-
-const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
 
 export interface AudioPlayerState {
   isPlaying: boolean;
@@ -12,7 +10,8 @@ export interface AudioPlayerState {
 }
 
 export function useAudioPlayer() {
-  const playerRef = useRef<AudioPlayer | null>(null);
+  const playerRef = useRef<UnifiedAudioPlayer | null>(null);
+  const volumeRef = useRef(1);
   const [state, setState] = useState<AudioPlayerState>({
     isPlaying: false,
     currentTime: 0,
@@ -20,94 +19,88 @@ export function useAudioPlayer() {
     volume: 1,
   });
 
-  const loadAudio = useCallback(async (src: string) => {
-    try {
-      if (playerRef.current) {
-        playerRef.current.remove();
-        playerRef.current = null;
-      }
+  useEffect(() => {
+    let mounted = true;
 
-      await setAudioModeAsync({
-        playsInSilentMode: true,
-        interruptionMode: 'mixWithOthers',
+    const init = async () => {
+      await setupAudioMode();
+      if (!mounted) return;
+
+      const player = new UnifiedAudioPlayer();
+      player.setProgressUpdateCallback((progress, duration) => {
+        if (!mounted) return;
+        setState((prev) => ({ ...prev, currentTime: progress, duration }));
       });
-
-      const player = createAudioPlayer(src, {
-        updateInterval: 100,
+      player.setPlayingStateCallback((playing) => {
+        if (!mounted) return;
+        setState((prev) => ({ ...prev, isPlaying: playing }));
       });
-
-      player.addListener(PLAYBACK_STATUS_UPDATE, (status: AudioStatus) => {
-        if (!status.isLoaded) return;
-
-        setState(prev => ({
-          ...prev,
-          currentTime: status.currentTime,
-          duration: status.duration,
-          isPlaying: status.playing,
-        }));
-
-        if (status.didJustFinish && !status.loop) {
-          setState(prev => ({ ...prev, isPlaying: false }));
-        }
+      player.setCompletionCallback(() => {
+        if (!mounted) return;
+        setState((prev) => ({ ...prev, isPlaying: false }));
       });
-
-      player.loop = true;
-      player.volume = state.volume;
-
       playerRef.current = player;
-      return player;
-    } catch (error) {
-      logger.error('Failed to load audio', { error });
-      return null;
-    }
-  }, [state.volume]);
+    };
 
-  const play = useCallback(async (src: string) => {
+    init();
+
+    return () => {
+      mounted = false;
+      playerRef.current?.unloadAll();
+    };
+  }, []);
+
+  const play = useCallback(async (src: string): Promise<boolean> => {
     try {
-      let player = playerRef.current;
-
-      if (!player) {
-        player = await loadAudio(src);
-        if (!player) return false;
+      if (!playerRef.current) {
+        logger.error('useAudioPlayer: player not initialized');
+        return false;
       }
 
-      player.play();
-      setState(prev => ({ ...prev, isPlaying: true }));
-      return true;
+      await playerRef.current.unloadAll();
+
+      const success = await playerRef.current.play({
+        tracks: [{
+          id: 'main',
+          url: src,
+          volume: volumeRef.current,
+          loop: true,
+          role: 'main',
+        }],
+      });
+
+      if (success) {
+        setState((prev) => ({ ...prev, isPlaying: true }));
+      }
+      return success;
     } catch (error) {
       logger.error('Failed to play audio', { error });
-      setState(prev => ({ ...prev, isPlaying: false }));
+      setState((prev) => ({ ...prev, isPlaying: false }));
       return false;
     }
-  }, [loadAudio]);
+  }, []);
 
   const pause = useCallback(() => {
     try {
-      if (playerRef.current) {
-        playerRef.current.pause();
-        setState(prev => ({ ...prev, isPlaying: false }));
-      }
+      playerRef.current?.pause();
+      setState((prev) => ({ ...prev, isPlaying: false }));
     } catch (error) {
       logger.error('Failed to pause audio', { error });
     }
   }, []);
 
-  const toggle = useCallback(async (src: string) => {
+  const toggle = useCallback(async (src: string): Promise<boolean> => {
     if (state.isPlaying) {
       pause();
       return false;
-    } else {
-      return await play(src);
     }
+    return await play(src);
   }, [state.isPlaying, pause, play]);
 
   const stop = useCallback(() => {
     try {
-      if (playerRef.current) {
-        playerRef.current.remove();
-        playerRef.current = null;
-        setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }));
-      }
+      playerRef.current?.unloadAll();
+      setState({ isPlaying: false, currentTime: 0, duration: 0, volume: volumeRef.current });
     } catch (error) {
       logger.error('Failed to stop audio', { error });
     }
@@ -115,19 +108,9 @@ export function useAudioPlayer() {
 
   const setVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
-    if (playerRef.current) {
-      playerRef.current.volume = clampedVolume;
-    }
-    setState(prev => ({ ...prev, volume: clampedVolume }));
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.remove();
-        playerRef.current = null;
-      }
-    };
+    volumeRef.current = clampedVolume;
+    playerRef.current?.setVolume('main', clampedVolume);
+    setState((prev) => ({ ...prev, volume: clampedVolume }));
   }, []);
 
   return {

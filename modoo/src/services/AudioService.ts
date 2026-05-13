@@ -119,9 +119,9 @@ class AudioService {
         this.player.remove();
         this.player = null;
       }
-      usePlayerStore.getState().stop();
     } catch (error) {
       logger.error('Failed to stop audio', { error });
+    } finally {
       usePlayerStore.getState().stop();
     }
   }
@@ -199,34 +199,7 @@ class AudioService {
     }, stepDuration);
   }
 
-  async playWhiteNoise(type: 'rain' | 'ocean' | 'wind' | 'stream') {
-    const whiteNoiseUrls = {
-      rain: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      ocean: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-      wind: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-      stream: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    };
-
-    try {
-      await this.initialize();
-
-      if (this.player) {
-        this.player.remove();
-        this.player = null;
-      }
-
-      this.player = createAudioPlayer(whiteNoiseUrls[type], {
-        updateInterval: 500,
-      });
-      
-      this.player.loop = true;
-      this.player.volume = 0.4;
-      this.player.play();
-    } catch (error) {
-      logger.error('Failed to play white noise', { error });
-      usePlayerStore.getState().setError(i18n.t('audio.whiteNoiseFailed'), 'WHITE_NOISE_ERROR');
-    }
-  }
 }
 
+/** @deprecated Use AudioProvider / useAudioPlayer hook instead */
 export const audioService = new AudioService();

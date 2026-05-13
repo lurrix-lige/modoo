@@ -78,9 +78,11 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
     setIsPlaying(false);
   }, []);
 
-  const resume = useCallback(() => {
-    playerRef.current?.resume();
-    setIsPlaying(true);
+  const resume = useCallback(async () => {
+    const success = await playerRef.current?.resume() ?? false;
+    if (success) {
+      setIsPlaying(true);
+    }
   }, []);
 
   const stop = useCallback(() => {

@@ -6,6 +6,7 @@ interface AudioContextType {
   isPlaying: boolean;
   progress: number;
   duration: number;
+  isBuffering: boolean;
   play: (url: string) => Promise<boolean>;
   pause: () => void;
   resume: () => Promise<boolean>;
@@ -23,6 +24,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isInitializedRef = useRef(false);
@@ -44,6 +46,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       playerRef.current.setPlayingStateCallback((playing) => {
         logger.debug('Audio playing state changed', { playing });
         setIsPlaying(playing);
+      });
+      playerRef.current.setBufferingCallback((buffering) => {
+        setIsBuffering(buffering);
       });
       isInitializedRef.current = true;
       logger.info('AudioProvider initialized successfully');
@@ -131,7 +136,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const resume = useCallback(async (): Promise<boolean> => {
     logger.debug('AudioProvider.resume called');
-    
+
     if (playerRef.current?.isCompletedState()) {
       logger.debug('Resume detected completed state, attempting replay');
       const success = await playerRef.current.replay();
@@ -139,11 +144,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         setIsPlaying(true);
         return true;
       }
+      return false;
     }
-    
-    playerRef.current?.resume();
-    setIsPlaying(true);
-    return true;
+
+    const success = await playerRef.current?.resume() ?? false;
+    if (success) {
+      setIsPlaying(true);
+    }
+    return success;
   }, []);
 
   const stop = useCallback(() => {
@@ -171,6 +179,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         isPlaying,
         progress,
         duration,
+        isBuffering,
         play,
         pause,
         resume,
