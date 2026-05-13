@@ -14,6 +14,8 @@ build/
 npm-debug.log*
 
 # 编辑器配置
+.expo/   
+
 .vscode/
 .idea/
 .git/
@@ -23,3 +25,4 @@ npm-debug.log*
 # 操作系统文件
 .DS_Store
 *.db
+* text=auto eol=lf

@@ -1,20 +1,4 @@
-/**
- * Dozoo 主题管理系统
- *
- * 功能特性：
- * - 三种主题模式：日间模式（light）、夜间模式（dark）、跟随系统（system�? * - 主题偏好持久化存�? * - 实时主题切换，无需重启应用
- * - 自动监听系统主题变化
- * - 完整的颜色体系支�? *
- * 使用方法�? * 1. 在应用根组件中使�?ThemeProvider 包裹
- * 2. 在任何组件中使用 useTheme() 获取当前主题信息
- * 3. 使用 colors 对象中的颜色值进行样式定�? *
- * 示例�? * ```tsx
- * const { colors, isDark, setThemeMode, themeMode } = useTheme();
- * <View style={{ backgroundColor: colors.background }}>
- *   <Text style={{ color: colors.textPrimary }}>Hello</Text>
- * </View>
- * ```
- */
+
 
 import React, {
   createContext,
@@ -227,7 +211,7 @@ export function useThemeToggle() {
 }
 
 /**
- * 颜色对比度计算工�? * 用于验证WCAG对比度标�? */
+ * 颜色对比度计算工�? * 用于验证WCAG对比度标�? */
 export function getContrastRatio(foreground: string, background: string): number {
   const getLuminance = (hex: string): number => {
     const rgb = hexToRgb(hex);
@@ -261,7 +245,7 @@ function hexToRgb(hex: string): number[] | null {
 }
 
 /**
- * WCAG 对比度验证工�? */
+ * WCAG 对比度验证工�? */
 export function meetsContrastRequirements(
   foreground: string,
   background: string,
