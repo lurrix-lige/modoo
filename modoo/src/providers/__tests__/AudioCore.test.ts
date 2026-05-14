@@ -376,6 +376,100 @@ describe('UnifiedAudioPlayer', () => {
     });
   });
 
+  describe('addTrack and removeTrack', () => {
+    test('addTrack creates a new player and plays it', async () => {
+      const trackPlayer = mockPlayer();
+      expoAudio.createAudioPlayer.mockReturnValue(trackPlayer);
+
+      const result = await player.addTrack({
+        id: 'bg',
+        url: 'https://example.com/bg.mp3',
+        role: 'background',
+      });
+
+      expect(result).toBe(true);
+      expect(expoAudio.createAudioPlayer).toHaveBeenCalled();
+      expect(trackPlayer.play).toHaveBeenCalled();
+      expect(player.isEmpty()).toBe(false);
+    });
+
+    test('addTrack returns false for invalid URL', async () => {
+      const result = await player.addTrack({
+        id: 'bg',
+        url: '',
+        role: 'background',
+      });
+
+      expect(result).toBe(false);
+    });
+
+    test('addTrack returns false for duplicate track ID', async () => {
+      const trackPlayer = mockPlayer();
+      expoAudio.createAudioPlayer.mockReturnValue(trackPlayer);
+
+      await player.addTrack({ id: 'bg', url: 'https://example.com/bg.mp3', role: 'background' });
+
+      // Try to add the same track again
+      const result = await player.addTrack({
+        id: 'bg',
+        url: 'https://example.com/bg2.mp3',
+        role: 'background',
+      });
+
+      expect(result).toBe(false);
+    });
+
+    test('addTrack does not affect existing tracks from play()', async () => {
+      await player.play({
+        tracks: [{ id: 'main', url: 'https://example.com/audio.mp3', role: 'main' }],
+      });
+
+      const trackPlayer = mockPlayer();
+      expoAudio.createAudioPlayer.mockReturnValue(trackPlayer);
+
+      await player.addTrack({ id: 'bg', url: 'https://example.com/bg.mp3', role: 'background' });
+
+      // Both tracks should be present
+      expect(player.isEmpty()).toBe(false);
+      // main track should still exist (getVolume will find it)
+      expect(player.getVolume('main')).toBe(1.0);
+      // bg track should also exist
+      expect(player.getVolume('bg')).toBe(1.0);
+    });
+
+    test('removeTrack removes a specific track', async () => {
+      const trackPlayer = mockPlayer();
+      expoAudio.createAudioPlayer.mockReturnValue(trackPlayer);
+
+      await player.addTrack({ id: 'bg', url: 'https://example.com/bg.mp3', role: 'background' });
+      expect(player.isEmpty()).toBe(false);
+
+      await player.removeTrack('bg');
+      expect(trackPlayer.remove).toHaveBeenCalled();
+      expect(player.isEmpty()).toBe(true);
+    });
+
+    test('removeTrack handles non-existent track gracefully', async () => {
+      await expect(player.removeTrack('nonexistent')).resolves.toBeUndefined();
+    });
+
+    test('removeTrack does not affect other tracks', async () => {
+      const bgPlayer = mockPlayer();
+      const ambientPlayer = mockPlayer();
+      expoAudio.createAudioPlayer
+        .mockReturnValueOnce(bgPlayer)
+        .mockReturnValueOnce(ambientPlayer);
+
+      await player.addTrack({ id: 'bg', url: 'https://example.com/bg.mp3', role: 'background' });
+      await player.addTrack({ id: 'ambient', url: 'https://example.com/ambient.mp3', role: 'background' });
+
+      await player.removeTrack('bg');
+      expect(bgPlayer.remove).toHaveBeenCalled();
+      expect(ambientPlayer.remove).not.toHaveBeenCalled();
+      expect(player.isEmpty()).toBe(false);
+    });
+  });
+
   describe('buffering callback', () => {
     test('notifies buffering state changes', async () => {
       const bufferingCb = jest.fn();

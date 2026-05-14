@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import {
   ArrowLeft,
@@ -24,6 +24,8 @@ import { PlayerControls } from '../components/PlayerControls';
 import { TimerModal } from '../components/TimerModal';
 import { useTheme, spacing, borderRadius, typography, responsive, iconSizes, shadows, commonColors } from '../../../theme';
 import { usePlayer } from '../hooks/usePlayer';
+import { useSleepTimer } from '../hooks/useSleepTimer';
+import { audioFocusManager } from '../../../providers/AudioFocusManager';
 import { useShare } from '../../../services/ShareService';
 import { useBrightness } from '../hooks/useBrightness';
 import { useOrientation } from '../hooks/useOrientation';
@@ -53,14 +55,37 @@ export default function StoryPlayerScreen() {
   const currentSpirit = getGuardianSpiritById(child?.guardianSpiritId || 'moon');
 
   const { isLandscape, toggleOrientation, lockToPortrait } = useOrientation();
-  const { isPlaying, isBuffering, progress, duration, isLoading, story, error: playerError, resume, pause, seekTo, skipForward, skipBackward, toggleFavorite, clearError } = usePlayer(route.params?.storyId);
+  const { isPlaying, isBuffering, progress, duration, isLoading, story, error: playerError, resume, pause, stop, seekTo, skipForward, skipBackward, toggleFavorite, clearError } = usePlayer(route.params?.storyId);
   const { isNightMode, toggleBrightness } = useBrightness();
 
-  const [showTimerModal, setShowTimerModal] = useState(false);
-  const [timerDuration, setTimerDuration] = useState<number | null>(null);
-  const [timerRemainingSeconds, setTimerRemainingSeconds] = useState<number | null>(null);
+  const handleSleepTimerExpire = useCallback(() => {
+    stop();
+    audioFocusManager.stopAll();
+  }, [stop]);
+
+  const {
+    timerDuration,
+    timerRemainingSeconds,
+    showTimerModal,
+    setShowTimerModal,
+    handleTimerSelect,
+    handleCancelTimer,
+    formatTimerRemaining,
+  } = useSleepTimer(handleSleepTimerExpire);
+
+  // 定时器激活期间，故事播放完毕后自动重播
+  useEffect(() => {
+    if (!timerDuration || isPlaying || isLoading || !story) return;
+
+    const id = setTimeout(() => {
+      logger.debug('Timer active, auto-replaying story');
+      resume();
+    }, 500);
+
+    return () => clearTimeout(id);
+  }, [isPlaying, timerDuration, isLoading, story, resume]);
+
   const [shareSuccess, setShareSuccess] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isAvailable: isPiPAvailable, isActive: isPiPActive, togglePiP } = usePictureInPicture({
     onEnterPiP: () => logger.info('Entered Picture-in-Picture mode'),
@@ -98,66 +123,6 @@ export default function StoryPlayerScreen() {
       logger.error('Failed to share story', { error: err });
     }
   }, [shareNative, story]);
-
-  const handleTimerSelect = useCallback((minutes: number) => {
-    setTimerDuration(minutes);
-    setTimerRemainingSeconds(minutes * 60);
-    setShowTimerModal(false);
-    logger.info(`Sleep timer set for ${minutes} minutes`);
-  }, []);
-
-  const clearTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    setTimerDuration(null);
-    setTimerRemainingSeconds(null);
-  }, []);
-
-  const handleCancelTimer = useCallback(() => {
-    clearTimer();
-    setShowTimerModal(false);
-    logger.info('Sleep timer cancelled');
-  }, [clearTimer]);
-
-  useEffect(() => {
-    if (!timerDuration) {
-      return;
-    }
-
-    timerRef.current = setInterval(() => {
-      setTimerRemainingSeconds((prev) => {
-        if (prev === null || prev <= 0) {
-          return null;
-        }
-        const next = prev - 1;
-        if (next <= 0) {
-          pause();
-          logger.info('Sleep timer expired');
-        }
-        return next;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [timerDuration, pause]);
-
-  useEffect(() => {
-    if (timerRemainingSeconds !== null && timerRemainingSeconds <= 0) {
-      clearTimer();
-    }
-  }, [timerRemainingSeconds, clearTimer]);
-
-  const formatTimerRemaining = useCallback(() => {
-    if (timerRemainingSeconds === null) return null;
-    return formatTime(Math.max(0, timerRemainingSeconds));
-  }, [timerRemainingSeconds]);
 
   const handlePrevStory = useCallback(() => {
     logger.info('Navigate to previous story');
@@ -295,7 +260,7 @@ export default function StoryPlayerScreen() {
                 />
                 {timerDuration && (
                   <Text style={[styles.timerText, { color: colors.textSecondary }]}>
-                    {formatTimerRemaining()}
+                    {formatTimerRemaining(formatTime)}
                   </Text>
                 )}
               </View>

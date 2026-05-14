@@ -18,6 +18,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.modoo.baby",
       "infoPlist": {
+        "UIBackgroundModes": ["audio"],
         "NSCameraUsageDescription": "梦兜需要使用相机来扫描二维码",
         "NSMicrophoneUsageDescription": "梦兜需要使用麦克风来录制语音互动",
         "NSAppTransportSecurity": {
@@ -57,7 +58,12 @@
       ],
       "expo-font",
       "expo-secure-store",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true
+        }
+      ],
       [
         "expo-screen-orientation",
         {

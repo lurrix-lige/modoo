@@ -30,21 +30,34 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setupAudioMode();
-    playerRef.current = new UnifiedAudioPlayer();
-    playerRef.current.addProgressListener((progressVal, durationVal) => {
-      setProgress(progressVal);
-      setDuration(durationVal);
-    });
-    playerRef.current.addCompletionListener(() => {
-      setIsPlaying(false);
-      setProgress(0);
-    });
-    playerRef.current.addBufferingListener((buffering) => {
-      setIsBuffering(buffering);
-    });
+    let mounted = true;
+
+    const init = async () => {
+      await setupAudioMode();
+      if (!mounted) return;
+
+      const player = new UnifiedAudioPlayer();
+      player.addProgressListener((progressVal, durationVal) => {
+        setProgress(progressVal);
+        setDuration(durationVal);
+      });
+      player.addCompletionListener(() => {
+        setIsPlaying(false);
+        setProgress(0);
+      });
+      player.addBufferingListener((buffering) => {
+        setIsBuffering(buffering);
+      });
+      player.setMetricsCallback((metrics) => {
+        logger.info('Audio playback metrics', { ...metrics });
+      });
+      playerRef.current = player;
+    };
+
+    init();
 
     return () => {
+      mounted = false;
       playerRef.current?.unloadAll();
     };
   }, []);

@@ -14,6 +14,7 @@ export function useAudioPlayer() {
   const playerRef = useRef<UnifiedAudioPlayer | null>(null);
   const volumeRef = useRef(1);
   const focusIdRef = useRef('');
+  const trackMapRef = useRef<Map<string, { url: string; volume: number }>>(new Map());
   if (!focusIdRef.current) {
     focusIdRef.current = `wn_${Math.random().toString(36).slice(2)}`;
   }
@@ -23,6 +24,11 @@ export function useAudioPlayer() {
     duration: 0,
     volume: 1,
   });
+  const [activeTrackIds, setActiveTrackIds] = useState<string[]>([]);
+
+  const syncActiveIds = useCallback(() => {
+    setActiveTrackIds([...trackMapRef.current.keys()]);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -42,7 +48,23 @@ export function useAudioPlayer() {
       });
       player.addCompletionListener(() => {
         if (!mounted) return;
-        setState((prev) => ({ ...prev, isPlaying: false }));
+        if (trackMapRef.current.size > 0) {
+          logger.debug('White noise completed unexpectedly, auto-restarting');
+          playerRef.current?.replay().catch(() => {
+            const tracks = [...trackMapRef.current.entries()].map(([id, info]) => ({
+              id,
+              url: info.url,
+              volume: info.volume,
+              loop: true,
+              role: 'background' as const,
+            }));
+            if (tracks.length > 0) {
+              playerRef.current?.play({ tracks });
+            }
+          });
+        } else {
+          setState((prev) => ({ ...prev, isPlaying: false }));
+        }
       });
       playerRef.current = player;
     };
@@ -56,12 +78,40 @@ export function useAudioPlayer() {
     };
   }, []);
 
+  const hasActiveTracks = useCallback(() => trackMapRef.current.size > 0, []);
+
+  const registerFocus = useCallback(() => {
+    audioFocusManager.request(focusIdRef.current, 'background', (action: FocusAction) => {
+      switch (action) {
+        case 'duck':
+          for (const [trackId] of trackMapRef.current) {
+            playerRef.current?.setVolume(trackId, 0.15);
+          }
+          break;
+        case 'restore':
+          for (const [trackId, info] of trackMapRef.current) {
+            playerRef.current?.setVolume(trackId, info.volume);
+          }
+          break;
+        case 'stop':
+          trackMapRef.current.clear();
+          syncActiveIds();
+          playerRef.current?.unloadAll();
+          audioFocusManager.release(focusIdRef.current);
+          setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
+          break;
+      }
+    });
+  }, [syncActiveIds]);
+
   const play = useCallback(async (src: string): Promise<boolean> => {
     try {
       if (!playerRef.current) {
         logger.error('useAudioPlayer: player not initialized');
         return false;
       }
+
+      trackMapRef.current.clear();
 
       await playerRef.current.unloadAll();
 
@@ -76,21 +126,9 @@ export function useAudioPlayer() {
       });
 
       if (success) {
-        audioFocusManager.request(focusIdRef.current, 'background', (action: FocusAction) => {
-          switch (action) {
-            case 'duck':
-              playerRef.current?.setVolume('main', 0.15);
-              break;
-            case 'restore':
-              playerRef.current?.setVolume('main', volumeRef.current);
-              break;
-            case 'stop':
-              playerRef.current?.unloadAll();
-              audioFocusManager.release(focusIdRef.current);
-              setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
-              break;
-          }
-        });
+        trackMapRef.current.set('main', { url: src, volume: volumeRef.current });
+        syncActiveIds();
+        registerFocus();
         setState((prev) => ({ ...prev, isPlaying: true }));
       }
       return success;
@@ -99,6 +137,65 @@ export function useAudioPlayer() {
       setState((prev) => ({ ...prev, isPlaying: false }));
       return false;
     }
+  }, [syncActiveIds, registerFocus]);
+
+  const addTrack = useCallback(async (id: string, url: string, volume?: number): Promise<boolean> => {
+    if (!playerRef.current) {
+      logger.error('useAudioPlayer: player not initialized');
+      return false;
+    }
+
+    if (trackMapRef.current.has(id)) {
+      logger.debug('Track already active', { id });
+      return false;
+    }
+
+    const trackVolume = volume ?? volumeRef.current;
+    const success = await playerRef.current.addTrack({
+      id,
+      url,
+      volume: trackVolume,
+      loop: true,
+      role: 'background',
+    });
+
+    if (success) {
+      trackMapRef.current.set(id, { url, volume: trackVolume });
+      syncActiveIds();
+
+      if (trackMapRef.current.size === 1) {
+        registerFocus();
+      }
+
+      setState((prev) => ({ ...prev, isPlaying: true, volume: trackVolume }));
+    }
+
+    return success;
+  }, [syncActiveIds, registerFocus]);
+
+  const removeTrack = useCallback(async (id: string): Promise<void> => {
+    if (!playerRef.current) return;
+
+    trackMapRef.current.delete(id);
+    syncActiveIds();
+    await playerRef.current.removeTrack(id);
+
+    if (trackMapRef.current.size === 0) {
+      audioFocusManager.release(focusIdRef.current);
+      setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
+    }
+  }, [syncActiveIds]);
+
+  const toggleTrack = useCallback(async (id: string, url: string, volume?: number): Promise<boolean> => {
+    if (trackMapRef.current.has(id)) {
+      await removeTrack(id);
+      return false;
+    }
+    return await addTrack(id, url, volume);
+  }, [addTrack, removeTrack]);
+
+  const hasTrack = useCallback((id: string): boolean => {
+    return trackMapRef.current.has(id);
   }, []);
 
   const pause = useCallback(() => {
@@ -107,6 +204,27 @@ export function useAudioPlayer() {
       setState((prev) => ({ ...prev, isPlaying: false }));
     } catch (error) {
       logger.error('Failed to pause audio', { error });
+    }
+  }, []);
+
+  const resume = useCallback(async (): Promise<boolean> => {
+    try {
+      if (playerRef.current?.isCompletedState()) {
+        const success = await playerRef.current.replay();
+        if (success) {
+          setState((prev) => ({ ...prev, isPlaying: true }));
+          return true;
+        }
+        return false;
+      }
+      const success = await playerRef.current?.resume() ?? false;
+      if (success) {
+        setState((prev) => ({ ...prev, isPlaying: true }));
+      }
+      return success;
+    } catch (error) {
+      logger.error('Failed to resume audio', { error });
+      return false;
     }
   }, []);
 
@@ -120,27 +238,37 @@ export function useAudioPlayer() {
 
   const stop = useCallback(() => {
     try {
+      trackMapRef.current.clear();
+      syncActiveIds();
       audioFocusManager.release(focusIdRef.current);
       playerRef.current?.unloadAll();
       setState({ isPlaying: false, currentTime: 0, duration: 0, volume: volumeRef.current });
     } catch (error) {
       logger.error('Failed to stop audio', { error });
     }
-  }, []);
+  }, [syncActiveIds]);
 
   const setVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
     volumeRef.current = clampedVolume;
-    playerRef.current?.setVolume('main', clampedVolume);
+    for (const trackId of trackMapRef.current.keys()) {
+      playerRef.current?.setVolume(trackId, clampedVolume);
+    }
     setState((prev) => ({ ...prev, volume: clampedVolume }));
   }, []);
 
   return {
     ...state,
+    activeTrackIds,
     play,
     pause,
+    resume,
     toggle,
     stop,
     setVolume,
+    addTrack,
+    removeTrack,
+    toggleTrack,
+    hasTrack,
   };
 }

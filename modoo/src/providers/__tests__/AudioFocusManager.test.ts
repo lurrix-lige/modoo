@@ -198,4 +198,38 @@ describe('AudioFocusManager', () => {
       expect(wnListener).toHaveBeenCalledWith('restore');
     });
   });
+
+  describe('stopAll', () => {
+    test('sends stop to all registered entries and clears them', () => {
+      const mainListener = jest.fn();
+      const bgListener = jest.fn();
+
+      manager.request('story', 'main', mainListener);
+      manager.request('whitenoise', 'background', bgListener);
+
+      manager.stopAll();
+
+      expect(mainListener).toHaveBeenCalledWith('stop');
+      expect(bgListener).toHaveBeenCalledWith('stop');
+      expect(manager.entryCount).toBe(0);
+    });
+
+    test('does not throw when no entries registered', () => {
+      expect(() => manager.stopAll()).not.toThrow();
+    });
+
+    test('entries cleared after stopAll do not restore', () => {
+      const bgListener = jest.fn();
+      manager.request('whitenoise', 'background', bgListener);
+      manager.stopAll();
+      bgListener.mockClear();
+
+      // Re-register as main and release — bg should not receive restore
+      const newMain = jest.fn();
+      manager.request('story', 'main', newMain);
+      manager.release('story');
+
+      expect(bgListener).not.toHaveBeenCalled();
+    });
+  });
 });

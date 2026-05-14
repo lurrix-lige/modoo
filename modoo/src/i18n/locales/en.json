@@ -112,6 +112,18 @@
     "unsupportedFile": "Audio file format not supported or file is corrupted, please try another audio",
     "decodeFailed": "Audio decoding failed (error code: {{code}}), please try another audio"
   },
+  "whiteNoise": {
+    "title": "White Noise",
+    "loadError": "Failed to load white noise",
+    "playError": "Failed to play white noise",
+    "empty": "No white noise available",
+    "volume": "Volume",
+    "sleepTimer": "Sleep Timer",
+    "sleepTimerTitle": "Set Sleep Timer",
+    "setTimer": "Set Timer",
+    "cancelTimer": "Cancel",
+    "minutes": "min"
+  },
   "api": {
     "timeout": "Request timeout, please try again later",
     "networkError": "Network connection failed, please check network",

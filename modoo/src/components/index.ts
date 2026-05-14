@@ -20,6 +20,8 @@ export { EmptyState } from './EmptyState';
 export { SettingsPopover } from './SettingsPopover';
 export { ActivityProvider, useActivity, withActivityTracking } from './ActivityProvider';
 export { ResponsiveGrid } from './ResponsiveGrid';
+export { WhiteNoisePlayer } from './WhiteNoisePlayer';
+export type { WhiteNoisePlayerProps, PlatformVariant } from './WhiteNoisePlayer';
 export { TwoPaneLayout } from './TwoPaneLayout';
 export { DesktopSidebar } from './DesktopSidebar';
 

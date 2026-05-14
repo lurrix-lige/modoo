@@ -65,6 +65,13 @@ class AudioFocusManager {
   get entryCount(): number {
     return this.entries.size;
   }
+
+  stopAll(): void {
+    for (const [id, entry] of this.entries) {
+      entry.listener('stop');
+    }
+    this.entries.clear();
+  }
 }
 
 export { AudioFocusManager };

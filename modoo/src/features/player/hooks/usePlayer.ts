@@ -121,10 +121,10 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
 
   const seekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    logger.debug('Auto-play useEffect triggered', { 
-      storyExists: !!story, 
+    logger.debug('Auto-play useEffect triggered', {
+      storyExists: !!story,
       audioUrlExists: !!story?.audioUrl,
-      audioUrl: story?.audioUrl 
+      audioUrl: story?.audioUrl
     });
 
     if (!story) {
@@ -134,6 +134,12 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
 
     if (!story.audioUrl) {
       logger.error('Story has no audio URL', { storyId: story.id, title: story.title });
+      return;
+    }
+
+    // 检测当前故事是否已经在播放中，避免重复加载
+    if (currentStory?.id === story.id && isPlaying) {
+      logger.info('Story already playing, skipping auto-play', { storyId: story.id });
       return;
     }
 
@@ -177,8 +183,6 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       if (story && audioProgress > 0) {
         saveProgress();
       }
-      audioStop();
-      storeStop();
     };
   }, [story]);
 

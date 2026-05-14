@@ -113,6 +113,18 @@
     "unsupportedFile": "音频文件格式不支持或文件已损坏，请尝试其他音频",
     "decodeFailed": "音频解码失败 (错误码: {{code}})，请尝试其他音频"
   },
+  "whiteNoise": {
+    "title": "白噪音",
+    "loadError": "白噪音加载失败",
+    "playError": "白噪音播放失败",
+    "empty": "暂无白噪音",
+    "volume": "音量",
+    "sleepTimer": "定时关闭",
+    "sleepTimerTitle": "设置定时关闭",
+    "setTimer": "设置定时",
+    "cancelTimer": "取消",
+    "minutes": "分钟"
+  },
   "api": {
     "timeout": "请求超时，请稍后重试",
     "networkError": "网络连接失败，请检查网络",

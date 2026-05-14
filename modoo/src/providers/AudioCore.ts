@@ -1,4 +1,4 @@
-import { createAudioPlayer, setAudioModeAsync, AudioStatus, AudioPlayer } from 'expo-audio';
+import { createAudioPlayer, setAudioModeAsync, setIsAudioActiveAsync, AudioStatus, AudioPlayer } from 'expo-audio';
 import { Platform } from 'react-native';
 import i18n from '../i18n';
 import { logger } from '../utils/logger';
@@ -102,6 +102,7 @@ export const setupAudioMode = async (): Promise<void> => {
       shouldPlayInBackground: true,
       interruptionMode: 'duckOthers',
     });
+    await setIsAudioActiveAsync(true);
   } catch (err) {
     logger.warn('Failed to set audio mode', { error: err });
   }
@@ -212,7 +213,7 @@ export class UnifiedAudioPlayer {
         }
 
         const encodedUrl = encodeUrl(track.url);
-        const player = createAudioPlayer(encodedUrl, { updateInterval });
+        const player = createAudioPlayer(encodedUrl, { updateInterval, keepAudioSessionActive: true });
         player.loop = track.loop ?? false;
         const volume = track.volume ?? 1.0;
         player.volume = volume;
@@ -335,12 +336,93 @@ export class UnifiedAudioPlayer {
     }
   }
 
+  async addTrack(track: AudioTrack): Promise<boolean> {
+    if (this.players.has(track.id)) {
+      logger.debug('Track already exists', { trackId: track.id });
+      return false;
+    }
+
+    const validation = validateUrl(track.url);
+    if (!validation.valid) {
+      logger.error('Invalid track URL for addTrack', { url: track.url, message: validation.message });
+      return false;
+    }
+
+    const currentGen = this.generation;
+    const encodedUrl = encodeUrl(track.url);
+    const player = createAudioPlayer(encodedUrl, { keepAudioSessionActive: true });
+    player.loop = track.loop ?? true;
+    player.volume = track.volume ?? 1.0;
+
+    player.addListener(PLAYBACK_STATUS_UPDATE, (status: AudioStatus) => {
+      if (this.generation !== currentGen) {
+        return;
+      }
+
+      if ((status as any).error) {
+        logger.error('Audio track playback error', { trackId: track.id, error: (status as any).error });
+      }
+
+      const isActuallyPlaying = status.isLoaded && status.playing === true;
+
+      if (!isActuallyPlaying && this.isPlayingInternal) {
+        const anyPlaying = [...this.players.values()].some((p) => {
+          try {
+            return p.playing;
+          } catch {
+            return false;
+          }
+        });
+        if (!anyPlaying) {
+          this.isPlayingInternal = false;
+          this.playingStateListeners.forEach((cb) => cb(false));
+        }
+      } else if (isActuallyPlaying && !this.isPlayingInternal) {
+        this.isPlayingInternal = true;
+        this.playingStateListeners.forEach((cb) => cb(true));
+      }
+    });
+
+    this.players.set(track.id, player);
+    player.play();
+    logger.debug('Track added and playing', { trackId: track.id });
+
+    if (!this.isPlayingInternal) {
+      this.isPlayingInternal = true;
+      this.playingStateListeners.forEach((cb) => cb(true));
+    }
+
+    return true;
+  }
+
+  async removeTrack(trackId: string): Promise<void> {
+    const player = this.players.get(trackId);
+    if (!player) {
+      logger.debug('Track not found for removal', { trackId });
+      return;
+    }
+
+    try {
+      player.remove();
+    } catch (err) {
+      logger.debug('Error removing track player', { trackId, error: err });
+    }
+
+    this.players.delete(trackId);
+    logger.debug('Track removed', { trackId });
+
+    if (this.players.size === 0) {
+      this.isPlayingInternal = false;
+      this.isCompleted = false;
+      this.playingStateListeners.forEach((cb) => cb(false));
+    }
+  }
+
   async replay(): Promise<boolean> {
     if (this.isEmpty()) {
       return false;
     }
 
-    this.generation++;
     this.isProcessing = true;
 
     try {
@@ -351,6 +433,8 @@ export class UnifiedAudioPlayer {
         player.play();
       }
 
+      this.isPlayingInternal = true;
+      this.playingStateListeners.forEach((cb) => cb(true));
       this.isProcessing = false;
       return true;
     } catch (err) {
@@ -373,6 +457,10 @@ export class UnifiedAudioPlayer {
   }
 
   async resume(): Promise<boolean> {
+    if (this.isCompleted) {
+      return this.replay();
+    }
+
     try {
       for (const player of this.players.values()) {
         await player.play();

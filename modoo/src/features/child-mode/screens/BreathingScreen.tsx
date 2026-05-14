@@ -6,29 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { SafeAreaContainer } from '../../../components';
-import { Leaf, Wind, Flower2, AlertCircle, Cloud, PlayCircle, CloudRain, Waves, Flame, TreeDeciduous, Bird, Coffee } from 'lucide-react-native';
-
-const breathingIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
-  'leaf': Leaf,
-  'play-circle': PlayCircle,
-  'cloud-rain': CloudRain,
-  'waves': Waves,
-  'flame': Flame,
-  'tree-deciduous': TreeDeciduous,
-  'birds': Bird,
-  'coffee': Coffee,
-};
+import { SafeAreaContainer, WhiteNoisePlayer, BreathingBalloon } from '../../../components';
+import { Leaf, Wind, AlertCircle, Cloud, PlayCircle } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, typography, shadows, sharedStyles, responsive, iconSizes } from '../../../theme';
-import { BreathingBalloon } from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
-import { apiService, BreathingExercise, WhiteNoise, BreathingResponse, WhiteNoisesResponse } from '../../../services';
+import { apiService, BreathingExercise } from '../../../services';
 import { errorHandler } from '../../../services/ErrorHandler';
 import { useError } from '../../../contexts/ErrorContext';
-import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
 
 type BreathingScreenNavigationProp = NativeStackNavigationProp<ChildrenStackParamList>;
 
@@ -37,13 +24,10 @@ export default function BreathingScreen() {
   const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const { addError } = useError();
-  const { isPlaying, toggle, stop } = useAudioPlayer();
 
-  const [selectedWhiteNoise, setSelectedWhiteNoise] = useState<string | null>(null);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [exercises, setExercises] = useState<BreathingExercise[]>([]);
-  const [whiteNoises, setWhiteNoises] = useState<WhiteNoise[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,13 +39,8 @@ export default function BreathingScreen() {
     setLoadError(null);
 
     try {
-      const [breathingResponse, whiteNoiseResponse] = await Promise.all([
-        apiService.getBreathingExercises(),
-        apiService.getWhiteNoises(),
-      ]);
-
+      const breathingResponse = await apiService.getBreathingExercises();
       setExercises(breathingResponse.exercises);
-      setWhiteNoises(whiteNoiseResponse.noises);
     } catch (error) {
       const errorMessage = errorHandler.getErrorMessage(
         error instanceof Error ? error.message : 'UNKNOWN_ERROR',
@@ -82,14 +61,9 @@ export default function BreathingScreen() {
     }
   };
 
-  const getWhiteNoiseName = (noise: WhiteNoise) => {
-    if (noise.nameKey) {
-      return t(noise.nameKey);
-    }
-    if (noise.name) {
-      return noise.name;
-    }
-    return t(`breathing.${noise.id}`) || noise.id;
+  const handleExercisePress = (exercise: BreathingExercise) => {
+    setSelectedExercise(exercise.id);
+    navigation.navigate('BreathingPractice');
   };
 
   const getExerciseInfo = (exercise: BreathingExercise) => {
@@ -99,49 +73,9 @@ export default function BreathingScreen() {
     };
   };
 
-  const handleExercisePress = (exercise: BreathingExercise) => {
-    setSelectedExercise(exercise.id);
-    navigation.navigate('BreathingPractice');
-  };
-
-  const handleWhiteNoisePress = async (noise: WhiteNoise) => {
-    if (selectedWhiteNoise === noise.id) {
-      await stop();
-      setSelectedWhiteNoise(null);
-    } else {
-      if (selectedWhiteNoise) {
-        await stop();
-      }
-
-      const noiseUrl = noise.audioUrl;
-      if (noiseUrl) {
-        const success = await toggle(noiseUrl);
-        if (success) {
-          setSelectedWhiteNoise(noise.id);
-        } else {
-          addError({
-            id: errorHandler.generateErrorId(),
-            code: 'AUDIO_PLAY_ERROR',
-            message: t('breathing.audioPlayError'),
-            severity: 'error',
-            timestamp: Date.now(),
-            duration: 5000,
-          });
-        }
-      }
-    }
-  };
-
   const handleRetry = () => {
     loadData();
   };
-
-  useEffect(() => {
-    const cleanup = () => {
-      stop();
-    };
-    return cleanup;
-  }, [stop]);
 
   const renderSkeleton = () => (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -165,16 +99,6 @@ export default function BreathingScreen() {
         ))}
       </View>
 
-      <View style={[styles.skeletonSectionTitle, { backgroundColor: colors.border }]} />
-
-      <View style={styles.whiteNoiseGrid}>
-        {[1, 2, 3, 4].map(i => (
-          <View key={i} style={[styles.skeletonNoiseCard, { backgroundColor: colors.surface }]}>
-            <View style={[styles.skeletonNoiseIcon, { backgroundColor: colors.border }]} />
-            <View style={[styles.skeletonNoiseName, { backgroundColor: colors.border }]} />
-          </View>
-        ))}
-      </View>
     </ScrollView>
   );
 
@@ -221,7 +145,7 @@ export default function BreathingScreen() {
         renderSkeleton()
       ) : loadError ? (
         renderErrorState()
-      ) : exercises.length === 0 && whiteNoises.length === 0 ? (
+      ) : exercises.length === 0 ? (
         renderEmptyState()
       ) : (
         <ScrollView 
@@ -291,46 +215,13 @@ export default function BreathingScreen() {
             </>
           )}
 
-          {whiteNoises.length > 0 && (
-            <>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                {t('breathing.whiteNoise')}
-              </Text>
-              <View style={styles.whiteNoiseGrid}>
-                {whiteNoises.map(noise => (
-                  <TouchableOpacity
-                    key={noise.id}
-                    style={[
-                      styles.noiseCard,
-                      {
-                        backgroundColor:
-                          selectedWhiteNoise === noise.id ? (noise.color || colors.surface) : colors.surface,
-                      },
-                    ]}
-                    onPress={() => handleWhiteNoisePress(noise)}
-                  >
-                    {(() => { 
-                      const IconComp = noise.icon ? (breathingIconMap[noise.icon] || Wind) : Wind;
-                      return <IconComp size={responsive.moderateScale(iconSizes.xl)} color={selectedWhiteNoise === noise.id ? colors.textPrimary : (noise.color || colors.textPrimary)} />;
-                    })()}
-                    <Text
-                      style={[
-                        styles.noiseName,
-                        { color: colors.textPrimary },
-                      ]}
-                    >
-                      {getWhiteNoiseName(noise)}
-                    </Text>
-                    {noise.isPremium && (
-                      <Text style={[styles.premiumBadge, { color: colors.warning }]}>
-                        {t('common.premium')}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </>
-          )}
+          <WhiteNoisePlayer
+            platform="child"
+            allowMultiple={false}
+            showVolumeControl={true}
+            showSleepTimer={true}
+            sectionTitle={t('breathing.whiteNoise')}
+          />
         </ScrollView>
       )}
     </SafeAreaContainer>
@@ -338,9 +229,6 @@ export default function BreathingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex:1,
-  },
   header: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
@@ -401,29 +289,6 @@ const styles = StyleSheet.create({
   },
   exerciseDesc: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-  },
-  whiteNoiseGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    paddingBottom: spacing.xxl,
-  },
-  noiseCard: {
-    width: '47%',
-    ...sharedStyles.columnCenter,
-    padding: spacing.xl,
-    borderRadius: borderRadius.lg,
-    ...shadows.small,
-  },
-  noiseName: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    fontWeight: typography.fontWeight.medium,
-    marginTop: spacing.sm,
-  },
-  premiumBadge: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    fontWeight: typography.fontWeight.bold,
-    marginTop: spacing.xs,
   },
 
   errorCard: {
@@ -510,22 +375,5 @@ const styles = StyleSheet.create({
     width: responsive.moderateScale(32),
     height: responsive.moderateScale(32),
     borderRadius: responsive.moderateScale(16),
-  },
-  skeletonNoiseCard: {
-    width: '47%',
-    alignItems: 'center',
-    padding: spacing.xl,
-    borderRadius: borderRadius.lg,
-    gap: spacing.sm,
-  },
-  skeletonNoiseIcon: {
-    width: responsive.moderateScale(32),
-    height: responsive.moderateScale(32),
-    borderRadius: responsive.moderateScale(16),
-  },
-  skeletonNoiseName: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(14),
-    borderRadius: responsive.moderateScale(7),
   },
 });
