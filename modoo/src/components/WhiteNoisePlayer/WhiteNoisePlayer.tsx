@@ -7,10 +7,12 @@ import {
   PanResponder,
   LayoutChangeEvent,
   GestureResponderEvent,
+  Animated,
 } from 'react-native';
 import {
   Music,
   Pause,
+  Play,
   AlarmClock,
   Volume2,
   VolumeX,
@@ -22,9 +24,12 @@ import {
   Coffee,
   Wind,
   AlertCircle,
+  X,
+  Crown,
+  RotateCw,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, responsive } from '../../theme';
+import { useTheme, spacing, borderRadius, typography, shadows, commonColors, responsive, iconSizes } from '../../theme';
 import { apiService, WhiteNoise } from '../../services';
 import { errorHandler } from '../../services/ErrorHandler';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
@@ -71,6 +76,8 @@ export default function WhiteNoisePlayer({
     removeTrack,
     stop,
     setVolume,
+    pauseTrack,
+    resumeTrack,
   } = useAudioPlayer();
 
   const isChild = platform === 'child';
@@ -83,9 +90,31 @@ export default function WhiteNoisePlayer({
   // Track ID to noise mapping for callbacks
   const noisesRef = useRef<Map<string, WhiteNoise>>(new Map());
 
-  // Volume bar layout
+  // Track manually paused noises (user clicked pause on these, not removed by other means).
+  // When a paused noise is resumed, it's re-added to the player via addTrack.
+  const [pausedTrackIds, setPausedTrackIds] = useState<Set<string>>(new Set());
+  const pausedRef = useRef<Set<string>>(new Set());
+
+  // Track which active noise card the user last interacted with.
+  // That card shows the Pause/Play button; other playing cards show the rotating indicator.
+  const [focusedTrackId, setFocusedTrackId] = useState<string | null>(null);
+
+  // Volume bar — Animated.Value for smooth native-performance tracking.
+  // We update the animated value directly in gesture callbacks (no setState)
+  // and commit the final volume to useAudioPlayer only on gesture release.
+  const volumeAnim = useRef(new Animated.Value(volume)).current;
+  const volumeValRef = useRef(volume);
+  const setVolumeRef = useRef(setVolume);
+  setVolumeRef.current = setVolume;
   const [volumeBarWidth, setVolumeBarWidth] = useState(0);
+  const volumeBarWidthRef = useRef(0);
   const volumeBarRef = useRef<View>(null);
+
+  // Keep animated value in sync when volume changes from outside (e.g. external setVolume)
+  useEffect(() => {
+    volumeAnim.setValue(volume);
+    volumeValRef.current = volume;
+  }, [volume, volumeAnim]);
 
   // --- Data fetching ---
   const fetchNoises = useCallback(async () => {
@@ -150,15 +179,49 @@ export default function WhiteNoisePlayer({
     [t],
   );
 
-  // --- Noise toggle ---
-  const handleNoiseToggle = useCallback(
+  // --- Per-noise play/pause ---
+  // Top-right button handler: pause/resume + focus management
+  const handleNoisePlayPause = useCallback(
     async (noise: WhiteNoise) => {
       const noiseUrl = noise.audioUrl;
       if (!noiseUrl) return;
 
-      if (activeTrackIds.includes(noise.id)) {
-        await removeTrack(noise.id);
+      const isCurrentlyPlaying = activeTrackIds.includes(noise.id) && !pausedTrackIds.has(noise.id);
+      const isCurrentlyPaused = activeTrackIds.includes(noise.id) && pausedTrackIds.has(noise.id);
+
+      if (isCurrentlyPlaying) {
+        // Playing → pause
+        pauseTrack(noise.id);
+        setPausedTrackIds((prev) => {
+          const next = new Set(prev);
+          next.add(noise.id);
+          return next;
+        });
+        setFocusedTrackId((prev) => (prev === noise.id ? null : prev));
+      } else if (isCurrentlyPaused) {
+        // Paused → resume + focus
+        setPausedTrackIds((prev) => {
+          const next = new Set(prev);
+          next.delete(noise.id);
+          return next;
+        });
+
+        if (!allowMultiple && activeTrackIds.length > 0) {
+          for (const id of activeTrackIds) {
+            if (id !== noise.id) {
+              await removeTrack(id);
+            }
+          }
+        }
+
+        const success = await resumeTrack(noise.id);
+        if (success) {
+          setFocusedTrackId(noise.id);
+        } else {
+          onError?.(t('whiteNoise.playError'));
+        }
       } else {
+        // Inactive → start new track + focus
         if (!allowMultiple && activeTrackIds.length > 0) {
           for (const id of activeTrackIds) {
             await removeTrack(id);
@@ -166,14 +229,68 @@ export default function WhiteNoisePlayer({
         }
 
         const success = await addTrack(noise.id, noiseUrl);
-        if (!success) {
-          const msg = t('whiteNoise.playError');
-          onError?.(msg);
+        if (success) {
+          setFocusedTrackId(noise.id);
+        } else {
+          onError?.(t('whiteNoise.playError'));
         }
       }
     },
-    [activeTrackIds, allowMultiple, addTrack, removeTrack, t, onError],
+    [activeTrackIds, allowMultiple, addTrack, removeTrack, pauseTrack, resumeTrack, pausedTrackIds, t, onError],
   );
+
+  // --- Noise toggle (card body press) ---
+  // Card body = play/stop toggle: playing → stop, otherwise → start/resume
+  const handleNoisePlayPauseRef = useRef(handleNoisePlayPause);
+  handleNoisePlayPauseRef.current = handleNoisePlayPause;
+
+  const handleNoiseToggle = useCallback(
+    async (noise: WhiteNoise) => {
+      const noiseUrl = noise.audioUrl;
+      if (!noiseUrl) return;
+
+      const isActive = activeTrackIds.includes(noise.id);
+      const isPaused = pausedTrackIds.has(noise.id);
+      const isActuallyPlaying = isActive && !isPaused;
+
+      if (isActuallyPlaying) {
+        // Playing (focused or background) → stop
+        await removeTrack(noise.id);
+        setPausedTrackIds((prev) => {
+          const next = new Set(prev);
+          next.delete(noise.id);
+          return next;
+        });
+        setFocusedTrackId((prev) => (prev === noise.id ? null : prev));
+      } else {
+        // Paused / Inactive → delegate to play/pause handler
+        await handleNoisePlayPauseRef.current(noise);
+      }
+    },
+    [activeTrackIds, focusedTrackId, pausedTrackIds, removeTrack],
+  );
+
+  // Keep pausedRef in sync for use in callbacks that can't depend on state
+  useEffect(() => {
+    pausedRef.current = pausedTrackIds;
+  }, [pausedTrackIds]);
+
+  // Prune stale pausedTrackIds when tracks are removed externally
+  // (e.g. single-track mode batch removal, timer expire, etc.)
+  useEffect(() => {
+    setPausedTrackIds((prev) => {
+      if (prev.size === 0) return prev;
+      const next = new Set(prev);
+      let changed = false;
+      for (const id of prev) {
+        if (!activeTrackIds.includes(id)) {
+          next.delete(id);
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [activeTrackIds]);
 
   // --- Active noises callback ---
   useEffect(() => {
@@ -182,6 +299,18 @@ export default function WhiteNoisePlayer({
       .filter(Boolean) as WhiteNoise[];
     onActiveNoisesChange?.(active);
   }, [activeTrackIds, onActiveNoisesChange]);
+
+  // Auto-focus: when the focused track disappears but others are still active,
+  // pick the first remaining active track as the new focus.
+  useEffect(() => {
+    if (activeTrackIds.length === 0) {
+      setFocusedTrackId(null);
+      return;
+    }
+    if (focusedTrackId && !activeTrackIds.includes(focusedTrackId)) {
+      setFocusedTrackId(activeTrackIds[0]);
+    }
+  }, [activeTrackIds, focusedTrackId]);
 
   // --- Playback state callback ---
   useEffect(() => {
@@ -194,49 +323,78 @@ export default function WhiteNoisePlayer({
   }, [volume, onVolumeChange]);
 
   // --- Volume bar interaction ---
-  // Track gesture origin so we only claim horizontal drags and let vertical
-  // scrolls pass through to the parent ScrollView.
-  const volumeGestureStart = useRef<{ x: number; y: number } | null>(null);
-
+  // Direction-aware so vertical scrolls pass through to parent ScrollView.
   const volumePanResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_: GestureResponderEvent, gs: { dx: number; dy: number }) => {
-        // Only claim the gesture if the user is dragging primarily horizontally
         return Math.abs(gs.dx) > Math.abs(gs.dy) && Math.abs(gs.dx) > 5;
       },
       onPanResponderGrant: (evt) => {
-        volumeGestureStart.current = {
-          x: evt.nativeEvent.locationX,
-          y: evt.nativeEvent.locationY,
-        };
-        updateVolumeFromTouch(evt.nativeEvent.locationX);
+        const w = volumeBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        volumeValRef.current = newVol;
+        volumeAnim.setValue(newVol);
       },
       onPanResponderMove: (evt) => {
-        updateVolumeFromTouch(evt.nativeEvent.locationX);
+        const w = volumeBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        volumeValRef.current = newVol;
+        volumeAnim.setValue(newVol);
       },
       onPanResponderRelease: () => {
-        volumeGestureStart.current = null;
+        setVolumeRef.current(volumeValRef.current);
       },
       onPanResponderTerminate: () => {
-        volumeGestureStart.current = null;
+        setVolumeRef.current(volumeValRef.current);
       },
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
 
-  const updateVolumeFromTouch = useCallback(
-    (x: number) => {
-      if (volumeBarWidth <= 0) return;
-      const newVol = Math.max(0, Math.min(1, x / volumeBarWidth));
-      setVolume(newVol);
-    },
-    [volumeBarWidth, setVolume],
-  );
-
   const handleVolumeBarLayout = useCallback((e: LayoutChangeEvent) => {
-    setVolumeBarWidth(e.nativeEvent.layout.width);
+    const w = e.nativeEvent.layout.width;
+    volumeBarWidthRef.current = w;
+    setVolumeBarWidth(w);
   }, []);
+
+  // --- Now-playing spin animation ---
+  // Create the animated value, interpolation, and loop exactly once.
+  // Only start/stop the loop based on playback state — never recreate it.
+  const spinAnim = useRef(new Animated.Value(0)).current;
+
+  const spin = useRef(
+    spinAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '360deg'],
+    }),
+  ).current;
+
+  const spinLoop = useRef(
+    Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+    ),
+  ).current;
+
+  const spinLoopRunning = useRef(false);
+
+  useEffect(() => {
+    const hasPlayingTracks = activeTrackIds.some((id) => !pausedTrackIds.has(id));
+    if (hasPlayingTracks && !spinLoopRunning.current) {
+      spinLoopRunning.current = true;
+      spinLoop.start();
+    } else if (!hasPlayingTracks && spinLoopRunning.current) {
+      spinLoopRunning.current = false;
+      spinLoop.stop();
+      spinAnim.setValue(0);
+    }
+  }, [activeTrackIds, pausedTrackIds, spinAnim, spinLoop]);
 
   // --- Cleanup on unmount ---
   useEffect(() => {
@@ -269,12 +427,39 @@ export default function WhiteNoisePlayer({
       return renderNoiseIcon(noise, isActive);
     }
 
+    if (isActive) {
+      // 播放中：显示旋转的 RotateCw 图标
+      return (
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          <RotateCw size={iconSize(36)} color={commonColors.white} />
+        </Animated.View>
+      );
+    }
+
+    // 未播放：显示原来的噪音图标
     const iconKey = noise.icon ?? '';
     const IconComp = defaultIconMap[iconKey] || Music;
-    const iconColor = isActive ? commonColors.white : noise.color || colors.textPrimary;
+    const iconColor = noise.color || colors.textPrimary;
 
     return <IconComp size={iconSize(36)} color={iconColor} />;
   };
+
+  // --- Animated interpolations for volume slider ---
+  const fillWidth = volumeBarWidth > 0
+    ? volumeAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, volumeBarWidth],
+        extrapolate: 'clamp',
+      })
+    : 0;
+
+  const thumbTranslate = volumeBarWidth > 0
+    ? volumeAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, Math.max(0, volumeBarWidth - 16)],
+        extrapolate: 'clamp',
+      })
+    : 0;
 
   // --- Loading skeleton ---
   if (isLoading) {
@@ -352,24 +537,37 @@ export default function WhiteNoisePlayer({
       <View style={styles.noiseGrid}>
         {noises.map((noise) => {
           const isActive = activeTrackIds.includes(noise.id);
+          const isPaused = pausedTrackIds.has(noise.id);
+          const isActuallyPlaying = isActive && !isPaused;
+          const isFocused = isActuallyPlaying && noise.id === focusedTrackId;
+          const isBackground = isActuallyPlaying && noise.id !== focusedTrackId;
+          const showPlayPause = isActuallyPlaying || isPaused;
+
           return (
             <TouchableOpacity
               key={noise.id}
               style={[
                 styles.noiseCard,
                 {
-                  backgroundColor: isActive ? noise.color || colors.surface : colors.surface,
+                  backgroundColor: isActuallyPlaying ? noise.color || colors.surface : colors.surface,
                 },
               ]}
               onPress={() => handleNoiseToggle(noise)}
               activeOpacity={0.7}
             >
-              {renderIcon(noise, isActive)}
+              {/* Premium crown — top-left corner */}
+              {noise.isPremium && (
+                <View style={styles.premiumCrown}>
+                  <Crown size={iconSize(16)} color={colors.warning} />
+                </View>
+              )}
+
+              {renderIcon(noise, isActuallyPlaying)}
               <Text
                 style={[
                   styles.noiseName,
                   {
-                    color: isActive ? commonColors.white : colors.textPrimary,
+                    color: isActuallyPlaying ? commonColors.white : colors.textPrimary,
                     fontSize: fontSize(typography.fontSize.md),
                   },
                 ]}
@@ -377,15 +575,39 @@ export default function WhiteNoisePlayer({
               >
                 {getNoiseName(noise)}
               </Text>
-              {isActive && (
-                <View style={[styles.playingIndicator, { backgroundColor: colors.success }]}>
-                  <Pause size={iconSize(16)} color={commonColors.white} />
-                </View>
-              )}
-              {noise.isPremium && (
-                <Text style={[styles.premiumBadge, { color: colors.warning, fontSize: fontSize(typography.fontSize.xs) }]}>
-                  {t('common.premium')}
-                </Text>
+
+              {/* Top-right indicator */}
+              {showPlayPause && (
+                <TouchableOpacity
+                  style={[
+                    styles.playPauseButton,
+                    { backgroundColor: isActuallyPlaying ? colors.primary : colors.success },
+                  ]}
+                  onPress={() => {
+                    if (isBackground) {
+                      setFocusedTrackId(noise.id);
+                    } else {
+                      handleNoisePlayPause(noise);
+                    }
+                  }}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  activeOpacity={0.8}
+                >
+                  {/* Focused active card: Pause button */}
+                  {isFocused && (
+                    <Pause size={iconSize(14)} color={commonColors.white} />
+                  )}
+                  {/* Background playing card: rotating indicator */}
+                  {isBackground && (
+                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                      <RotateCw size={iconSize(14)} color={commonColors.white} />
+                    </Animated.View>
+                  )}
+                  {/* Paused card: Play button */}
+                  {isPaused && (
+                    <Play size={iconSize(14)} color={commonColors.white} />
+                  )}
+                </TouchableOpacity>
               )}
             </TouchableOpacity>
           );
@@ -394,80 +616,83 @@ export default function WhiteNoisePlayer({
 
       {children}
 
-      {/* Volume control */}
-      {showVolumeControl && (
-        <View style={[styles.controlRow, { backgroundColor: colors.surface }]}>
-          <View style={styles.controlLabel}>
-            {volume > 0 ? (
-              <Volume2 size={iconSize(20)} color={colors.textSecondary} />
-            ) : (
-              <VolumeX size={iconSize(20)} color={colors.textSecondary} />
-            )}
-            <Text style={[styles.controlLabelText, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
-              {t('whiteNoise.volume')}
-            </Text>
-          </View>
-          <View
-            ref={volumeBarRef}
-            style={[styles.volumeBar, { backgroundColor: colors.border }]}
-            onLayout={handleVolumeBarLayout}
-            {...volumePanResponder.panHandlers}
-          >
-            <View
-              style={[
-                styles.volumeFill,
-                {
-                  backgroundColor: colors.primary,
-                  width: volume * volumeBarWidth,
-                },
-              ]}
-            />
-            <View
-              style={[
-                styles.volumeThumb,
-                {
-                  backgroundColor: colors.primary,
-                  left: volume * volumeBarWidth - 8,
-                },
-              ]}
-            />
-          </View>
-          <Text style={[styles.volumePercent, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
-            {Math.round(volume * 100)}%
-          </Text>
-        </View>
-      )}
+      {/* Unified controls panel */}
+      {(showVolumeControl || showSleepTimer) && (
+        <View style={[styles.controlPanel, { backgroundColor: colors.surface }]}>
+          {/* Volume section */}
+          {showVolumeControl && (
+            <View style={styles.controlSection}>
+              <View style={styles.controlSectionHeader}>
+                {volume > 0 ? (
+                  <Volume2 size={iconSize(iconSizes.md)} color={colors.textSecondary} />
+                ) : (
+                  <VolumeX size={iconSize(iconSizes.md)} color={colors.textSecondary} />
+                )}
+                <Text style={[styles.controlSectionLabel, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                  {t('whiteNoise.volume')}
+                </Text>
+                <Text style={[styles.volumePercent, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                  {Math.round(volume * 100)}%
+                </Text>
+              </View>
+              <View
+                ref={volumeBarRef}
+                style={[styles.sliderTrack, { backgroundColor: colors.border }]}
+                onLayout={handleVolumeBarLayout}
+                {...volumePanResponder.panHandlers}
+              >
+                <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: fillWidth }]} />
+                <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: thumbTranslate }] }]} />
+              </View>
+            </View>
+          )}
 
-      {/* Sleep timer */}
-      {showSleepTimer && (
-        <View style={[styles.controlRow, { backgroundColor: colors.surface }]}>
-          <TouchableOpacity
-            style={styles.controlLabel}
-            onPress={() => setShowTimerModal(true)}
-          >
-            <AlarmClock size={iconSize(20)} color={colors.textSecondary} />
-            <Text style={[styles.controlLabelText, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
-              {t('whiteNoise.sleepTimer')}
-            </Text>
-          </TouchableOpacity>
+          {/* Divider */}
+          {showVolumeControl && showSleepTimer && (
+            <View style={[styles.controlDivider, { backgroundColor: colors.borderLight }]} />
+          )}
 
-          {timerRemainingSeconds !== null ? (
-            <View style={styles.timerActive}>
-              <Text style={[styles.timerText, { color: colors.primary, fontSize: fontSize(typography.fontSize.sm) }]}>
-                {timerDisplay}
-              </Text>
-              <TouchableOpacity onPress={handleCancelTimer}>
-                <Text style={[styles.timerCancel, { color: colors.error, fontSize: fontSize(typography.fontSize.xs) }]}>
-                  {t('whiteNoise.cancelTimer')}
+          {/* Timer section */}
+          {showSleepTimer && (
+            <View style={styles.controlSection}>
+              <TouchableOpacity
+                style={styles.controlSectionHeader}
+                onPress={() => setShowTimerModal(true)}
+                activeOpacity={0.7}
+              >
+                <AlarmClock size={iconSize(iconSizes.md)} color={colors.textSecondary} />
+                <Text style={[styles.controlSectionLabel, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                  {t('whiteNoise.sleepTimer')}
                 </Text>
               </TouchableOpacity>
+
+              {timerRemainingSeconds !== null ? (
+                <View style={[styles.timerActivePill, { backgroundColor: colors.primaryLight }]}>
+                  <AlarmClock size={iconSize(16)} color={colors.primaryDark} />
+                  <Text style={[styles.timerActiveText, { color: colors.primaryDark, fontSize: fontSize(typography.fontSize.md) }]}>
+                    {timerDisplay}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleCancelTimer}
+                    style={styles.timerActiveCancel}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <X size={iconSize(16)} color={colors.primaryDark} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.timerSetButton, { borderColor: colors.border }]}
+                  onPress={() => setShowTimerModal(true)}
+                  activeOpacity={0.7}
+                >
+                  <AlarmClock size={iconSize(16)} color={colors.primary} />
+                  <Text style={[styles.timerSetText, { color: colors.primary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                    {t('whiteNoise.setTimer')}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
-          ) : (
-            <TouchableOpacity onPress={() => setShowTimerModal(true)}>
-              <Text style={[styles.timerSetText, { color: colors.primary, fontSize: fontSize(typography.fontSize.sm) }]}>
-                {t('whiteNoise.setTimer')}
-              </Text>
-            </TouchableOpacity>
           )}
         </View>
       )}
@@ -513,7 +738,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     textAlign: 'center',
   },
-  playingIndicator: {
+  playPauseButton: {
     position: 'absolute',
     top: spacing.sm,
     right: spacing.sm,
@@ -523,67 +748,102 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  premiumBadge: {
-    fontWeight: typography.fontWeight.bold,
-    marginTop: spacing.xs,
-  },
-
-  // Controls
-  controlRow: {
-    flexDirection: 'row',
+  premiumCrown: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginTop: spacing.md,
     ...shadows.small,
   },
-  controlLabel: {
+
+  // Controls panel — unified card
+  controlPanel: {
+    borderRadius: borderRadius.xl,
+    marginTop: spacing.md,
+    ...shadows.medium,
+    overflow: 'hidden',
+  },
+  controlSection: {
+    padding: spacing.lg,
+  },
+  controlSectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    marginBottom: spacing.md,
   },
-  controlLabelText: {
+  controlSectionLabel: {
     fontWeight: typography.fontWeight.medium,
+    flex: 1,
+  },
+  controlDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: spacing.lg,
   },
 
-  // Volume
-  volumeBar: {
-    flex: 1,
+  // Volume slider
+  sliderTrack: {
     height: 6,
     borderRadius: 3,
-    marginHorizontal: spacing.md,
     position: 'relative',
     justifyContent: 'center',
   },
-  volumeFill: {
+  sliderFill: {
+    position: 'absolute',
     height: 6,
     borderRadius: 3,
+    left: 0,
+    top: 0,
   },
-  volumeThumb: {
+  sliderThumb: {
     position: 'absolute',
     width: 16,
     height: 16,
     borderRadius: 8,
+    top: -5,
+    left: 0,
   },
   volumePercent: {
-    minWidth: 36,
+    fontWeight: typography.fontWeight.semibold,
+    fontVariant: ['tabular-nums'],
+    minWidth: 40,
     textAlign: 'right',
   },
 
   // Timer
-  timerActive: {
+  timerActivePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
   },
-  timerText: {
-    fontWeight: typography.fontWeight.semibold,
+  timerActiveText: {
+    fontWeight: typography.fontWeight.bold,
+    fontVariant: ['tabular-nums'],
+    flex: 1,
+    textAlign: 'center',
   },
-  timerCancel: {
-    fontWeight: typography.fontWeight.medium,
+  timerActiveCancel: {
+    padding: spacing.xs,
+  },
+  timerSetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
   },
   timerSetText: {
-    fontWeight: typography.fontWeight.medium,
+    fontWeight: typography.fontWeight.semibold,
   },
 
   // Skeleton

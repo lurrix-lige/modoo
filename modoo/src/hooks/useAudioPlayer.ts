@@ -12,7 +12,7 @@ export interface AudioPlayerState {
 
 export function useAudioPlayer() {
   const playerRef = useRef<UnifiedAudioPlayer | null>(null);
-  const volumeRef = useRef(1);
+  const volumeRef = useRef(0.6);
   const focusIdRef = useRef('');
   const trackMapRef = useRef<Map<string, { url: string; volume: number }>>(new Map());
   if (!focusIdRef.current) {
@@ -22,7 +22,7 @@ export function useAudioPlayer() {
     isPlaying: false,
     currentTime: 0,
     duration: 0,
-    volume: 1,
+    volume: 0.6,
   });
   const [activeTrackIds, setActiveTrackIds] = useState<string[]>([]);
 
@@ -150,7 +150,7 @@ export function useAudioPlayer() {
       return false;
     }
 
-    const trackVolume = volume ?? volumeRef.current;
+    const trackVolume = Math.max(0, Math.min(1, volume ?? volumeRef.current));
     const success = await playerRef.current.addTrack({
       id,
       url,
@@ -249,12 +249,30 @@ export function useAudioPlayer() {
   }, [syncActiveIds]);
 
   const setVolume = useCallback((volume: number) => {
-    const clampedVolume = Math.max(0, Math.min(1, volume));
+    const safeVolume = (volume == null || isNaN(volume) || !isFinite(volume)) ? volumeRef.current : volume;
+    const clampedVolume = Math.max(0, Math.min(1, safeVolume));
     volumeRef.current = clampedVolume;
     for (const trackId of trackMapRef.current.keys()) {
       playerRef.current?.setVolume(trackId, clampedVolume);
     }
     setState((prev) => ({ ...prev, volume: clampedVolume }));
+  }, []);
+
+  const pauseTrack = useCallback((id: string) => {
+    try {
+      playerRef.current?.pauseTrack(id);
+    } catch (error) {
+      logger.error('Failed to pause track', { id, error });
+    }
+  }, []);
+
+  const resumeTrack = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      return await playerRef.current?.resumeTrack(id) ?? false;
+    } catch (error) {
+      logger.error('Failed to resume track', { id, error });
+      return false;
+    }
   }, []);
 
   return {
@@ -263,6 +281,8 @@ export function useAudioPlayer() {
     play,
     pause,
     resume,
+    pauseTrack,
+    resumeTrack,
     toggle,
     stop,
     setVolume,
