@@ -22,6 +22,8 @@ export { ActivityProvider, useActivity, withActivityTracking } from './ActivityP
 export { ResponsiveGrid } from './ResponsiveGrid';
 export { WhiteNoisePlayer } from './WhiteNoisePlayer';
 export type { WhiteNoisePlayerProps, PlatformVariant } from './WhiteNoisePlayer';
+export { TimerModal } from './TimerModal';
+export type { TimerModalProps } from './TimerModal';
 export { TwoPaneLayout } from './TwoPaneLayout';
 export { DesktopSidebar } from './DesktopSidebar';
 

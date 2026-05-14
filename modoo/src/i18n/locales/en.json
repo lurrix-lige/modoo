@@ -124,6 +124,10 @@
     "cancelTimer": "Cancel",
     "minutes": "min"
   },
+  "timer": {
+    "title": "Sleep Timer",
+    "cancelTimer": "Cancel Timer"
+  },
   "api": {
     "timeout": "Request timeout, please try again later",
     "networkError": "Network connection failed, please check network",

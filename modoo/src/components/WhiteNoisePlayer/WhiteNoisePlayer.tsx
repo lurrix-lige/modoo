@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Modal,
   PanResponder,
   LayoutChangeEvent,
   GestureResponderEvent,
@@ -30,6 +29,7 @@ import { apiService, WhiteNoise } from '../../services';
 import { errorHandler } from '../../services/ErrorHandler';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { useSleepTimer } from '../../features/player/hooks/useSleepTimer';
+import { TimerModal } from '../TimerModal';
 import { WhiteNoisePlayerProps } from './types';
 
 const defaultIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
@@ -43,8 +43,6 @@ const defaultIconMap: Record<string, React.ComponentType<{ size: number; color: 
   'wind': Wind,
   'music': Music,
 };
-
-const TIMER_OPTIONS = [15, 30, 60, 90];
 
 export default function WhiteNoisePlayer({
   platform = 'parent',
@@ -133,6 +131,7 @@ export default function WhiteNoisePlayer({
   }, [stop, onTimerExpire]);
 
   const {
+    timerDuration,
     timerRemainingSeconds,
     showTimerModal,
     setShowTimerModal,
@@ -474,48 +473,14 @@ export default function WhiteNoisePlayer({
       )}
 
       {/* Sleep timer modal */}
-      <Modal
+      <TimerModal
         visible={showTimerModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowTimerModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.timerModalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowTimerModal(false)}
-        >
-          <View
-            style={[styles.timerModal, { backgroundColor: colors.surface }]}
-            onStartShouldSetResponder={() => true}
-          >
-            <Text style={[styles.timerModalTitle, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.lg) }]}>
-              {t('whiteNoise.sleepTimerTitle')}
-            </Text>
-            <View style={styles.timerOptions}>
-              {TIMER_OPTIONS.map((mins) => (
-                <TouchableOpacity
-                  key={mins}
-                  style={[styles.timerOption, { backgroundColor: colors.background, borderColor: colors.border }]}
-                  onPress={() => handleTimerSelect(mins)}
-                >
-                  <Text style={[styles.timerOptionText, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.md) }]}>
-                    {mins} {t('whiteNoise.minutes')}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity
-              style={[styles.timerCancelButton, { borderTopColor: colors.border }]}
-              onPress={() => setShowTimerModal(false)}
-            >
-              <Text style={[styles.timerCancelButtonText, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.md) }]}>
-                {t('common.cancel')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        timerDuration={timerDuration ?? null}
+        timerOptions={[15, 30, 60, 90]}
+        onSelect={handleTimerSelect}
+        onCancel={() => setShowTimerModal(false)}
+        onCancelTimer={handleCancelTimer}
+      />
 
       {renderFooter?.()}
     </View>
@@ -618,54 +583,6 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
   },
   timerSetText: {
-    fontWeight: typography.fontWeight.medium,
-  },
-
-  // Timer modal
-  timerModalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-    zIndex: 100,
-  },
-  timerModal: {
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    paddingTop: spacing.xl,
-    ...shadows.large,
-  },
-  timerModalTitle: {
-    fontWeight: typography.fontWeight.semibold,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  timerOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    paddingHorizontal: spacing.xl,
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  timerOption: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-  },
-  timerOptionText: {
-    fontWeight: typography.fontWeight.medium,
-  },
-  timerCancelButton: {
-    paddingVertical: spacing.lg,
-    borderTopWidth: 1,
-    alignItems: 'center',
-  },
-  timerCancelButtonText: {
     fontWeight: typography.fontWeight.medium,
   },
 
