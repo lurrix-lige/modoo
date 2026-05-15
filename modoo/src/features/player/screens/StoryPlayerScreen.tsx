@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Sun,
   Check,
+  ShieldAlert
 } from 'lucide-react-native';
 import Slider from '@react-native-community/slider';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -317,6 +318,10 @@ export default function StoryPlayerScreen() {
 
           {!isLandscapeMode && (
             <View style={[styles.tipCard, { backgroundColor: colors.surface }]}>
+              <ShieldAlert
+                size={responsive.moderateScale(iconSizes.lg)}
+                color={colors.success}
+              />
               <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                 {t('storyPlayer.autoSleepNoise')}
               </Text>

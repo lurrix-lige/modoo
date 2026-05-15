@@ -119,6 +119,8 @@ export class UnifiedAudioPlayer {
   private lastSeekPosition = 0;
   private suppressProgressUpdate = false;
   private seekResetTimer: ReturnType<typeof setTimeout> | null = null;
+  private primaryPlayerRef: AudioPlayer | null = null;
+  private progressPollTimer: ReturnType<typeof setInterval> | null = null;
   private generation = 0;
   private progressUpdateListeners = new Set<(progress: number, duration: number) => void>();
   private completionListeners = new Set<() => void>();
@@ -256,6 +258,34 @@ export class UnifiedAudioPlayer {
     }
   }
 
+  private startProgressPolling(currentGen: number, intervalMs: number): void {
+    this.stopProgressPolling();
+    this.progressPollTimer = setInterval(() => {
+      if (this.generation !== currentGen) {
+        this.stopProgressPolling();
+        return;
+      }
+      if (!this.primaryPlayerRef || this.suppressProgressUpdate) {
+        return;
+      }
+      const rawProgress = this.primaryPlayerRef.currentTime;
+      const rawDuration = this.primaryPlayerRef.duration;
+      const progress = sanitizeTimeValue(rawProgress);
+      const duration = sanitizeTimeValue(rawDuration);
+      if (duration > 0) {
+        this.currentDuration = duration;
+      }
+      this.progressUpdateListeners.forEach((cb) => cb(progress, duration));
+    }, intervalMs);
+  }
+
+  private stopProgressPolling(): void {
+    if (this.progressPollTimer) {
+      clearInterval(this.progressPollTimer);
+      this.progressPollTimer = null;
+    }
+  }
+
   isPlaying(): boolean {
     return !this.isCompleted && !this.isEmpty();
   }
@@ -317,11 +347,13 @@ export class UnifiedAudioPlayer {
         hasValidTrack = true;
       }
 
-      // 为选中的主播放器注册进度监听
+      // 为选中的主播放器注册进度监听并启动轮询兜底
       if (primaryPlayer) {
+        this.primaryPlayerRef = primaryPlayer;
         primaryPlayer.addListener(PLAYBACK_STATUS_UPDATE, (status: AudioStatus) => {
           this.handlePlaybackStatusUpdate(status, currentGen, primaryTrackLoop);
         });
+        this.startProgressPolling(currentGen, updateInterval);
       }
 
       if (!hasValidTrack) {
@@ -585,6 +617,8 @@ export class UnifiedAudioPlayer {
   async unloadAll(): Promise<void> {
     // 递增代数，使旧会话的所有待处理回调失效
     this.generation++;
+    this.stopProgressPolling();
+    this.primaryPlayerRef = null;
     for (const player of this.players.values()) {
       try {
         player.remove();
