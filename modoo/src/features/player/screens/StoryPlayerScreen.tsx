@@ -115,8 +115,9 @@ export default function StoryPlayerScreen() {
 
   const handleShare = useCallback(async () => {
     try {
+      /* 分享标题包含标题和描述 TODO: 考虑实现分享内容的富媒体格式*/
       await shareNative({
-        title: story?.title || '',
+        title: story?.title || '' + ' \n ' + story?.description || '',
         url: story?.audioUrl || '',
       });
       setShareSuccess(true);
