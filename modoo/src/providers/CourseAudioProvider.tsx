@@ -52,35 +52,42 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     setError(null);
     currentTrackRef.current = track;
 
-    const bgValidation = validateUrl(track.backgroundMusicUrl);
-    const voiceValidation = validateUrl(track.voiceGuideUrl);
+    const tracks: Array<{ id: string; url: string; volume: number; loop: boolean; role: 'main' | 'background' }> = [];
 
-    if (!bgValidation.valid || !voiceValidation.valid) {
-      const errorMsg = bgValidation.message || voiceValidation.message || 'Invalid audio URL';
-      setError(errorMsg);
+    if (track.backgroundMusicUrl) {
+      const bgValidation = validateUrl(track.backgroundMusicUrl);
+      if (bgValidation.valid) {
+        tracks.push({
+          id: 'background',
+          url: track.backgroundMusicUrl,
+          volume: backgroundVolume,
+          loop: true,
+          role: 'background',
+        });
+      }
+    }
+
+    if (track.voiceGuideUrl) {
+      const voiceValidation = validateUrl(track.voiceGuideUrl);
+      if (voiceValidation.valid) {
+        tracks.push({
+          id: 'voice',
+          url: track.voiceGuideUrl,
+          volume: voiceVolume,
+          loop: false,
+          role: 'main',
+        });
+      }
+    }
+
+    if (tracks.length === 0) {
+      setError('No valid audio URLs provided');
       setIsLoading(false);
       return false;
     }
 
     try {
-      const success = await unifiedAudio.play({
-        tracks: [
-          {
-            id: 'background',
-            url: track.backgroundMusicUrl,
-            volume: backgroundVolume,
-            loop: true,
-            role: 'background',
-          },
-          {
-            id: 'voice',
-            url: track.voiceGuideUrl,
-            volume: voiceVolume,
-            loop: false,
-            role: 'main',
-          },
-        ],
-      });
+      const success = await unifiedAudio.play({ tracks });
 
       if (success) {
         audioFocusManager.request('course', 'main', (action: FocusAction) => {

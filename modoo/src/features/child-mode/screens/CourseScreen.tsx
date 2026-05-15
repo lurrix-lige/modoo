@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { BookOpen, Play, Lock, ArrowLeft, ChevronRight, GraduationCap, Trophy } from 'lucide-react-native';
@@ -16,6 +17,7 @@ import { ChildrenStackParamList } from '../../../navigation/types';
 import { AuthModal } from '../../../features/auth';
 import { useAppStore } from '../../../store';
 import { apiService, Course } from '../../../services';
+import { useCourseLocalization } from '../hooks/useCourseLocalization';
 import { logger } from '../../../utils/logger';
 
 type CourseScreenNavigationProp = NativeStackNavigationProp<ChildrenStackParamList>;
@@ -25,8 +27,11 @@ export default function CourseScreen() {
   const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const { isAuthenticated } = useAppStore();
+  const { getCourseName, getCourseDescription } = useCourseLocalization();
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingCourseId, setPendingCourseId] = useState<string | null>(null);
   const [isLockedCourse, setIsLockedCourse] = useState(false);
@@ -44,19 +49,34 @@ export default function CourseScreen() {
 
   const loadData = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       const response = await apiService.getCourses();
       setCourses(response.courses);
     } catch (error) {
       logger.error('Failed to load course data', { error });
+      setLoadError(t('common.error'));
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    setLoadError(null);
+    try {
+      const response = await apiService.getCourses();
+      setCourses(response.courses);
+    } catch (error) {
+      logger.error('Failed to refresh courses', { error });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const getLevelStars = (completed: number, total: number) => {
-    const progress = (completed / total) * 100;
-    if (progress >= 100) return '★★★★';
+    const progress = total > 0 ? (completed / total) * 100 : 0;
+    if (progress >= 100) return '★★★★★';
     if (progress >= 80) return '★★★★';
     if (progress >= 60) return '★★★☆';
     if (progress >= 40) return '★★☆☆';
@@ -64,33 +84,11 @@ export default function CourseScreen() {
     return '☆☆☆☆';
   };
 
-  const getCourseName = (course: Course) => {
-    if (course.nameKey) {
-      const translated = t(course.nameKey);
-      if (translated !== course.nameKey) {
-        return translated;
-      }
-    }
-    const translated = t(`course.level${course.level}.title`);
-    if (translated !== `course.level${course.level}.title`) {
-      return translated;
-    }
-    return course.name;
-  };
-
-  const getCourseDescription = (course: Course) => {
-    if (course.descriptionKey) {
-      const translated = t(course.descriptionKey);
-      if (translated !== course.descriptionKey) {
-        return translated;
-      }
-    }
-    const translated = t(`course.level${course.level}.desc`);
-    if (translated !== `course.level${course.level}.desc`) {
-      return translated;
-    }
-    return course.description;
-  };
+  const completedCourses = courses.filter(c => c.completedLessons && c.completedLessons >= c.totalLessons);
+  const currentLevel = completedCourses.length > 0
+    ? Math.max(...completedCourses.map(c => c.level))
+    : 1;
+  const earnedBadges = completedCourses.length;
 
   const renderLoadingSkeleton = () => (
     <View style={styles.skeletonContent}>
@@ -154,9 +152,30 @@ export default function CourseScreen() {
         </Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
         {isLoading ? (
           renderLoadingSkeleton()
+        ) : loadError ? (
+          <View style={[styles.errorCard, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.errorText, { color: colors.error }]}>{loadError}</Text>
+            <TouchableOpacity
+              style={[styles.retryButton, { backgroundColor: colors.primary }]}
+              onPress={loadData}
+            >
+              <Text style={[styles.retryButtonText, { color: commonColors.white }]}>{t('common.retry')}</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <>
             <View style={styles.levelOverview}>
@@ -168,7 +187,7 @@ export default function CourseScreen() {
                   {t('course.currentProgress')}
                 </Text>
                 <Text style={[styles.levelValue, { color: colors.textPrimary }]}>
-                  {t('course.level', { level: 2 })}
+                  {t('course.level', { level: currentLevel })}
                 </Text>
               </View>
 
@@ -180,7 +199,7 @@ export default function CourseScreen() {
                   {t('course.earnedBadges')}
                 </Text>
                 <Text style={[styles.levelValue, { color: colors.textPrimary }]}>
-                  1 {t('course.piece')}
+                  {earnedBadges} {t('course.piece')}
                 </Text>
               </View>
             </View>
@@ -190,7 +209,7 @@ export default function CourseScreen() {
             </Text>
 
             {courses.map(course => {
-              const isLocked = course.level > 2;
+              const isLocked = !course.isUnlocked;
               return (
                 <TouchableOpacity
                   key={course.id}
@@ -443,5 +462,28 @@ const styles = StyleSheet.create({
     flex: 1,
     height: responsive.verticalScale(6),
     borderRadius: responsive.moderateScale(3),
+  },
+
+  // Error state
+  errorCard: {
+    alignItems: 'center',
+    padding: spacing.xxl,
+    borderRadius: borderRadius.xl,
+    marginTop: spacing.xl,
+    ...shadows.medium,
+  },
+  errorText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
+  retryButton: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+  retryButtonText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.semibold,
   },
 });

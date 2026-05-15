@@ -42,7 +42,15 @@ export type ChildrenStackParamList = {
   StoryPlayer: { storyId: string };
   CourseDetail: { courseId: string };
   BreathingPractice: undefined;
-  CourseLearning: { lessonId: string };
+  CourseLearning: {
+    lessonId: string;
+    courseId?: string;
+    backgroundMusicUrl?: string;
+    voiceGuideUrl?: string;
+    contentUrl?: string;
+    lessonTitle?: string;
+    lessonDuration?: number;
+  };
 };
 
 export type ParentTabParamList = {

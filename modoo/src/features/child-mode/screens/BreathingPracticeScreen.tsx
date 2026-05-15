@@ -7,11 +7,12 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Play, Pause, RefreshCw, CheckCircle, Settings, Sun } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, commonColors, sharedStyles } from '../../../theme';
+import { useTheme, spacing, borderRadius, typography, commonColors, sharedStyles, shadows } from '../../../theme';
 import { BreathingBalloon, ErrorToast } from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { logger } from '../../../utils/logger';
@@ -156,7 +157,7 @@ export default function BreathingPracticeScreen() {
     code: string,
     error?: unknown
   ) => {
-    logger.error(message, { error });
+    logger.error(message, error ? { error } : undefined);
     setPracticeError({
       visible: true,
       message,
@@ -183,29 +184,26 @@ export default function BreathingPracticeScreen() {
 
   const switchPattern = (pattern: '4-4-4-4' | '4-7-8') => {
     if (isActive) {
-      showPracticeError(
-        t('common.error'),
-        'PATTERN_SWITCH_ERROR'
-      );
-      return;
+      setIsActive(false);
     }
     setSelectedPattern(pattern);
   };
 
   return (
-    <SafeAreaContainer style={{ backgroundColor: colors.background }}>
-      <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <ArrowLeft size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('breathing.exercises')}</Text>
-          <TouchableOpacity style={styles.fullscreenButton} onPress={toggleFullscreen}>
-            <Sun size={24} color={statusBarHidden ? colors.primary : colors.textPrimary} />
-          </TouchableOpacity>
-        </View>
+    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
+      <View style={styles.mainContainer}>
+        <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+              <ArrowLeft size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('breathing.exercises')}</Text>
+            <TouchableOpacity style={styles.fullscreenButton} onPress={toggleFullscreen}>
+              <Sun size={24} color={statusBarHidden ? colors.primary : colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.content}>
-        <View style={styles.patternSelector}>
+          <View style={styles.content}>
+            <View style={styles.patternSelector}>
           <TouchableOpacity
             style={[
               styles.patternButton,
@@ -329,38 +327,40 @@ export default function BreathingPracticeScreen() {
         )}
       </View>
 
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.mainButton,
-            { backgroundColor: isActive ? colors.error : colors.primary },
-          ]}
-          onPress={togglePractice}
-          disabled={isLoading}
-        >
-          {isActive ? <Pause size={32} color={colors.textPrimary} /> : <Play size={32} color={colors.textPrimary} />}
-          <Text style={[styles.mainButtonText, { color: commonColors.white }]}>
-            {isActive ? t('breathing.pause') : t('common.start')}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={[styles.footer, { backgroundColor: colors.surface }]} edges={['bottom']}>
+            <TouchableOpacity
+              style={[
+                styles.mainButton,
+                { backgroundColor: isActive ? colors.error : colors.primary },
+              ]}
+              onPress={togglePractice}
+              disabled={isLoading}
+            >
+              {isActive ? <Pause size={32} color={colors.textPrimary} /> : <Play size={32} color={colors.textPrimary} />}
+              <Text style={[styles.mainButtonText, { color: commonColors.white }]}>
+                {isActive ? t('breathing.pause') : t('common.start')}
+              </Text>
+            </TouchableOpacity>
+          </SafeAreaView>
 
-      <ErrorToast
-        visible={practiceError.visible}
-        message={practiceError.message}
-        code={practiceError.code}
-        severity="error"
-        duration={0}
-        onRetry={handleRetry}
-        onDismiss={handleDismissError}
-      />
-    </SafeAreaContainer>
+          <ErrorToast
+            visible={practiceError.visible}
+            message={practiceError.message}
+            code={practiceError.code}
+            severity="error"
+            duration={0}
+            onRetry={handleRetry}
+            onDismiss={handleDismissError}
+          />
+        </View>
+      </SafeAreaContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex:1,
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
   },
   header: {
     ...sharedStyles.rowBetween,
@@ -378,8 +378,11 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   content: {
-    ...sharedStyles.columnCenter,
+    flex: 1,
     paddingHorizontal: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xl,
   },
   loadingContainer: {
     ...sharedStyles.columnCenter,
@@ -388,11 +391,13 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
   },
   patternSelector: {
+    alignSelf: 'stretch',
     flexDirection: 'row',
     gap: spacing.md,
     marginBottom: spacing.xxl,
   },
   patternButton: {
+    flex: 1,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
@@ -401,10 +406,12 @@ const styles = StyleSheet.create({
   patternText: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
+    textAlign: 'center',
   },
   patternDesc: {
     fontSize: typography.fontSize.xs,
     marginTop: spacing.xs,
+    textAlign: 'center',
   },
   balloonContainer: {
     ...sharedStyles.columnCenter,
@@ -445,7 +452,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.xs,
   },
   cycleCounter: {
-    ...sharedStyles.rowStart,
+    ...sharedStyles.rowCenter,
     gap: spacing.sm,
   },
   cycleText: {
@@ -454,6 +461,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: spacing.xl,
+    ...shadows.small,
   },
   mainButton: {
     ...sharedStyles.rowCenter,

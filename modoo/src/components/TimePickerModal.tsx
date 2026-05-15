@@ -387,7 +387,7 @@ export default function TimePickerModal({
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>时</Text>
+                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>{t('common.hour')}</Text>
                   </View>
 
                   {/* 时间分隔符 - 与选中项垂直居中对齐 */}
@@ -434,7 +434,7 @@ export default function TimePickerModal({
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>分</Text>
+                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>{t('common.minute')}</Text>
                   </View>
                 </View>
               </View>
@@ -550,7 +550,6 @@ const styles = StyleSheet.create({
   separatorText: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
-    lineHeight: PICKER_CONFIG.ITEM_HEIGHT,
   },
   modalFooter: {
     flexDirection: 'row',

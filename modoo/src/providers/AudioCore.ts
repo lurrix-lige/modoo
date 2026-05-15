@@ -456,6 +456,29 @@ export class UnifiedAudioPlayer {
     }
   }
 
+  pauseTrack(trackId: string): void {
+    const player = this.players.get(trackId);
+    if (player) {
+      player.pause();
+      logger.debug('Paused track', { trackId });
+    }
+  }
+
+  async resumeTrack(trackId: string): Promise<boolean> {
+    const player = this.players.get(trackId);
+    if (player) {
+      try {
+        await player.play();
+        logger.debug('Resumed track', { trackId });
+        return true;
+      } catch (err) {
+        logger.debug('Resume track failed', { trackId, error: err });
+        return false;
+      }
+    }
+    return false;
+  }
+
   async resume(): Promise<boolean> {
     if (this.isCompleted) {
       return this.replay();

@@ -11,7 +11,7 @@ export { ErrorToast, ErrorAlert } from './ErrorToast';
 export { ConnectionStatus } from './ConnectionStatus';
 export { PermissionGate } from './PermissionGate';
 export { useCheckIn, CheckInCalendar, CheckInStatsCard, CheckInHistoryList } from './CheckIn';
-export { AuthModal } from '../features/auth';
+export { AuthModal } from '../features/auth/components/AuthModal';
 export { default as TimePickerModal } from './TimePickerModal';
 export { default as DatePickerModal } from './DatePickerModal';
 export { FreeContentSection } from './FreeContentSection';

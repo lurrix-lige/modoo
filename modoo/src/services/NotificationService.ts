@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { apiService } from './index';
+import { apiService } from '../infrastructure/api';
 import { logger } from '../utils/logger';
 
 const ENABLE_PUSH_NOTIFICATIONS = false;

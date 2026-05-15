@@ -1,14 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  PanResponder,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+} from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Music } from 'lucide-react-native';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Music, ArrowLeft, Sun } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors } from '../../../theme';
+import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { useCourseAudio, CourseAudioTrack } from '../../../providers/CourseAudioProvider';
 import { apiService, Lesson } from '../../../services';
+import { storageService } from '../../../infrastructure/storage';
 import { logger } from '../../../utils/logger';
 
 type CourseLearningRouteProp = RouteProp<ChildrenStackParamList, 'CourseLearning'>;
@@ -18,19 +29,19 @@ export default function CourseLearningScreen() {
   const navigation = useNavigation<CourseLearningNavigationProp>();
   const route = useRoute<CourseLearningRouteProp>();
   const { t } = useTranslation();
-  const { colors, isDark } = useTheme();
-  const { 
-    isPlaying, 
-    progress, 
-    duration, 
-    isLoading, 
-    error, 
+  const { colors } = useTheme();
+  const {
+    isPlaying,
+    progress,
+    duration,
+    isLoading,
+    error,
     backgroundVolume,
     voiceVolume,
-    play, 
-    pause, 
-    resume, 
-    stop, 
+    play,
+    pause,
+    resume,
+    stop,
     seekTo,
     setBackgroundVolume,
     setVoiceVolume,
@@ -38,9 +49,134 @@ export default function CourseLearningScreen() {
 
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [isTrackLoaded, setIsTrackLoaded] = useState(false);
+  const hasCompletedRef = useRef(false);
+
+  // --- D1: Background volume slider ---
+  const bgVolumeValRef = useRef(backgroundVolume);
+  const bgVolumeAnim = useRef(new Animated.Value(backgroundVolume)).current;
+  const bgBarWidthRef = useRef(0);
+  const [bgBarWidth, setBgBarWidth] = useState(0);
+  const setBgVolumeRef = useRef(setBackgroundVolume);
+  setBgVolumeRef.current = setBackgroundVolume;
+
+  const bgPanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_: GestureResponderEvent, gs: { dx: number; dy: number }) =>
+        Math.abs(gs.dx) > Math.abs(gs.dy) && Math.abs(gs.dx) > 5,
+      onPanResponderGrant: (evt) => {
+        const w = bgBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        bgVolumeValRef.current = newVol;
+        bgVolumeAnim.setValue(newVol);
+      },
+      onPanResponderMove: (evt) => {
+        const w = bgBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        bgVolumeValRef.current = newVol;
+        bgVolumeAnim.setValue(newVol);
+      },
+      onPanResponderRelease: () => {
+        setBgVolumeRef.current(bgVolumeValRef.current);
+      },
+      onPanResponderTerminate: () => {
+        setBgVolumeRef.current(bgVolumeValRef.current);
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+
+  const handleBgBarLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    bgBarWidthRef.current = w;
+    setBgBarWidth(w);
+  }, []);
+
+  // --- D1: Voice volume slider ---
+  const voiceVolumeValRef = useRef(voiceVolume);
+  const voiceVolumeAnim = useRef(new Animated.Value(voiceVolume)).current;
+  const voiceBarWidthRef = useRef(0);
+  const [voiceBarWidth, setVoiceBarWidth] = useState(0);
+  const setVoiceVolumeRef = useRef(setVoiceVolume);
+  setVoiceVolumeRef.current = setVoiceVolume;
+
+  const voicePanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_: GestureResponderEvent, gs: { dx: number; dy: number }) =>
+        Math.abs(gs.dx) > Math.abs(gs.dy) && Math.abs(gs.dx) > 5,
+      onPanResponderGrant: (evt) => {
+        const w = voiceBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        voiceVolumeValRef.current = newVol;
+        voiceVolumeAnim.setValue(newVol);
+      },
+      onPanResponderMove: (evt) => {
+        const w = voiceBarWidthRef.current;
+        if (w <= 0) return;
+        const newVol = Math.max(0, Math.min(1, evt.nativeEvent.locationX / w));
+        voiceVolumeValRef.current = newVol;
+        voiceVolumeAnim.setValue(newVol);
+      },
+      onPanResponderRelease: () => {
+        setVoiceVolumeRef.current(voiceVolumeValRef.current);
+      },
+      onPanResponderTerminate: () => {
+        setVoiceVolumeRef.current(voiceVolumeValRef.current);
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+
+  const handleVoiceBarLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    voiceBarWidthRef.current = w;
+    setVoiceBarWidth(w);
+  }, []);
+
+  // Sync Animated.Values with state when settings load externally
+  useEffect(() => {
+    bgVolumeAnim.setValue(backgroundVolume);
+    bgVolumeValRef.current = backgroundVolume;
+  }, [backgroundVolume]);
 
   useEffect(() => {
-    loadLessonData();
+    voiceVolumeAnim.setValue(voiceVolume);
+    voiceVolumeValRef.current = voiceVolume;
+  }, [voiceVolume]);
+
+  // Animated interpolations for slider fills and thumbs
+  const bgFillWidth = bgBarWidth > 0
+    ? bgVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, bgBarWidth], extrapolate: 'clamp' })
+    : 0;
+  const bgThumbTranslate = bgBarWidth > 0
+    ? bgVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Math.max(0, bgBarWidth - 16)], extrapolate: 'clamp' })
+    : 0;
+
+  const voiceFillWidth = voiceBarWidth > 0
+    ? voiceVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, voiceBarWidth], extrapolate: 'clamp' })
+    : 0;
+  const voiceThumbTranslate = voiceBarWidth > 0
+    ? voiceVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Math.max(0, voiceBarWidth - 16)], extrapolate: 'clamp' })
+    : 0;
+
+  // B5: Sequential init — settings must resolve before lesson data triggers audio load
+  useEffect(() => {
+    const init = async () => {
+      await loadSettings();
+      await loadLessonData();
+    };
+    init();
+
+    return () => {
+      if (currentLesson && progress > 0) {
+        storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+      }
+      stop();
+    };
   }, []);
 
   useEffect(() => {
@@ -49,25 +185,89 @@ export default function CourseLearningScreen() {
     }
   }, [currentLesson]);
 
-  const loadLessonData = async () => {
+  // D6: Auto-save playback progress every 5 seconds during playback
+  useEffect(() => {
+    if (!isPlaying || !currentLesson) return;
+    const interval = setInterval(() => {
+      if (progress > 0) {
+        storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPlaying, currentLesson?.id, progress]);
+
+  // D7: Auto-complete lesson when playback finishes
+  useEffect(() => {
+    if (duration > 0 && progress >= duration - 0.5 && currentLesson && !hasCompletedRef.current) {
+      hasCompletedRef.current = true;
+      apiService.completeLesson(currentLesson.id).catch(err => {
+        logger.error('Failed to complete lesson', { err, lessonId: currentLesson.id });
+        hasCompletedRef.current = false;
+      });
+    }
+  }, [progress, duration, currentLesson]);
+
+  const loadSettings = async () => {
     try {
-      const lessonId = (route.params as { lessonId?: string })?.lessonId || '1';
-      const course = await apiService.getCourse('1');
+      const savedSettings = await storageService.getCourseVolumeSettings();
+      if (savedSettings) {
+        setBackgroundVolume(savedSettings.backgroundVolume);
+        setVoiceVolume(savedSettings.voiceVolume);
+      }
+    } catch (error) {
+      logger.error('Failed to load course settings', { error });
+    }
+  };
+
+  const loadLessonData = async () => {
+    // D3: Use navigation params when available, fall back to API
+    const params = route.params as Record<string, unknown> | undefined;
+    const paramLessonId = params?.lessonId as string | undefined;
+    const paramCourseId = params?.courseId as string | undefined;
+    const paramTitle = params?.lessonTitle as string | undefined;
+    const paramDuration = params?.lessonDuration as number | undefined;
+    const paramBgUrl = params?.backgroundMusicUrl as string | undefined;
+    const paramVoiceUrl = params?.voiceGuideUrl as string | undefined;
+    const paramContentUrl = params?.contentUrl as string | undefined;
+
+    if (paramLessonId && paramTitle && paramDuration != null && paramDuration > 0) {
+      setCurrentLesson({
+        id: paramLessonId,
+        courseId: paramCourseId || '',
+        order: 0,
+        title: paramTitle,
+        name: paramTitle,
+        duration: paramDuration,
+        type: '',
+        contentUrl: paramContentUrl || '',
+        backgroundMusicUrl: paramBgUrl,
+        voiceGuideUrl: paramVoiceUrl,
+      });
+      return;
+    }
+
+    // Fall back to API fetch
+    try {
+      const lessonId = paramLessonId || '1';
+      const courseId = paramCourseId || '1';
+      const course = await apiService.getCourse(courseId);
       const lessons = course.lessons || [];
       const lessonData = lessons.find((l: Lesson) => l.id === lessonId) || lessons[0];
-      setCurrentLesson(lessonData);
+      if (lessonData) {
+        setCurrentLesson(lessonData);
+      }
     } catch (error) {
       logger.error('Failed to load lesson', { error });
-      Alert.alert(t('common.error'), t('course.loadFailed'));
     }
   };
 
   const loadAudioTrack = async () => {
     if (!currentLesson) return;
 
+    // B6: Don't fall back both URLs to contentUrl — voiceGuideUrl falls back, backgroundMusicUrl only uses its dedicated URL
     const track: CourseAudioTrack = {
       id: currentLesson.id,
-      backgroundMusicUrl: currentLesson.backgroundMusicUrl || currentLesson.contentUrl || '',
+      backgroundMusicUrl: currentLesson.backgroundMusicUrl || '',
       voiceGuideUrl: currentLesson.voiceGuideUrl || currentLesson.contentUrl || '',
       title: currentLesson.name || currentLesson.title,
       duration: currentLesson.duration,
@@ -76,28 +276,45 @@ export default function CourseLearningScreen() {
     const success = await play(track);
     if (success) {
       setIsTrackLoaded(true);
+
+      // D6: Restore saved playback position
+      try {
+        const savedProgress = await storageService.getCoursePlaybackProgress(currentLesson.id);
+        if (savedProgress && typeof savedProgress === 'object' && !Array.isArray(savedProgress) && 'progress' in savedProgress) {
+          const sp = (savedProgress as { progress: number }).progress;
+          if (sp > 0 && sp < (currentLesson.duration || Infinity)) {
+            seekTo(sp);
+          }
+        }
+      } catch (e) {
+        // Silently ignore restore errors
+      }
     }
   };
 
   const handlePlayPause = () => {
     if (isPlaying) {
       pause();
+      if (currentLesson && progress > 0) {
+        storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+      }
     } else {
       resume();
     }
   };
 
   const handleSkipBack = () => {
-    const newPosition = Math.max(0, progress - 10);
-    seekTo(newPosition);
+    seekTo(Math.max(0, progress - 10));
   };
 
   const handleSkipForward = () => {
-    const newPosition = Math.min(duration, progress + 10);
-    seekTo(newPosition);
+    seekTo(Math.min(duration, progress + 10));
   };
 
   const handleBack = () => {
+    if (currentLesson && progress > 0) {
+      storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+    }
     stop();
     navigation.goBack();
   };
@@ -110,7 +327,16 @@ export default function CourseLearningScreen() {
 
   if (!currentLesson) {
     return (
-      <SafeAreaContainer style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <ArrowLeft size={24} color={colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('common.loading')}</Text>
+          <View style={styles.headerRight}>
+            <Sun size={24} color={colors.textPrimary} />
+          </View>
+        </View>
         <View style={styles.loadingContainer}>
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
         </View>
@@ -119,90 +345,105 @@ export default function CourseLearningScreen() {
   }
 
   return (
-    <SafeAreaContainer style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { backgroundColor: colors.surface }]}>
+    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={[styles.backText, { color: colors.textPrimary }]}>{t('common.back')}</Text>
+          <ArrowLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
           {currentLesson.name || currentLesson.title}
         </Text>
-        <View style={styles.headerSpacer} />
+        <View style={styles.headerRight}>
+          <Sun size={24} color={colors.textPrimary} />
+        </View>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={[styles.visualGuide, { backgroundColor: colors.primary }]}>
-          <View style={styles.breatheCircle}>
-            <Text style={[styles.breatheText, { color: commonColors.white }]}>
-              {isPlaying ? t('course.breatheIn') : t('course.getReady')}
-            </Text>
+        <View style={styles.visualGuideContainer}>
+          <View style={[styles.visualGuide, { backgroundColor: colors.primary }]}>
+            <View style={styles.breatheCircle}>
+              <Text style={[styles.breatheText, { color: commonColors.white }]}>
+                {isPlaying ? t('course.breatheIn') : t('course.getReady')}
+              </Text>
+            </View>
           </View>
         </View>
 
+        {/* D2: Added backgroundColor to progress bar container */}
         <View style={[styles.progressSection, { backgroundColor: colors.surface }]}>
           <Text style={[styles.progressLabel, { color: colors.textPrimary }]}>
             {formatTime(progress)} / {formatTime(duration)}
           </Text>
-          <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
             <View style={[styles.progressBar, { width: `${duration > 0 ? (progress / duration) * 100 : 0}%`, backgroundColor: colors.primary }]} />
           </View>
         </View>
 
-        <View style={styles.controlsSection}>
-          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface }]} onPress={handleSkipBack}>
-            <SkipBack size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.playButton, { backgroundColor: colors.primary }]} 
-            onPress={handlePlayPause}
-            disabled={isLoading}
-          >
-            {isPlaying ? (
-              <Pause size={32} color={commonColors.white} />
-            ) : (
-              <Play size={32} color={commonColors.white} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface }]} onPress={handleSkipForward}>
-            <SkipForward size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
+        <View style={[styles.controlsSection, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.controls')}</Text>
+          <View style={styles.controlsRow}>
+            <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.background }]} onPress={handleSkipBack}>
+              <SkipBack size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.playButton, { backgroundColor: colors.primary }]}
+              onPress={handlePlayPause}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Text style={{ color: commonColors.white, fontSize: 24 }}>...</Text>
+              ) : isPlaying ? (
+                <Pause size={32} color={commonColors.white} />
+              ) : (
+                <Play size={32} color={commonColors.white} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.background }]} onPress={handleSkipForward}>
+              <SkipForward size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
+        {/* D1+D2: Volume controls with drag sliders and bar backgrounds */}
         <View style={[styles.volumeSection, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.volumeSettings')}</Text>
+
+          {/* Background music volume slider */}
           <View style={styles.volumeRow}>
             <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
               <Music size={20} color={colors.primary} />
             </View>
             <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>{t('course.backgroundMusic')}</Text>
-            <View style={styles.volumeBarContainer}>
-              <View 
-                style={[styles.volumeBar, { width: `${backgroundVolume * 100}%`, backgroundColor: colors.primary }]} 
-              />
+            <View
+              style={[styles.sliderTrack, { backgroundColor: colors.border }]}
+              onLayout={handleBgBarLayout}
+              {...bgPanResponder.panHandlers}
+            >
+              <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]} />
+              <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: bgThumbTranslate }] }]} />
             </View>
             <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
               {Math.round(backgroundVolume * 100)}%
             </Text>
-            <TouchableOpacity onPress={() => setBackgroundVolume(backgroundVolume + 0.1)}>
-              <Volume2 size={16} color={colors.textSecondary} />
-            </TouchableOpacity>
           </View>
 
+          {/* Voice guide volume slider */}
           <View style={styles.volumeRow}>
             <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
               <Volume2 size={20} color={colors.primary} />
             </View>
             <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>{t('course.voiceGuide')}</Text>
-            <View style={styles.volumeBarContainer}>
-              <View 
-                style={[styles.volumeBar, { width: `${voiceVolume * 100}%`, backgroundColor: colors.primary }]} 
-              />
+            <View
+              style={[styles.sliderTrack, { backgroundColor: colors.border }]}
+              onLayout={handleVoiceBarLayout}
+              {...voicePanResponder.panHandlers}
+            >
+              <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: voiceFillWidth }]} />
+              <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: voiceThumbTranslate }] }]} />
             </View>
             <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
               {Math.round(voiceVolume * 100)}%
             </Text>
-            <TouchableOpacity onPress={() => setVoiceVolume(voiceVolume + 0.1)}>
-              <Volume2 size={16} color={colors.textSecondary} />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -224,9 +465,6 @@ export default function CourseLearningScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -236,42 +474,40 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
+    ...sharedStyles.rowBetween,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   backButton: {
     padding: spacing.sm,
   },
-  backText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
+  headerRight: {
+    padding: spacing.sm,
   },
   headerTitle: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
-  },
-  headerSpacer: {
-    width: 60,
+    flex: 1,
+    textAlign: 'center',
   },
   content: {
     flex: 1,
-    padding: spacing.xl,
-    gap: spacing.xl,
+    paddingHorizontal: spacing.xl,
+  },
+  visualGuideContainer: {
+    marginBottom: spacing.xl,
   },
   visualGuide: {
-    height: 300,
+    height: 250,
     borderRadius: borderRadius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     ...shadows.medium,
   },
   breatheCircle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -285,6 +521,7 @@ const styles = StyleSheet.create({
   progressSection: {
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
     ...shadows.small,
   },
   progressLabel: {
@@ -302,10 +539,17 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   controlsSection: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
+    ...shadows.small,
+  },
+  controlsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: spacing.lg,
+    marginTop: spacing.md,
   },
   controlButton: {
     width: 56,
@@ -326,13 +570,14 @@ const styles = StyleSheet.create({
   volumeSection: {
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
     ...shadows.small,
   },
   volumeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    marginBottom: spacing.lg,
+    marginTop: spacing.md,
   },
   volumeIconContainer: {
     width: 32,
@@ -345,24 +590,39 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     width: 100,
   },
-  volumeBarContainer: {
+  volumeValue: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+    fontVariant: ['tabular-nums'],
+    width: 40,
+    textAlign: 'right',
+  },
+  sliderTrack: {
     flex: 1,
     height: 6,
     borderRadius: 3,
-    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
   },
-  volumeBar: {
-    height: '100%',
+  sliderFill: {
+    position: 'absolute',
+    height: 6,
     borderRadius: 3,
+    left: 0,
+    top: 0,
   },
-  volumeValue: {
-    fontSize: typography.fontSize.sm,
-    width: 40,
-    textAlign: 'right',
+  sliderThumb: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    top: -5,
+    left: 0,
   },
   errorMessage: {
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
   },
   errorText: {
     fontSize: typography.fontSize.sm,
@@ -370,6 +630,7 @@ const styles = StyleSheet.create({
   guideSection: {
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
     ...shadows.small,
   },
   sectionTitle: {

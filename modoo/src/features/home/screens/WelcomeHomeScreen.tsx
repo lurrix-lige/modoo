@@ -225,5 +225,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    textAlign: 'center',
   },
 });

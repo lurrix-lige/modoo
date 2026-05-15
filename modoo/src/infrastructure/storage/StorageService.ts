@@ -15,6 +15,9 @@ const STORAGE_KEYS = {
   PLAY_HISTORY: '@dozoo_play_history',
   CHECK_IN_RECORD: '@dozoo_check_in',
   COURSE_PROGRESS: '@dozoo_course_progress',
+  COURSE_CACHE: '@dozoo_course_cache',
+  COURSE_VOLUME_SETTINGS: '@dozoo_course_volume',
+  COURSE_PLAYBACK_PROGRESS: '@dozoo_course_playback',
   CACHE: '@dozoo_cache',
   CACHE_STORIES: '@dozoo_cache_stories',
   CACHE_ARTICLES: '@dozoo_cache_articles',
@@ -387,6 +390,70 @@ class StorageService {
     } catch (error) {
       logger.error('Failed to get course progress', { error });
       return {};
+    }
+  }
+
+  async saveCoursesCache(courses: any[]): Promise<void> {
+    await this.setCacheEntry(STORAGE_KEYS.COURSE_CACHE, courses, CACHE_TTL.MEDIUM);
+  }
+
+  async getCoursesCache(): Promise<any[] | null> {
+    return await this.getCacheEntry<any[]>(STORAGE_KEYS.COURSE_CACHE);
+  }
+
+  async saveCourseVolumeSettings(settings: {
+    backgroundVolume: number;
+    voiceVolume: number;
+  }): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.COURSE_VOLUME_SETTINGS, JSON.stringify(settings));
+    } catch (error) {
+      logger.error('Failed to save course volume settings', { error });
+    }
+  }
+
+  async getCourseVolumeSettings(): Promise<{
+    backgroundVolume: number;
+    voiceVolume: number;
+  } | null> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.COURSE_VOLUME_SETTINGS);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      logger.error('Failed to get course volume settings', { error });
+      return null;
+    }
+  }
+
+  async saveCoursePlaybackProgress(lessonId: string, progress: number): Promise<void> {
+    try {
+      const allProgress = (await this.getCoursePlaybackProgress()) as Record<string, { progress: number; lastPlayedAt: string }> | null;
+      const progressData: Record<string, { progress: number; lastPlayedAt: string }> = allProgress && typeof allProgress === 'object' && !Array.isArray(allProgress)
+        ? (allProgress as Record<string, { progress: number; lastPlayedAt: string }>)
+        : {};
+      progressData[lessonId] = {
+        progress,
+        lastPlayedAt: new Date().toISOString(),
+      };
+      await AsyncStorage.setItem(STORAGE_KEYS.COURSE_PLAYBACK_PROGRESS, JSON.stringify(progressData));
+    } catch (error) {
+      logger.error('Failed to save course playback progress', { error });
+    }
+  }
+
+  async getCoursePlaybackProgress(lessonId?: string): Promise<Record<string, { progress: number; lastPlayedAt: string }> | { progress: number; lastPlayedAt: string } | null> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.COURSE_PLAYBACK_PROGRESS);
+      if (!data) return null;
+      
+      const allProgress = JSON.parse(data);
+      if (lessonId) {
+        return allProgress[lessonId] || null;
+      }
+      return allProgress;
+    } catch (error) {
+      logger.error('Failed to get course playback progress', { error });
+      return null;
     }
   }
 
