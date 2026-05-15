@@ -21,7 +21,7 @@ import { Sun, Moon, Smartphone } from 'lucide-react-native';
 const iconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'sunny': Sun,
   'moon': Moon,
-  'phone-portrait': Smartphone,
+  'system': Smartphone,
 };
 import { useTranslation } from 'react-i18next';
 import { useTheme, useThemeToggle } from '../theme';
@@ -73,7 +73,7 @@ export function ThemeSwitcher({ onModeChange }: ThemeSwitcherProps) {
   const options = [
     { mode: 'light' as const, icon: 'sunny', labelKey: 'common.lightMode' },
     { mode: 'dark' as const, icon: 'moon', labelKey: 'common.darkMode' },
-    { mode: 'system' as const, icon: 'phone-portrait', labelKey: 'common.systemMode' },
+    { mode: 'system' as const, icon: 'system', labelKey: 'common.systemMode' },
   ];
 
   const handlePress = (mode: 'light' | 'dark' | 'system') => {

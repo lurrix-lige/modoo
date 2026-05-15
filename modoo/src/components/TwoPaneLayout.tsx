@@ -16,7 +16,7 @@ export const TwoPaneLayout: React.FC<TwoPaneLayoutProps> = ({
   detail,
   defaultShowDetail = false,
   onDetailClose,
-  masterWidth = 35,
+  masterWidth = 55,
   showDivider = true,
 }) => {
   const [showDetailView, setShowDetailView] = useState(defaultShowDetail);
