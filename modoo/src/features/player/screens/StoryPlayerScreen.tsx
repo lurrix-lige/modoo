@@ -369,15 +369,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   landscapeContent: {
-    flex: 1.8,
+    flex: 2,
     justifyContent: 'center',
     paddingRight: spacing.lg,
   },
   controlsSection: {
+    flex: 1,
     justifyContent: 'center',
   },
   portraitControls: {
-    flex: 0,
+    flex: 1,
   },
   landscapeControls: {
     flex: 1,

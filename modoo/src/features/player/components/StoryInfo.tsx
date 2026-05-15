@@ -26,9 +26,9 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
-  // 计算尺寸：竖�?180x180，横�?120x120
+  // 计算尺寸：竖屏 180x180，横屏 120x120
   const avatarSize = responsive.moderateScale(isLandscape ? 120 : 180);
-  // 内层尺寸比例�?50/180 = 0.833�?00/120 = 0.833
+  // 内层尺寸 比例 50/180 = 0.833，00/120 = 0.833
   const innerSizeRatio = 0.833;
   // 图标尺寸
   const iconSize = responsive.moderateScale(iconSizes.hero);
