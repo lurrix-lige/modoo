@@ -39,6 +39,11 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
   const [backgroundVolume, setBackgroundVolumeState] = useState(0.5);
   const [voiceVolume, setVoiceVolumeState] = useState(0.75);
   const currentTrackRef = useRef<CourseAudioTrack | null>(null);
+  const [fallbackDuration, setFallbackDuration] = useState(0);
+
+  // expo-audio 原生 player.duration 属性在 Android 上返回 null，
+  // 因此使用课程数据中的时长作为兜底
+  const effectiveDuration = unifiedAudio.duration || fallbackDuration;
 
   const play = useCallback(async (track: CourseAudioTrack): Promise<boolean> => {
     logger.debug('CourseAudioProvider.play called with track', { track });
@@ -51,6 +56,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     setIsLoading(true);
     setError(null);
     currentTrackRef.current = track;
+    setFallbackDuration(track.duration || 0);
 
     const tracks: Array<{ id: string; url: string; volume: number; loop: boolean; role: 'main' | 'background' }> = [];
 
@@ -134,6 +140,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     audioFocusManager.release('course');
     unifiedAudio.stop();
     currentTrackRef.current = null;
+    setFallbackDuration(0);
     setError(null);
   }, [unifiedAudio]);
 
@@ -159,7 +166,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
       value={{
         isPlaying: unifiedAudio.isPlaying,
         progress: unifiedAudio.progress,
-        duration: unifiedAudio.duration,
+        duration: effectiveDuration,
         isBuffering: unifiedAudio.isBuffering,
         isLoading,
         error,

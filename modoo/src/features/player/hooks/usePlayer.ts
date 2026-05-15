@@ -56,17 +56,21 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
   } = audioContext;
 
   useEffect(() => {
-    logger.debug('useAudio context acquired', { 
-      isPlaying, 
-      progress: audioProgress, 
+    logger.debug('useAudio context acquired', {
+      isPlaying,
+      progress: audioProgress,
       duration: audioDuration,
-      audioContextExists: !!audioContext 
+      audioContextExists: !!audioContext
     });
   }, []);
 
+  // expo-audio 原生 player.duration 属性在 Android 上返回 null，
+  // 因此使用 API 返回的故事时长作为兜底
+  const effectiveDuration = audioDuration || story?.duration || 0;
+
   useEffect(() => {
-    updateProgress(audioProgress, audioDuration);
-  }, [audioProgress, audioDuration, updateProgress]);
+    updateProgress(audioProgress, effectiveDuration);
+  }, [audioProgress, effectiveDuration, updateProgress]);
 
   useEffect(() => {
     if (audioError) {
@@ -204,10 +208,10 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
 
   const skipForward = useCallback(
     (seconds: number) => {
-      const newPosition = Math.min(audioDuration || 0, audioProgress + seconds);
+      const newPosition = Math.min(effectiveDuration, audioProgress + seconds);
       audioSeekTo(newPosition);
     },
-    [audioProgress, audioDuration, audioSeekTo]
+    [audioProgress, effectiveDuration, audioSeekTo]
   );
 
   const skipBackward = useCallback(
@@ -226,7 +230,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     isPlaying,
     isBuffering: audioBuffering,
     progress: audioProgress,
-    duration: audioDuration,
+    duration: effectiveDuration,
     isLoading,
     story,
     savedProgress,

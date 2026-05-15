@@ -68,15 +68,15 @@ export const validateUrl = (url: string): { valid: boolean; message?: string } =
     logger.error('Invalid audio URL', { url });
     return { valid: false, message: i18n.t('audio.invalidUrl') };
   }
-  
+
   const ext = getFileExtension(url);
   const supportedExtensions = Platform.OS === 'ios' ? SUPPORTED_EXTENSIONS_IOS : SUPPORTED_EXTENSIONS_ANDROID;
-  
+
   if (ext && !supportedExtensions.includes(ext)) {
     logger.warn(`Unsupported audio format: ${ext} on ${Platform.OS}, attempting to play anyway`);
     // 不阻止播放，只记录警告，让 expo-audio 决定是否能处理
   }
-  
+
   return { valid: true };
 };
 
@@ -84,7 +84,7 @@ export const encodeUrl = (url: string): string => {
   try {
     const parsedUrl = new URL(url);
     logger.debug('Encoding URL', { url: parsedUrl.toString() });
-    parsedUrl.pathname = parsedUrl.pathname.split('/').map(segment => 
+    parsedUrl.pathname = parsedUrl.pathname.split('/').map(segment =>
       encodeURIComponent(decodeURIComponent(segment))
     ).join('/');
     logger.debug('Encoded URL', { url: parsedUrl.toString() });
@@ -220,6 +220,7 @@ export class UnifiedAudioPlayer {
 
     const progress = sanitizeTimeValue(status.currentTime);
     const duration = sanitizeTimeValue(status.duration);
+
     this.currentDuration = duration;
 
     this.lastSeekPosition = progress;
@@ -269,7 +270,8 @@ export class UnifiedAudioPlayer {
         return;
       }
       const rawProgress = this.primaryPlayerRef.currentTime;
-      const rawDuration = this.primaryPlayerRef.duration;
+      // 使用 currentStatus 对象获取 duration，避免 expo-audio 独立 duration 属性返回 null 的 bug
+      const rawDuration = this.primaryPlayerRef.currentStatus?.duration ?? null;
       const progress = sanitizeTimeValue(rawProgress);
       const duration = sanitizeTimeValue(rawDuration);
       if (duration > 0) {
@@ -573,10 +575,9 @@ export class UnifiedAudioPlayer {
 
     try {
       const seekPromises: Promise<void>[] = [];
-      // expo-audio 的 seekTo 需要毫秒
-      const seekPositionMs = clampedPosition * 1000;
+      // expo-audio 的 seekTo 需要秒（原生内部会转换为毫秒）
       for (const player of this.players.values()) {
-        seekPromises.push(player.seekTo(seekPositionMs));
+        seekPromises.push(player.seekTo(clampedPosition));
       }
 
       await Promise.all(seekPromises);
