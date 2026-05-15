@@ -45,6 +45,9 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
         setIsPlaying(false);
         setProgress(0);
       });
+      player.addPlayingStateListener((playing) => {
+        setIsPlaying(playing);
+      });
       player.addBufferingListener((buffering) => {
         setIsBuffering(buffering);
       });

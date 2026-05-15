@@ -118,6 +118,7 @@ export class UnifiedAudioPlayer {
   private currentDuration = 0;
   private lastSeekPosition = 0;
   private suppressProgressUpdate = false;
+  private seekResetTimer: ReturnType<typeof setTimeout> | null = null;
   private generation = 0;
   private progressUpdateListeners = new Set<(progress: number, duration: number) => void>();
   private completionListeners = new Set<() => void>();
@@ -178,6 +179,83 @@ export class UnifiedAudioPlayer {
     });
   }
 
+  private handlePlaybackStatusUpdate(status: AudioStatus, currentGen: number, trackLoop: boolean): void {
+    if (this.generation !== currentGen) {
+      return;
+    }
+
+    const isActuallyPlaying = status.isLoaded && status.playing === true;
+    logger.debug('PLAYBACK_STATUS_UPDATE received', {
+      generation: currentGen,
+      isLoaded: status.isLoaded,
+      playbackState: status.playbackState,
+      timeControlStatus: (status as any).timeControlStatus,
+      reasonForWaitingToPlay: (status as any).reasonForWaitingToPlay,
+      playing: status.playing,
+      currentTime: status.currentTime,
+      duration: status.duration,
+      isBuffering: status.isBuffering,
+      didJustFinish: status.didJustFinish,
+      error: (status as any).error,
+    });
+
+    if (!status.isLoaded) {
+      return;
+    }
+
+    if (!status.playing && !status.isBuffering) {
+      logger.warn('Audio loaded but not playing', {
+        playbackState: status.playbackState,
+        timeControlStatus: (status as any).timeControlStatus,
+        reasonForWaitingToPlay: (status as any).reasonForWaitingToPlay,
+      });
+    }
+
+    if ((status as any).error) {
+      logger.error('Audio playback error detected', { error: (status as any).error });
+      this.emitMetrics((status as any).error);
+    }
+
+    const progress = sanitizeTimeValue(status.currentTime);
+    const duration = sanitizeTimeValue(status.duration);
+    this.currentDuration = duration;
+
+    this.lastSeekPosition = progress;
+
+    if (isActuallyPlaying !== this.isPlayingInternal) {
+      this.isPlayingInternal = isActuallyPlaying;
+      this.playingStateListeners.forEach((cb) => cb(this.isPlayingInternal));
+
+      if (isActuallyPlaying && !this.firstPlayingRecorded) {
+        this.firstPlayingRecorded = true;
+        const latency = Date.now() - this.playStartTime;
+        logger.debug('First playing status reached', { latencyMs: latency });
+      }
+    }
+
+    const isBuffering = status.isBuffering === true;
+    if (isBuffering !== this.isBufferingInternal) {
+      this.isBufferingInternal = isBuffering;
+      this.bufferingListeners.forEach((cb) => cb(isBuffering));
+      if (isBuffering) {
+        this.bufferEventCount++;
+      }
+    }
+
+    if (!this.suppressProgressUpdate) {
+      this.progressUpdateListeners.forEach((cb) => cb(progress, duration));
+    }
+
+    if (status.didJustFinish && !trackLoop && !this.isCompleted && !this.isSeeking) {
+      this.isCompleted = true;
+      this.isPlayingInternal = false;
+      this.progressUpdateListeners.forEach((cb) => cb(duration, duration));
+      this.completionListeners.forEach((cb) => cb());
+      this.playingStateListeners.forEach((cb) => cb(false));
+      this.emitMetrics();
+    }
+  }
+
   isPlaying(): boolean {
     return !this.isCompleted && !this.isEmpty();
   }
@@ -187,6 +265,14 @@ export class UnifiedAudioPlayer {
     this.generation++;
     const currentGen = this.generation;
     this.isProcessing = true;
+
+    // 清除上一次 seek 的延迟复位定时器，避免跨会话干扰
+    if (this.seekResetTimer) {
+      clearTimeout(this.seekResetTimer);
+      this.seekResetTimer = null;
+    }
+    this.isSeeking = false;
+    this.suppressProgressUpdate = false;
 
     // Reset per-session metrics
     this.playStartTime = Date.now();
@@ -204,6 +290,8 @@ export class UnifiedAudioPlayer {
 
       const updateInterval = config.updateInterval || 100;
       let hasValidTrack = false;
+      let primaryPlayer: AudioPlayer | null = null;
+      let primaryTrackLoop = false;
 
       for (const track of config.tracks) {
         const validation = validateUrl(track.url);
@@ -219,89 +307,21 @@ export class UnifiedAudioPlayer {
         player.volume = volume;
         logger.debug(`Created audio player for ${track.url} with volume ${volume}`);
 
-        if (track.role === 'main') {
-          player.addListener(PLAYBACK_STATUS_UPDATE, (status: AudioStatus) => {
-            // 忽略旧会话的状态回调
-            if (this.generation !== currentGen) {
-              return;
-            }
-
-            const isActuallyPlaying = status.isLoaded && status.playing === true;
-            logger.debug('PLAYBACK_STATUS_UPDATE received', {
-              generation: currentGen,
-              isLoaded: status.isLoaded,
-              playbackState: status.playbackState,
-              timeControlStatus: (status as any).timeControlStatus,
-              reasonForWaitingToPlay: (status as any).reasonForWaitingToPlay,
-              playing: status.playing,
-              currentTime: status.currentTime,
-              duration: status.duration,
-              isBuffering: status.isBuffering,
-              didJustFinish: status.didJustFinish,
-              error: (status as any).error,
-            });
-
-            if (!status.isLoaded) {
-              return;
-            }
-
-            if (!status.playing && !status.isBuffering) {
-              logger.warn('Audio loaded but not playing', {
-                playbackState: status.playbackState,
-                timeControlStatus: (status as any).timeControlStatus,
-                reasonForWaitingToPlay: (status as any).reasonForWaitingToPlay,
-              });
-            }
-
-            if ((status as any).error) {
-              logger.error('Audio playback error detected', { error: (status as any).error });
-              this.emitMetrics((status as any).error);
-            }
-
-            const progress = sanitizeTimeValue(status.currentTime);
-            const duration = sanitizeTimeValue(status.duration);
-            this.currentDuration = duration;
-
-            this.lastSeekPosition = progress;
-
-            if (isActuallyPlaying !== this.isPlayingInternal) {
-              this.isPlayingInternal = isActuallyPlaying;
-              this.playingStateListeners.forEach((cb) => cb(this.isPlayingInternal));
-
-              if (isActuallyPlaying && !this.firstPlayingRecorded) {
-                this.firstPlayingRecorded = true;
-                const latency = Date.now() - this.playStartTime;
-                logger.debug('First playing status reached', { latencyMs: latency });
-              }
-            }
-
-            const isBuffering = status.isBuffering === true;
-            if (isBuffering !== this.isBufferingInternal) {
-              this.isBufferingInternal = isBuffering;
-              this.bufferingListeners.forEach((cb) => cb(isBuffering));
-              if (isBuffering) {
-                this.bufferEventCount++;
-              }
-            }
-
-            if (!this.suppressProgressUpdate) {
-              this.progressUpdateListeners.forEach((cb) => cb(progress, duration));
-            }
-
-            // Seek 期间抑制 didJustFinish，防止快进到末尾被误判为播放完成
-            if (status.didJustFinish && !status.loop && !this.isCompleted && !this.isSeeking) {
-              this.isCompleted = true;
-              this.isPlayingInternal = false;
-              this.progressUpdateListeners.forEach((cb) => cb(duration, duration));
-              this.completionListeners.forEach((cb) => cb());
-              this.playingStateListeners.forEach((cb) => cb(false));
-              this.emitMetrics();
-            }
-          });
+        // 优先选择 main 角色的 track 作为进度更新源，没有则使用第一个可用 track
+        if (!primaryPlayer || track.role === 'main') {
+          primaryPlayer = player;
+          primaryTrackLoop = track.loop ?? false;
         }
 
         this.players.set(track.id, player);
         hasValidTrack = true;
+      }
+
+      // 为选中的主播放器注册进度监听
+      if (primaryPlayer) {
+        primaryPlayer.addListener(PLAYBACK_STATUS_UPDATE, (status: AudioStatus) => {
+          this.handlePlaybackStatusUpdate(status, currentGen, primaryTrackLoop);
+        });
       }
 
       if (!hasValidTrack) {
@@ -429,6 +449,7 @@ export class UnifiedAudioPlayer {
       this.isCompleted = false;
 
       for (const player of this.players.values()) {
+        // expo-audio 的 seekTo 需要毫秒
         await player.seekTo(0);
         player.play();
       }
@@ -511,26 +532,33 @@ export class UnifiedAudioPlayer {
     this.isSeeking = true;
     this.suppressProgressUpdate = true;
 
-    const clampedPosition = Math.max(0, Math.min(position, this.currentDuration));
-    
+    const maxPosition = this.currentDuration > 0 ? this.currentDuration : position;
+    const clampedPosition = Math.max(0, Math.min(position, maxPosition));
+
     if (this.isCompleted) {
       this.isCompleted = false;
     }
 
     try {
       const seekPromises: Promise<void>[] = [];
+      // expo-audio 的 seekTo 需要毫秒
+      const seekPositionMs = clampedPosition * 1000;
       for (const player of this.players.values()) {
-        seekPromises.push(player.seekTo(clampedPosition));
+        seekPromises.push(player.seekTo(seekPositionMs));
       }
-      
+
       await Promise.all(seekPromises);
-      
+
       this.lastSeekPosition = clampedPosition;
       this.progressUpdateListeners.forEach((cb) => cb(clampedPosition, this.currentDuration));
     } catch (err) {
       logger.debug('Seek failed', { error: err });
     } finally {
-      setTimeout(() => {
+      if (this.seekResetTimer) {
+        clearTimeout(this.seekResetTimer);
+      }
+      this.seekResetTimer = setTimeout(() => {
+        this.seekResetTimer = null;
         this.isSeeking = false;
         this.suppressProgressUpdate = false;
       }, 200);

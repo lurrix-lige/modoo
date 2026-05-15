@@ -85,6 +85,8 @@ export default function StoryPlayerScreen() {
   }, [isPlaying, timerDuration, isLoading, story, resume]);
 
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
+  const [sliderValue, setSliderValue] = useState(0);
 
   const { isAvailable: isPiPAvailable, isActive: isPiPActive, togglePiP } = usePictureInPicture({
     onEnterPiP: () => logger.info('Entered Picture-in-Picture mode'),
@@ -132,7 +134,21 @@ export default function StoryPlayerScreen() {
   }, []);
 
   const maxDuration = duration || 0;
-  const currentProgress = Math.min(progress || 0, maxDuration);
+  const currentProgress = isSliding ? sliderValue : Math.min(progress || 0, maxDuration);
+
+  const handleSlidingStart = useCallback(() => {
+    setIsSliding(true);
+    setSliderValue(Math.min(progress || 0, maxDuration));
+  }, [progress, maxDuration]);
+
+  const handleValueChange = useCallback((value: number) => {
+    setSliderValue(value);
+  }, []);
+
+  const handleSlidingComplete = useCallback((value: number) => {
+    setIsSliding(false);
+    seekTo(value);
+  }, [seekTo]);
 
   if (isLoading) {
     return (
@@ -210,7 +226,9 @@ export default function StoryPlayerScreen() {
               minimumTrackTintColor={colors.primary}
               maximumTrackTintColor={colors.border}
               thumbTintColor={colors.primary}
-              onSlidingComplete={seekTo}
+              onSlidingStart={handleSlidingStart}
+              onValueChange={handleValueChange}
+              onSlidingComplete={handleSlidingComplete}
             />
             {isBuffering && (
               <Text style={[styles.bufferingText, { color: colors.primary }]}>
