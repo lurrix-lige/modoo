@@ -37,7 +37,7 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [backgroundVolume, setBackgroundVolumeState] = useState(0.5);
-  const [voiceVolume, setVoiceVolumeState] = useState(1.0);
+  const [voiceVolume, setVoiceVolumeState] = useState(0.75);
   const currentTrackRef = useRef<CourseAudioTrack | null>(null);
 
   const play = useCallback(async (track: CourseAudioTrack): Promise<boolean> => {
