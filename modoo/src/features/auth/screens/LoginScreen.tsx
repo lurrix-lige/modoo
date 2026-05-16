@@ -1,12 +1,12 @@
 /**
  * LoginScreen - 用户登录页面
  *
- * 功能说明�?
- * - 提供手机�?验证码登录方�?
+ * 功能说明：
+ * - 提供手机验证码登录方式
  * - 支持 Apple 登录
  * - 支持微信登录（预留）
- * - 登录成功后同步儿童档案信�?
- * - 根据来源页面引导用户跳转至目标页�?
+ * - 登录成功后同步儿童档案信息
+ * - 根据来源页面引导用户跳转至目标页面
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -40,7 +40,7 @@ import { normalizeSleepProblems, parseGender, parseGuardianIP } from '../../../u
 
 /**
  * 导航类型定义
- * @description 用于类型安全的导航参数传�?
+ * @description 用于类型安全的导航参数传递
  */
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Auth'>;
@@ -54,24 +54,26 @@ export default function LoginScreen() {
   const { setAuthenticated, setChild } = useAppStore();
 
   /**
-   * 路由参数说明�?
-   * @param fromScreen - 登录来源页面，用于登录后返回原页�?
+   * 路由参数说明
+   * @param fromScreen - 登录来源页面，用于登录后返回原页面
    * @param selectedPlanId - 选中的订阅计划ID，用于跳转至支付页面
    */
   const fromScreen = route.params?.fromScreen;
   const selectedPlanId = route.params?.selectedPlanId;
 
-  // 输入框引�?
+  // 输入框引用
+  // 手机号输入框引用
   const phoneInputRef = useRef<TextInput>(null);
   const codeInputRef = useRef<TextInput>(null);
 
-  // 输入状�?
-  const [phone, setPhone] = useState('');           // 手机号输�?
-  const [code, setCode] = useState('');             // 验证码输�?
-  const [countdown, setCountdown] = useState(0);    // 倒计时秒�?
-  const [loading, setLoading] = useState(false);     // 手机登录加载状�?
-  const [appleLoading, setAppleLoading] = useState(false);   // Apple登录加载状�?
-  const [wechatLoading, setWechatLoading] = useState(false); // 微信登录加载状�?
+  // 输入状态
+  // 手机号输入状态
+  const [phone, setPhone] = useState('');           // 手机号输入状态
+  const [code, setCode] = useState('');             // 验证码输入状态
+  const [countdown, setCountdown] = useState(0);    // 倒计时秒数
+  const [loading, setLoading] = useState(false);     // 手机登录加载状态
+  const [appleLoading, setAppleLoading] = useState(false);   // Apple登录加载状态
+  const [wechatLoading, setWechatLoading] = useState(false); // 微信登录加载状态
 
   /**
    * 页面加载完成后自动聚焦到手机号输入框
@@ -85,9 +87,9 @@ export default function LoginScreen() {
   }, []);
 
   /**
-   * 手机号格式验证规�?
-   * @description 中国大陆手机号格式：1开头，第二位为3-9，后�?位为数字
-   * @param phone - 待验证的手机�?
+   * 手机号格式验证规则
+   * @description 中国大陆手机号格式：1开头，第二位为3-9，后9位为数字
+   * @param phone - 待验证的手机号
    * @returns boolean - 是否符合格式
    */
   const isValidPhoneNumber = (phone: string): boolean => {
@@ -96,13 +98,13 @@ export default function LoginScreen() {
   };
 
   /**
-   * 处理手机号输入变�?
+   * 处理手机号输入变化
    * @description 当手机号输入完成且格式正确时，自动跳转到验证码输入框
    */
   const handlePhoneChange = (text: string) => {
     setPhone(text);
     
-    // 当输入完�?1位且格式正确时，自动跳转到验证码输入�?
+    // 当输入完1位且格式正确时，自动跳转到验证码输入框
     if (isValidPhoneNumber(text)) {
       setTimeout(() => {
         codeInputRef.current?.focus();
@@ -117,11 +119,11 @@ export default function LoginScreen() {
    * @description 登录成功后，从API获取儿童档案并存储到本地
    * @returns Promise<void>
    *
-   * 处理流程�?
+   * 处理流程
    * 1. 检查本地是否已存在儿童档案，存在则跳过
    * 2. 从API获取儿童档案信息
-   * 3. 转换数据格式（性别、生日、监护精灵等�?
-   * 4. 存储到本地AuthService和全局状�?
+   * 3. 转换数据格式（性别、生日、监护精灵等）
+   * 4. 存储到本地AuthService和全局状态
    */
   const syncChildProfile = async (): Promise<void> => {
     const existingChildProfile = await authService.getChild();
@@ -148,14 +150,14 @@ export default function LoginScreen() {
    * Apple 登录处理
    * @description 处理 Apple ID 登录流程
    *
-   * 处理流程�?
-   * 1. 检�?Apple 登录是否可用
+   * 处理流程
+   * 1. 检查Apple登录是否可用
    * 2. 调用 appleService.login 获取用户授权信息
-   * 3. 使用授权码调用后�?API 完成登录
+   * 3. 使用授权码调用后端API完成登录
    * 4. 设置认证状态并同步儿童档案
-   * 5. 根据来源页面导航至目标页�?
+   * 5. 根据来源页面导航至目标页面
    *
-   * 错误处理�?
+   * 错误处理
    * - 用户取消登录时不提示错误
    * - 其他错误统一提示"Apple登录失败"
    */
@@ -198,8 +200,8 @@ export default function LoginScreen() {
 
   /**
    * 微信登录处理
-   * @description 微信登录入口（当前为预留接口�?
-   * @note 尚未实现，调用时提示"功能未实�?
+   * @description 微信登录入口（当前为预留接口，暂未实现）
+   * @note 尚未实现，调用时提示"功能未实现"
    */
   const handleWeChatLogin = async () => {
     Alert.alert(t('common.hint'), t('auth.wechatNotImplemented'));
@@ -207,17 +209,17 @@ export default function LoginScreen() {
   };
 
   /**
-   * 获取验证�?
-   * @description 发送手机验证码到用户手�?
+   * 获取验证码
+   * @description 发送手机验证码到用户手机号
    *
-   * 前置校验�?
-   * - 手机号长度必须为11�?
+   * 前置校验
+   * - 手机号长度必须为11位
    *
-   * 发送后逻辑�?
-   * - 启动60秒倒计�?
-   * - 倒计时期间禁用发送按�?
+   * 发送后逻辑
+   * - 启动60秒倒计�?
+   * - 倒计时期间禁用发送按�?
    *
-   * @see handleLogin 使用验证码进行登�?
+   * @see handleLogin 使用验证码进行登�?
    */
   const handleGetCode = async () => {
     if (phone.length !== 11) {
@@ -246,16 +248,16 @@ export default function LoginScreen() {
   };
 
   /**
-   * 手机号登�?
-   * @description 使用手机号和验证码进行登�?
+   * 手机号登录
+   * @description 使用手机号和验证码进行登录
    *
-   * 前置校验�?
-   * - 手机号长度必须为11�?
-   * - 验证码长度必须为6�?
+   * 前置校验
+   * - 手机号长度必须为11位
+   * - 验证码长度必须为6位
    *
-   * 登录后逻辑�?
+   * 登录后逻辑
    * 1. 调用 authService.login 完成认证
-   * 2. 设置全局认证状�?
+   * 2. 设置全局认证状态
    * 3. 同步儿童档案信息
    * 4. 根据登录来源和儿童档案状态导航至目标页面
    */
@@ -289,6 +291,7 @@ export default function LoginScreen() {
   // ==================== 页面渲染 ====================
   return (
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
+       {/* ------------------- 键盘输入区域 ------------------- */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -324,7 +327,7 @@ export default function LoginScreen() {
             />
           </View>
 
-          {/* 验证码输入框 + 发送按�?*/}
+          {/* 验证码输入框 + 发送按钮 */}
           <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
             <Lock size={20} color={colors.textSecondary} />
             <TextInput
@@ -352,7 +355,7 @@ export default function LoginScreen() {
           {/* 登录按钮 */}
           <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={styles.loginButton} />
 
-          {/* ------------------- 分隔�?------------------- */}
+          {/* ------------------- 分隔线 ------------------- */}
           <View style={styles.divider}>
             <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
@@ -361,7 +364,7 @@ export default function LoginScreen() {
             <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
           </View>
 
-          {/* ------------------- 第三方登�?------------------- */}
+          {/* ------------------- 第三方登录按钮 ------------------- */}
           <View style={styles.socialButtons}>
             {/* Apple 登录按钮 */}
             <TouchableOpacity
