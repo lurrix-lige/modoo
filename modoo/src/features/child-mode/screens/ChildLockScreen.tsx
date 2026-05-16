@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: typography.fontSize.md,
+    alignContent: 'center',
     textAlign: 'center',
   },
 });

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Animated } from 'react-native';
-import { Lock, Shield, CheckCircle, X } from 'lucide-react-native';
+import { Lock, Shield, Check, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, typography, commonColors, responsive } from '../theme';
 
@@ -123,7 +123,7 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
                 style={[styles.key, { backgroundColor: colors.primary }]}
                 onPress={handleSubmit}
               >
-                <CheckCircle size={24} color={colors.textPrimary} />
+                <Check size={24} color={commonColors.white} />
               </TouchableOpacity>
             </View>
           </View>
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: typography.fontSize.sm,
     marginTop: spacing.xs,
+    textAlign: 'center',
   },
   content: {
     padding: spacing.xl,
