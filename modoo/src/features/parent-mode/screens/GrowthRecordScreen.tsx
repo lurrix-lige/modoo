@@ -5,7 +5,7 @@ import { ArrowLeft, Trophy, Flame, BookOpen, Calendar, TrendingUp, Award, Star, 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
 import { apiService, type StoryStatsResponse, type CheckInResponse } from '../../../services';
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   avatarText: {
-    fontSize: 32,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
     fontWeight: typography.fontWeight.bold,
     color: commonColors.white,
   },

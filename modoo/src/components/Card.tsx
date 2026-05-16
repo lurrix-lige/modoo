@@ -166,7 +166,7 @@ export function StoryCard({
             resizeMode="cover"
           />
         ) : (
-          <BookOpen size={responsive.moderateScale(iconSizes.xl)} color={colors.textPrimary} />
+          <BookOpen size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />
         )}
         {isPremium && (
           <View style={[styles.premiumBadge, { backgroundColor: colors.success }]}>
@@ -176,7 +176,7 @@ export function StoryCard({
           </View>
         )}
         <View style={styles.durationBadge}>
-          <Clock size={responsive.moderateScale(iconSizes.xs)} color={commonColors.white} />
+          <Clock size={responsive.moderateScaleForIcon(iconSizes.xs)} color={commonColors.white} />
           <Text style={[styles.duration, { color: commonColors.white }]}>
             {translatedContent.formattedDuration}
           </Text>
@@ -236,13 +236,13 @@ export function DataCard({ title, value, unit, trend, trendValue, icon, iconColo
 
   const iconComponent = useMemo(() => {
     const IconComp = cardIconMap[icon] || BookOpen;
-    return <IconComp size={responsive.moderateScale(iconSizes.md)} color={colors.textPrimary} />;
+    return <IconComp size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textPrimary} />;
   }, [icon, colors.textPrimary]);
 
   const trendIconComponent = useMemo(() => {
     if (!trend || !trendValue) return null;
     const IconComp = cardIconMap[trendConfig.trendIcon];
-    return IconComp ? <IconComp size={responsive.moderateScale(iconSizes.sm)} color={trendConfig.trendColor} /> : null;
+    return IconComp ? <IconComp size={responsive.moderateScaleForIcon(iconSizes.sm)} color={trendConfig.trendColor} /> : null;
   }, [trend, trendValue, trendConfig]);
 
   return (

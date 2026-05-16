@@ -223,7 +223,7 @@ export default function ParentHomeScreen() {
                 onPress={handleSwitchToChildMode}
                 activeOpacity={0.7}
               >
-                <Baby size={responsive.moderateScale(iconSizes.xl)} color={colors.textPrimary} />
+                <Baby size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />
               </TouchableOpacity>
               {}
               <SettingsPopover />
@@ -365,7 +365,7 @@ export default function ParentHomeScreen() {
                     {article.coverUrl ? (
                       <Image source={{ uri: article.coverUrl }} style={styles.articleCoverImage} resizeMode="cover" />
                     ) : (
-                      <FileText size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+                      <FileText size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
                     )}
                   </View>
                   <Text style={[styles.articleTitle, { color: colors.textPrimary }]} numberOfLines={2}>
@@ -390,7 +390,7 @@ export default function ParentHomeScreen() {
             <View
               style={[styles.actionIcon, { backgroundColor: colors.secondary }]}
             >
-              <Headphones size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <Headphones size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </View>
             <Text
               style={[styles.actionText, { color: colors.textPrimary }]}
@@ -408,7 +408,7 @@ export default function ParentHomeScreen() {
             <View
               style={[styles.actionIcon, { backgroundColor: colors.warning }]}
             >
-              <MessageSquare size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <MessageSquare size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </View>
             <Text
               style={[styles.actionText, { color: colors.textPrimary }]}
@@ -424,7 +424,7 @@ export default function ParentHomeScreen() {
             onPress={() => navigation.navigate("GrowthRecord")}
           >
             <View style={[styles.actionIcon, { backgroundColor: colors.info }]}>
-              <BarChart3 size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <BarChart3 size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </View>
             <Text
               style={[styles.actionText, { color: colors.textPrimary }]}
@@ -442,7 +442,7 @@ export default function ParentHomeScreen() {
             <View
               style={[styles.actionIcon, { backgroundColor: colors.error }]}
             >
-              <Heart size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <Heart size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </View>
             <Text
               style={[styles.actionText, { color: colors.textPrimary }]}
@@ -460,7 +460,7 @@ export default function ParentHomeScreen() {
             <View
               style={[styles.actionIcon, { backgroundColor: colors.info }]}
             >
-              <Wind size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <Wind size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </View>
             <Text
               style={[styles.actionText, { color: colors.textPrimary }]}

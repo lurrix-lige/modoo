@@ -228,7 +228,7 @@ export default function ProfileScreen() {
           <>
             <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
               <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-                <User size={responsive.moderateScale(iconSizes.xxl)} color={commonColors.white} />
+                <User size={responsive.moderateScaleForIcon(iconSizes.xxl)} color={commonColors.white} />
               </View>
               <View style={styles.profileInfo}>
                 <Text style={[styles.nickname, { color: colors.textPrimary }]}>
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
                 </Text>
               </View>
               <TouchableOpacity onPress={() => {}}>
-                <ChevronRight size={responsive.moderateScale(iconSizes.lg)} color={colors.textSecondary} />
+                <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -248,7 +248,7 @@ export default function ProfileScreen() {
               onPress={switchToChildMode}
             >
               <View style={styles.childModeContent}>
-                <Baby size={responsive.moderateScale(iconSizes.xl)} color={commonColors.white} />
+                <Baby size={responsive.moderateScaleForIcon(iconSizes.xl)} color={commonColors.white} />
                 <View style={styles.childModeText}>
                   <Text style={[styles.childModeTitle, { color: commonColors.white }]}>
                     {t('profile.childModeTitle')}
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
               </View>
-              <ArrowRight size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+              <ArrowRight size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
             </TouchableOpacity>
 
             <View style={[styles.menuSection, { backgroundColor: colors.surface }]}>
@@ -272,12 +272,12 @@ export default function ProfileScreen() {
                   onPress={() => handleMenuPress(item)}
                 >
                   <View style={styles.menuLeft}>
-                    {(() => { const IconComp = profileIconMap[item.icon] || User; return <IconComp size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />; })()}
+                    {(() => { const IconComp = profileIconMap[item.icon] || User; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />; })()}
                     <Text style={[styles.menuText, { color: colors.textPrimary }]}>
                       {t(item.titleKey)}
                     </Text>
                   </View>
-                  <ChevronRight size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                  <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -286,7 +286,7 @@ export default function ProfileScreen() {
               style={[styles.logoutButton, { backgroundColor: colors.surface }]}
               onPress={handleLogout}
             >
-              <LogOut size={responsive.moderateScale(iconSizes.lg)} color={colors.error} />
+              <LogOut size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.error} />
               <Text style={[styles.logoutText, { color: colors.error }]}>
                 {t('profile.logout')}
               </Text>

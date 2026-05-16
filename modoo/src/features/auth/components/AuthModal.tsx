@@ -40,7 +40,7 @@ export function AuthModal({ visible, onLogin, onDismiss, title, message }: AuthM
       <View style={[styles.overlay, { backgroundColor: overlayColor }]}>
         <View style={[styles.modal, { backgroundColor: colors.surface }]}>
           <View style={[styles.iconContainer, { backgroundColor: iconContainerColor }]}>
-            <Lock size={responsive.moderateScale(iconSizes.hero)} color={colors.primary} />
+            <Lock size={responsive.moderateScaleForIcon(iconSizes.hero)} color={colors.primary} />
           </View>
 
           <Text style={[styles.title, { color: colors.textPrimary }]}>
@@ -88,7 +88,7 @@ function FeatureItem({ text }: { text: string }) {
   const { colors } = useTheme();
   return (
     <View style={styles.featureItem}>
-      <Shield size={responsive.moderateScale(iconSizes.md)} color={colors.primary} />
+      <Shield size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.primary} />
       <Text style={[styles.featureText, { color: colors.textSecondary }]}>{text}</Text>
     </View>
   );

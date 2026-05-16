@@ -105,7 +105,7 @@ export default function KnowledgeScreen() {
 
       <View style={styles.searchContainer}>
         <View style={[styles.searchInput, { backgroundColor: colors.surface }]}>
-          <Search size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+          <Search size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
           <TextInput
             style={[styles.searchText, { color: colors.textPrimary }]}
             placeholder={t('knowledge.searchPlaceholder')}
@@ -170,7 +170,7 @@ export default function KnowledgeScreen() {
                       resizeMode="cover"
                     />
                   ) : (
-                    <FileText size={responsive.moderateScale(iconSizes.xxl)} color={commonColors.white} />
+                    <FileText size={responsive.moderateScaleForIcon(iconSizes.xxl)} color={commonColors.white} />
                   )}
                 </View>
                 <View style={styles.articleInfo}>
@@ -184,13 +184,13 @@ export default function KnowledgeScreen() {
                     </View>
                     <View style={styles.articleMeta}>
                       <View style={styles.metaItem}>
-                        <Eye size={responsive.moderateScale(iconSizes.sm)} color={colors.textSecondary} />
+                        <Eye size={responsive.moderateScaleForIcon(iconSizes.sm)} color={colors.textSecondary} />
                         <Text style={[styles.metaText, { color: colors.textSecondary }]}>
                           {article.views}
                         </Text>
                       </View>
                       <View style={styles.metaItem}>
-                        <Clock size={responsive.moderateScale(iconSizes.sm)} color={colors.textSecondary} />
+                        <Clock size={responsive.moderateScaleForIcon(iconSizes.sm)} color={colors.textSecondary} />
                         <Text style={[styles.metaText, { color: colors.textSecondary }]}>
                           {article.readTime}{t('knowledge.minutes')}
                         </Text>
@@ -212,14 +212,14 @@ export default function KnowledgeScreen() {
                 style={[styles.quickButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.navigate('Dialogue')}
               >
-                <MessageSquare size={responsive.moderateScale(iconSizes.lg)} color={colors.warning} />
+                <MessageSquare size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.warning} />
                 <Text style={[styles.quickText, { color: colors.textPrimary }]}>{t('knowledge.dialogue')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.quickButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.navigate('Favorites')}
               >
-                <Heart size={responsive.moderateScale(iconSizes.lg)} color={colors.error} />
+                <Heart size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.error} />
                 <Text style={[styles.quickText, { color: colors.textPrimary }]}>{t('knowledge.favorites')}</Text>
               </TouchableOpacity>
             </View>

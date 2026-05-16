@@ -31,7 +31,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
   // 内层尺寸 比例 50/180 = 0.833，00/120 = 0.833
   const innerSizeRatio = 0.833;
   // 图标尺寸
-  const iconSize = responsive.moderateScale(iconSizes.hero);
+  const iconSize = responsive.moderateScaleForIcon(iconSizes.hero);
 
   return (
     <View style={[styles.playerSection, isLandscape && styles.landscapePlayerSection]}>
@@ -74,7 +74,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
             accessibilityState={{ disabled: !hasPrevStory }}
           >
             <ChevronLeft
-              size={responsive.moderateScale(iconSizes.md)}
+              size={responsive.moderateScaleForIcon(iconSizes.md)}
               color={hasPrevStory ? colors.textPrimary : colors.textDisabled}
             />
           </TouchableOpacity>
@@ -96,7 +96,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
             accessibilityState={{ disabled: !hasNextStory }}
           >
             <ChevronRight
-              size={responsive.moderateScale(iconSizes.md)}
+              size={responsive.moderateScaleForIcon(iconSizes.md)}
               color={hasNextStory ? colors.textPrimary : colors.textDisabled}
             />
           </TouchableOpacity>

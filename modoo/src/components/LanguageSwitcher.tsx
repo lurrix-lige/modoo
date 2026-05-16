@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useLanguage, availableLanguages } from '../hooks/useLanguage';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, typography, responsive } from '../theme';
 import { spacing } from '../theme/spacing';
 
 interface LanguageSwitcherProps {
@@ -32,7 +32,7 @@ export function LanguageSwitcher({ horizontal = false }: LanguageSwitcherProps) 
       borderColor: colors.primary,
     },
     text: {
-      fontSize: 16,
+      fontSize: responsive.scaledFontSize(typography.fontSize.lg),
       color: colors.textPrimary,
     },
     activeText: {
@@ -40,7 +40,7 @@ export function LanguageSwitcher({ horizontal = false }: LanguageSwitcherProps) 
       fontWeight: '600',
     },
     nativeName: {
-      fontSize: 12,
+      fontSize: responsive.scaledFontSize(typography.fontSize.xs),
       color: colors.textSecondary,
     },
     activeNativeName: {

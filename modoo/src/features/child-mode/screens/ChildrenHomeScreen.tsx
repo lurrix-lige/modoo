@@ -1,10 +1,13 @@
 /**
  * 儿童首页屏幕组件
  * 
- * 该页面是儿童模式下的主界面，包含以下核心功能� * - 显示欢迎问候和儿童昵称
- * - 守护精灵展示区域（带呼吸动画效果� * - 故事分类筛选（全部、勇敢、梦想、推荐）
+ * 该页面是儿童模式下的主界面，包含以下核心功能：
+ * - 1. - 显示欢迎问候和儿童昵称
+ * - 守护精灵展示区域（带呼吸动画效果）
+ * - 故事分类筛选（全部、勇敢、梦想、推荐）
  * - 故事列表横向滚动展示
- * - 加载骨架屏、错误状态、空状态处� * - 家长模式入口提示
+ * - 加载骨架屏、错误状态、空状态处理
+ * - 家长模式入口提示
  * 
  * @component
  */
@@ -20,7 +23,8 @@ import { SafeAreaContainer } from '../../../components';
 import { BookOpen, Star, Clock, Heart, Play, User, ChevronDown, Layout, Shield, RefreshCw, Library } from 'lucide-react-native';
 
 /**
- * 儿童图标映射� * 将图标名称字符串映射到对应的 Lucide 图标组件
+ * 儿童图标映射
+ * 将图标名称字符串映射到对应的 Lucide 图标组件
  */
 const childrenIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'person-outline': User,
@@ -67,28 +71,28 @@ const categories = [
 export default function ChildrenHomeScreen() {
   // 导航对象，用于页面跳转
   const navigation = useNavigation<ChildrenHomeNavigationProp>();
-  
+
   // 国际化翻译钩子
   const { t } = useTranslation();
-  
+
   // 主题颜色和深色模式状态
   const { colors, isDark } = useTheme();
-  
+
   // 从全局状态获取儿童信息和认证状态
   const { child, isAuthenticated } = useAppStore();
-  
+
   // 当前选中的分类
   const [selectedCategory, setSelectedCategory] = useState('all');
-  
+
   // 页面加载状态
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // 下拉刷新状态
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   // 数据加载错误状态
   const [hasError, setHasError] = useState(false);
-  
+
   // 故事列表数据
   const [stories, setStories] = useState<Story[]>([]);
 
@@ -132,7 +136,7 @@ export default function ChildrenHomeScreen() {
     }
     setHasError(false);
     try {
-  const response = await apiService.getStories();
+      const response = await apiService.getStories();
       setStories(response.stories);
     } catch (error) {
       logger.error('Failed to load data', { error });
@@ -178,9 +182,7 @@ export default function ChildrenHomeScreen() {
    * 在数据加载期间显示占位动画
    */
   const renderLoadingSkeleton = () => (
-    <ScrollView 
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.skeletonContainer}>
         <View style={styles.skeletonHeader}>
           <View style={styles.skeletonHeaderLeft}>
@@ -237,7 +239,7 @@ export default function ChildrenHomeScreen() {
       {isLoading && !isRefreshing ? (
         renderLoadingSkeleton()
       ) : (
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1 }}
         >
@@ -257,7 +259,7 @@ export default function ChildrenHomeScreen() {
                 style={[styles.settingsButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.getParent()?.getParent()?.navigate('ChildLock')}
               >
-                <User size={iconSizes.lg} color={colors.textSecondary} />
+                <User size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -289,7 +291,7 @@ export default function ChildrenHomeScreen() {
             </View>
 
             <View style={styles.downArrow}>
-              <ChevronDown size={iconSizes.lg} color={colors.textSecondary} />
+              <ChevronDown size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
             </View>
           </TouchableOpacity>
 
@@ -308,7 +310,7 @@ export default function ChildrenHomeScreen() {
                   ]}
                   onPress={() => setSelectedCategory(cat.id)}
                 >
-                  {(() => { const IconComp = childrenIconMap[cat.icon] || Layout; return <IconComp size={iconSizes.sm} color={selectedCategory === cat.id ? commonColors.white : colors.textSecondary} />; })()}
+                  {(() => { const IconComp = childrenIconMap[cat.icon] || Layout; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.sm)} color={selectedCategory === cat.id ? commonColors.white : colors.textSecondary} />; })()}
                   <Text
                     style={[
                       styles.categoryText,
@@ -333,7 +335,7 @@ export default function ChildrenHomeScreen() {
                   style={styles.refreshButton}
                   onPress={handleRefresh}
                 >
-                  <RefreshCw size={iconSizes.md} color={colors.primary} />
+                  <RefreshCw size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.primary} />
                 </TouchableOpacity>
               )}
             </View>
@@ -407,7 +409,7 @@ export default function ChildrenHomeScreen() {
   );
 }
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   header: {
     ...sharedStyles.rowBetween,
     paddingHorizontal: spacing.xl,
@@ -436,7 +438,7 @@ export default function ChildrenHomeScreen() {
     ...sharedStyles.columnCenter,
     paddingVertical: spacing.xxl,
   },
-  
+
   guardianBubble: {
     ...sharedStyles.columnCenter,
   },

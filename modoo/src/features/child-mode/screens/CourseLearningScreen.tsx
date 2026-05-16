@@ -15,7 +15,7 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, Music, ArrowLeft, Sun } fr
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive } from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { useCourseAudio, CourseAudioTrack } from '../../../providers/CourseAudioProvider';
 import { apiService, Lesson } from '../../../services';
@@ -391,7 +391,7 @@ export default function CourseLearningScreen() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <Text style={{ color: commonColors.white, fontSize: 24 }}>...</Text>
+                <Text style={{ color: commonColors.white, fontSize: responsive.scaledFontSize(typography.fontSize.xxl) }}>...</Text>
               ) : isPlaying ? (
                 <Pause size={32} color={commonColors.white} />
               ) : (

@@ -74,7 +74,7 @@ export default function SettingsScreen() {
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <ArrowLeft size={responsive.moderateScale(iconSizes.lg)} color={colors.textPrimary} />
+          <ArrowLeft size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.textPrimary }]}>{t('settings.title')}</Text>
       </View>
@@ -90,7 +90,7 @@ export default function SettingsScreen() {
               onPress={handleThemePress}
             >
               <View style={styles.settingLeft}>
-                <Palette size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                <Palette size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
                 <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
                   {t('settings.themeMode')}
                 </Text>
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
                 <Text style={[styles.settingValue, { color: colors.textSecondary }]}>
                   {getCurrentThemeLabel()}
                 </Text>
-                <ChevronRight size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
               </View>
             </TouchableOpacity>
 
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
               onPress={handleLanguagePress}
             >
               <View style={styles.settingLeft}>
-                <Globe size={responsive.moderateScale(iconSizes.lg)} color={colors.textSecondary} />
+                <Globe size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
                 <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
                   {t('settings.language')}
                 </Text>
@@ -117,7 +117,7 @@ export default function SettingsScreen() {
                 <Text style={[styles.settingValue, { color: colors.textSecondary }]}>
                   {getCurrentLanguageLabel()}
                 </Text>
-                <ChevronRight size={responsive.moderateScale(iconSizes.lg)} color={colors.textSecondary} />
+                <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
               </View>
             </TouchableOpacity>
           </View>
@@ -142,7 +142,7 @@ export default function SettingsScreen() {
                 onPress={() => handleThemeSelect(theme.mode)}
               >
                 <View style={styles.themePreviewIcon}>
-                  {(() => { const IconComp = settingsIconMap[theme.icon] || Palette; return <IconComp size={responsive.moderateScale(iconSizes.xl)} color={themeMode === theme.mode ? colors.primary : colors.textSecondary} />; })()}
+                  {(() => { const IconComp = settingsIconMap[theme.icon] || Palette; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={themeMode === theme.mode ? colors.primary : colors.textSecondary} />; })()}
                 </View>
                 <Text
                   style={[
@@ -157,7 +157,7 @@ export default function SettingsScreen() {
                 </Text>
                 {themeMode === theme.mode && (
                   <View style={[styles.themeSelectedBadge, { backgroundColor: colors.primary }]}>
-                    <Check size={responsive.moderateScale(iconSizes.sm)} color={commonColors.white} />
+                    <Check size={responsive.moderateScaleForIcon(iconSizes.sm)} color={commonColors.white} />
                   </View>
                 )}
               </TouchableOpacity>
@@ -175,12 +175,12 @@ export default function SettingsScreen() {
               onPress={handleUserAgreement}
             >
               <View style={styles.settingLeft}>
-                <FileText size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                <FileText size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
                 <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
                   {t('settings.userAgreement')}
                 </Text>
               </View>
-              <ChevronRight size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+              <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -188,12 +188,12 @@ export default function SettingsScreen() {
               onPress={handlePrivacyPolicy}
             >
               <View style={styles.settingLeft}>
-                <ShieldCheck size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                <ShieldCheck size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
                 <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
                   {t('settings.privacyPolicy')}
                 </Text>
               </View>
-              <ChevronRight size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+              <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
         </View>

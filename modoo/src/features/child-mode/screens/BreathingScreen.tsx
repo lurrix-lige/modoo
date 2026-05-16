@@ -105,7 +105,7 @@ export default function BreathingScreen() {
   const renderErrorState = () => (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
       <View style={[styles.errorCard, { backgroundColor: colors.surface }]}>
-        <AlertCircle size={responsive.moderateScale(iconSizes.hero)} color={colors.error} />
+        <AlertCircle size={responsive.moderateScaleForIcon(iconSizes.hero)} color={colors.error} />
         <Text style={[styles.errorText, { color: colors.textPrimary }]}>
           {loadError || t('breathing.loadError')}
         </Text>
@@ -124,7 +124,7 @@ export default function BreathingScreen() {
   const renderEmptyState = () => (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
       <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
-        <Cloud size={responsive.moderateScale(iconSizes.hero)} color={colors.textSecondary} />
+        <Cloud size={responsive.moderateScaleForIcon(iconSizes.hero)} color={colors.textSecondary} />
         <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
           {t('breathing.emptyState')}
         </Text>
@@ -187,7 +187,7 @@ export default function BreathingScreen() {
                           { backgroundColor: selectedExercise === exercise.id ? colors.textPrimary : colors.primary },
                         ]}
                       >
-                        <Leaf size={responsive.moderateScale(iconSizes.lg)} color={selectedExercise === exercise.id ? colors.primary : colors.textPrimary} />
+                        <Leaf size={responsive.moderateScaleForIcon(iconSizes.lg)} color={selectedExercise === exercise.id ? colors.primary : colors.textPrimary} />
                       </View>
                       <View style={styles.exerciseInfo}>
                         <Text
@@ -207,7 +207,7 @@ export default function BreathingScreen() {
                           {exerciseInfo.desc}
                         </Text>
                       </View>
-                      <PlayCircle size={responsive.moderateScale(iconSizes.xl)} color={selectedExercise === exercise.id ? colors.textPrimary : colors.primary} />
+                      <PlayCircle size={responsive.moderateScaleForIcon(iconSizes.xl)} color={selectedExercise === exercise.id ? colors.textPrimary : colors.primary} />
                     </TouchableOpacity>
                   );
                 })}

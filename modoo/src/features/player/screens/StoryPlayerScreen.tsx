@@ -187,7 +187,7 @@ export default function StoryPlayerScreen() {
         <View style={[styles.contentSection, contentStyle]}>
           <View style={styles.header}>
             <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-              <ArrowLeft size={responsive.moderateScale(iconSizes.xl)} color={colors.textPrimary} />
+              <ArrowLeft size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1}>
               {story.title}
@@ -196,14 +196,14 @@ export default function StoryPlayerScreen() {
               {isPiPAvailable && (
                 <TouchableOpacity style={styles.headerButton} onPress={togglePiP}>
                   <PictureInPicture
-                    size={responsive.moderateScale(iconSizes.lg)}
+                    size={responsive.moderateScaleForIcon(iconSizes.lg)}
                     color={isPiPActive ? colors.primary : colors.textPrimary}
                   />
                 </TouchableOpacity>
               )}
               <TouchableOpacity style={styles.moreButton}>
                 <MoreHorizontal
-                  size={responsive.moderateScale(iconSizes.lg)}
+                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
                   color={colors.textPrimary}
                 />
               </TouchableOpacity>
@@ -262,7 +262,7 @@ export default function StoryPlayerScreen() {
           <View style={[styles.secondaryControls, isLandscapeMode && styles.landscapeSecondaryControls]}>
             <TouchableOpacity style={styles.secondaryButton} onPress={handleFavorite}>
               <Heart
-                size={responsive.moderateScale(iconSizes.lg)}
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
                 color={story.isFavorite ? colors.error : colors.textSecondary}
                 fill={story.isFavorite ? colors.error : 'none'}
               />
@@ -274,7 +274,7 @@ export default function StoryPlayerScreen() {
             >
               <View style={styles.timerButtonContainer}>
                 <Timer
-                  size={responsive.moderateScale(iconSizes.lg)}
+                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
                   color={colors.textSecondary}
                 />
                 {timerDuration && (
@@ -289,12 +289,12 @@ export default function StoryPlayerScreen() {
               <View style={styles.shareButtonContainer}>
                 {shareSuccess ? (
                   <Check
-                    size={responsive.moderateScale(iconSizes.lg)}
+                    size={responsive.moderateScaleForIcon(iconSizes.lg)}
                     color={colors.success}
                   />
                 ) : (
                   <Share2
-                    size={responsive.moderateScale(iconSizes.lg)}
+                    size={responsive.moderateScaleForIcon(iconSizes.lg)}
                     color={colors.textSecondary}
                   />
                 )}
@@ -303,14 +303,14 @@ export default function StoryPlayerScreen() {
 
             <TouchableOpacity style={styles.secondaryButton} onPress={toggleOrientation}>
               <RotateCcw
-                size={responsive.moderateScale(iconSizes.lg)}
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
                 color={isLandscape ? colors.primary : colors.textSecondary}
               />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.secondaryButton} onPress={toggleBrightness}>
               <Sun
-                size={responsive.moderateScale(iconSizes.lg)}
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
                 color={isNightMode ? colors.primary : colors.textSecondary}
                 fill={isNightMode ? colors.primary : 'none'}
               />
@@ -320,7 +320,7 @@ export default function StoryPlayerScreen() {
           {!isLandscapeMode && (
             <View style={[styles.tipCard, { backgroundColor: colors.surface }]}>
               <ShieldAlert
-                size={responsive.moderateScale(iconSizes.lg)}
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
                 color={colors.success}
               />
               <Text style={[styles.tipText, { color: colors.textSecondary }]}>

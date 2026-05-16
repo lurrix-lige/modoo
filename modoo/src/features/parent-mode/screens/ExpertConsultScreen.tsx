@@ -27,6 +27,7 @@ import {
   shadows,
   commonColors,
   sharedStyles,
+  responsive,
 } from "../../../theme";
 
 import { Button, AuthModal } from "../../../components";
@@ -487,7 +488,7 @@ const styles = StyleSheet.create({
   },
 
   avatarText: {
-    fontSize: 28,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
   },
 
   expertInfo: {

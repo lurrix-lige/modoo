@@ -13,6 +13,16 @@ const verticalScale = (size: number) => (screenHeight / standardHeight) * size;
 
 const moderateScale = (size: number, factor = 0.5) => size + (scale(size) - size) * factor;
 
+const moderateScaleForIcon = (size: number, maxSize: number = 32) => {
+  const scaled = size + (scale(size) - size) * 0.3;
+  return Math.min(scaled, maxSize);
+};
+
+const moderateScaleForFont = (size: number, maxSize: number = 24) => {
+  const scaled = size + (scale(size) - size) * 0.3;
+  return Math.min(scaled, maxSize);
+};
+
 const responsiveWidth = (percentage: number) => (screenWidth * percentage) / 100;
 
 const responsiveHeight = (percentage: number) => (screenHeight * percentage) / 100;
@@ -47,7 +57,7 @@ const getFontScale = () => PixelRatio.getFontScale();
 
 const scaledFontSize = (size: number) => {
   const fontScale = getFontScale();
-  return moderateScale(size, 0.4) * fontScale;
+  return moderateScaleForFont(size, 24) * fontScale;
 };
 
 const getSpacing = (size: number) => {
@@ -87,6 +97,8 @@ export const responsive = {
   scale,
   verticalScale,
   moderateScale,
+  moderateScaleForIcon,
+  moderateScaleForFont,
   responsiveWidth,
   responsiveHeight,
   scaledFontSize,

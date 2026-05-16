@@ -43,7 +43,7 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
   return (
     <Card style={styles.contentCard} onPress={onPress} variant="glass" elevated>
       <View style={[styles.contentIcon, { backgroundColor: colors.primary + '20' }]}>
-        {(() => { const IconComp = dashboardIconMap[getIcon(item.type)] || Star; return <IconComp size={responsive.moderateScale(iconSizes.xl)} color={colors.primary} />; })()}
+        {(() => { const IconComp = dashboardIconMap[getIcon(item.type)] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />; })()}
       </View>
       <Text style={[styles.contentTitle, { color: colors.textPrimary }]} numberOfLines={1}>
         {item.title}
@@ -53,7 +53,7 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
       </Text>
       {item.isPremium && (
         <View style={[styles.premiumBadge, { backgroundColor: colors.primary + '20' }]}>
-          <Star size={responsive.moderateScale(iconSizes.sm)} color={colors.primary} />
+          <Star size={responsive.moderateScaleForIcon(iconSizes.sm)} color={colors.primary} />
           <Text style={[styles.premiumText, { color: colors.primary }]}>VIP</Text>
         </View>
       )}
@@ -69,7 +69,7 @@ function MembershipPromoCard({ onUpgrade }: { onUpgrade: () => void }) {
     <View style={[styles.promoCard, { backgroundColor: colors.primary }]}>
       <View style={styles.promoContent}>
         <View style={[styles.promoIcon, { backgroundColor: colors.primaryLight }]}>
-          <Star size={responsive.moderateScale(iconSizes.hero)} color={commonColors.white} />
+          <Star size={responsive.moderateScaleForIcon(iconSizes.hero)} color={commonColors.white} />
         </View>
         <Text style={styles.promoTitle}>{t('dashboard.unlockContent')}</Text>
         <Text style={[styles.promoDesc, { color: commonColors.white }]}>{t('dashboard.unlockDesc')}</Text>

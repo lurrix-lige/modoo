@@ -181,7 +181,7 @@ export default function CourseScreen() {
             <View style={styles.levelOverview}>
               <View style={[styles.levelCard, { backgroundColor: colors.surface }]}>
                 <View style={[styles.levelIcon, { backgroundColor: colors.primary }]}>
-                  <GraduationCap size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+                  <GraduationCap size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
                 </View>
                 <Text style={[styles.levelLabel, { color: colors.textSecondary }]}>
                   {t('course.currentProgress')}
@@ -193,7 +193,7 @@ export default function CourseScreen() {
 
               <View style={[styles.levelCard, { backgroundColor: colors.surface }]}>
                 <View style={[styles.levelIcon, { backgroundColor: colors.warning }]}>
-                  <Trophy size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+                  <Trophy size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
                 </View>
                 <Text style={[styles.levelLabel, { color: colors.textSecondary }]}>
                   {t('course.earnedBadges')}
@@ -218,7 +218,7 @@ export default function CourseScreen() {
                 >
                   <View style={[styles.courseImage, { backgroundColor: isLocked ? colors.secondary : colors.primary }]}>
                     {isLocked ? (
-                      <Lock size={responsive.moderateScale(iconSizes.lg)} color={commonColors.white} />
+                      <Lock size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
                     ) : (
                       <Text style={[styles.courseLevel, { color: commonColors.white }]}>{course.level}</Text>
                     )}
@@ -256,7 +256,7 @@ export default function CourseScreen() {
                     </Text>
                   </View>
 
-                  <ChevronRight size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+                  <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
                 </TouchableOpacity>
               );
             })}

@@ -61,7 +61,7 @@ export default function MembershipScreen() {
   useEffect(() => {
     loadPlans();
 
-    // Èç¹û´ÓServicesScreen ´«µİÁË selectedPlanId£¬ÔòÊ¹ÓÃËü
+    // å‚è€ƒServicesScreen å¦‚æœæœ‰ selectedPlanIdåˆ™ä½¿ç”¨å®ƒ
     if (route.params?.selectedPlanId) {
       setSelectedPlan(route.params.selectedPlanId);
     }
@@ -72,7 +72,7 @@ export default function MembershipScreen() {
     try {
       const plans = await apiService.getMembershipPlans();
       setPlans(plans);
-      // Èç¹ûÓĞÌ×²ÍÇÒÃ»ÓĞÒÑÑ¡ÔñµÄ£¬Ä¬ÈÏÑ¡ÔñµÚÒ»¸ö
+      // é»˜è®¤é€‰ä¸­æ¿å—ç”¨æˆ·å·²é€‰æ‹©çš„ï¼Œé»˜è®¤é€‰ä¸­ç¬¬ä¸€ä¸ª
       if (plans.length > 0 && !plans.find(p => p.id === selectedPlan)) {
         setSelectedPlan(plans[0].id);
       }
@@ -86,7 +86,7 @@ export default function MembershipScreen() {
 
   const handleSubscribe = async () => {
     if (!isAuthenticated) {
-      // Î´µÇÂ¼Ê±Ö±½ÓÌø×ªµ½µÇÂ¼Ò³Ãæ£¬±£´æÓÃ»§Ñ¡ÔñµÄÌ×²Í
+      // æœªç™»å½•æ—¶ç›´æ¥è·³è½¬ç™»å½•é¡µé¢ï¼Œè®©ç”¨æˆ·é€‰æ‹©å¥—é¤
       navigation.getParent()?.navigate('Auth', { 
         fromScreen: 'Membership', 
         selectedPlanId: selectedPlan 
@@ -96,7 +96,7 @@ export default function MembershipScreen() {
 
     setIsProcessing(true);
     try {
-      await apiService.subscribe(selectedPlan, true); // ´«Èë suppressError£¬±ÜÃâÖØ¸´ÌáÊ¾
+      await apiService.subscribe(selectedPlan, true); // æš‚æ—¶ suppressErrorï¼Œè¿”å›é”™è¯¯æç¤º
       const { setPaidStatus } = useAppStore.getState();
       setPaidStatus(true);
       Alert.alert(t('membership.openSuccess'), t('membership.openSuccessDesc'));
@@ -113,7 +113,7 @@ export default function MembershipScreen() {
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <ArrowLeft size={responsive.moderateScale(iconSizes.lg)} color={colors.textPrimary} />
+          <ArrowLeft size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.textPrimary }]}>{t('membership.openMembership')}</Text>
         <View style={styles.placeholder} />
@@ -122,7 +122,7 @@ export default function MembershipScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.heroSection}>
           <View style={[styles.heroCard, { backgroundColor: colors.primary }]}>
-            <Star size={responsive.moderateScale(iconSizes.xxxl)} color={commonColors.white} />
+            <Star size={responsive.moderateScaleForIcon(iconSizes.xxxl)} color={commonColors.white} />
             <Text style={[styles.heroTitle, { color: commonColors.white }]}>{t('membership.heroTitle')}</Text>
             <Text style={[styles.heroDesc, { color: commonColors.white }]}>{t('membership.heroDesc')}</Text>
           </View>
@@ -134,7 +134,7 @@ export default function MembershipScreen() {
             {BENEFITS.map((benefit, index) => (
             <View key={index} style={[styles.benefitCard, { backgroundColor: colors.surface }]}>
               <View style={[styles.benefitIcon, { backgroundColor: colors.primary + '20' }]}>
-                {(() => { const IconComp = membershipIconMap[benefit.icon] || Star; return <IconComp size={responsive.moderateScale(iconSizes.lg)} color={colors.primary} />; })()}
+                {(() => { const IconComp = membershipIconMap[benefit.icon] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.primary} />; })()}
               </View>
               <Text style={[styles.benefitTitle, { color: colors.textPrimary }]}>
                 {t(benefit.titleKey)}

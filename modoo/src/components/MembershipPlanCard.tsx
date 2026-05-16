@@ -92,7 +92,7 @@ export function MembershipPlanCard({
         {featuresArray.map((feature, index) => (
           <View key={index} style={styles.featureItem}>
             <CheckCircle
-              size={responsive.moderateScale(iconSizes.sm)}
+              size={responsive.moderateScaleForIcon(iconSizes.sm)}
               color={plan.recommended ? commonColors.white : colors.success}
             />
             <Text
@@ -110,7 +110,7 @@ export function MembershipPlanCard({
 
       {isSelected && (
         <View style={[styles.selectedIndicator, { backgroundColor: colors.primary }]}>
-          <CheckCircle size={responsive.moderateScale(iconSizes.md)} color={commonColors.white} />
+          <CheckCircle size={responsive.moderateScaleForIcon(iconSizes.md)} color={commonColors.white} />
         </View>
       )}
     </TouchableOpacity>

@@ -24,7 +24,7 @@ const iconMap: Record<string, React.ComponentType<{ size: number; color: string 
   'system': Smartphone,
 };
 import { useTranslation } from 'react-i18next';
-import { useTheme, useThemeToggle } from '../theme';
+import { useTheme, useThemeToggle, responsive, typography } from '../theme';
 
 interface ThemeToggleProps {
   size?: number;
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   switcherLabel: {
-    fontSize: 12,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
     marginLeft: 4,
     fontWeight: '500',
   },

@@ -46,7 +46,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
     <View style={[styles.sidebar, { backgroundColor: isDark ? colors.surface : commonColors.white }]}>
       <View style={styles.logoSection}>
         <View style={[styles.logo, { backgroundColor: colors.primary }]}>
-          <Star size={responsive.moderateScale(iconSizes.xl)} color={commonColors.white} />
+          <Star size={responsive.moderateScaleForIcon(iconSizes.xl)} color={commonColors.white} />
         </View>
         <Text style={[styles.logoText, { color: colors.textPrimary }]}>Dozoo</Text>
       </View>
@@ -65,7 +65,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
               onPress={() => onTabPress(item.id)}
             >
               <IconComp 
-                size={responsive.moderateScale(iconSizes.lg)} 
+                size={responsive.moderateScaleForIcon(iconSizes.lg)} 
                 color={isActive ? colors.primary : colors.textSecondary} 
               />
               <Text style={[
@@ -91,7 +91,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
               onPress={() => onTabPress(item.id)}
             >
               <IconComp 
-                size={responsive.moderateScale(iconSizes.md)} 
+                size={responsive.moderateScaleForIcon(iconSizes.md)} 
                 color={colors.textSecondary} 
               />
               <Text style={[styles.navLabel, { color: colors.textSecondary }]}>
@@ -110,7 +110,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
           onPress={switchToChildMode}
         >
           <View style={[styles.childIcon, { backgroundColor: colors.secondary }]}>
-            <Shield size={responsive.moderateScale(iconSizes.sm)} color={commonColors.white} />
+            <Shield size={responsive.moderateScaleForIcon(iconSizes.sm)} color={commonColors.white} />
           </View>
           <View style={styles.childInfo}>
             <Text style={[styles.childName, { color: colors.textPrimary }]}>
@@ -125,7 +125,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
 
       <View style={styles.bottomSection}>
         <TouchableOpacity style={styles.settingsButton} onPress={() => onTabPress('settings')}>
-          <Settings size={responsive.moderateScale(iconSizes.md)} color={colors.textSecondary} />
+          <Settings size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
           <Text style={[styles.navLabel, { color: colors.textSecondary }]}>
             {t('common.settings')}
           </Text>

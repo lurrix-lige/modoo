@@ -111,11 +111,11 @@ export default function ExpertBookingsScreen() {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const weekdays = t('common.weekdays', { returnObjects: true }) as string[] || ['ÈÕ', 'Ò»', '¶þ', 'Èý', 'ËÄ', 'Îå', 'Áù'];
+    const weekdays = t('common.weekdays', { returnObjects: true }) as string[] || ['æ—¥', 'ä¸€', 'äºŒ', 'ä¸‰', 'å››', 'äº”', 'å…­'];
     const weekday = weekdays[date.getDay()];
     return {
       date: `${year}-${month}-${day}`,
-      weekday: `ÖÜ${weekday}`,
+      weekday: `${weekday}`,
     };
   };
 

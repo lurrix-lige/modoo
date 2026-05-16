@@ -1,7 +1,7 @@
 /**
  * 服务页面组件
  *
- * 数据来源说明�? * - 使用 apiService.getServices() 获取服务列表
+ * 数据来源说明�? * - 使用 apiService.getServices() 获取服务列表
  * - 使用 apiService.getMembershipPlans() 获取会员套餐
  */
 
@@ -135,7 +135,7 @@ export default function ServicesScreen() {
                   }}
                 >
                   <View style={[styles.serviceIcon, { backgroundColor: colors[service.colorKey] }]}>
-                    {(() => { const IconComp = servicesIconMap[service.icon] || Star; return <IconComp size={responsive.moderateScale(iconSizes.xl)} color={colors.textPrimary} />; })()}
+                    {(() => { const IconComp = servicesIconMap[service.icon] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />; })()}
                   </View>
                   <Text style={[styles.serviceTitle, { color: colors.textPrimary }]}>
                     {t(service.titleKey)}
@@ -150,7 +150,7 @@ export default function ServicesScreen() {
                 onPress={() => navigation.getParent()?.navigate('ExpertBookings')}
               >
                 <View style={[styles.serviceIcon, { backgroundColor: colors.primary + '20' }]}>
-                  <Calendar size={responsive.moderateScale(iconSizes.xl)} color={colors.primary} />
+                  <Calendar size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />
                 </View>
                 <Text style={[styles.serviceTitle, { color: colors.textPrimary }]}>
                   {t('services.manageBookings')}
@@ -179,7 +179,7 @@ export default function ServicesScreen() {
               ))}
 
               <View style={[styles.trustBadge, { backgroundColor: colors.surface }]}>
-                <ShieldCheck size={responsive.moderateScale(iconSizes.md)} color={colors.success} />
+                <ShieldCheck size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.success} />
                 <Text style={[styles.trustText, { color: colors.textSecondary }]}>
                   {t('services.trustBadge')}
                 </Text>

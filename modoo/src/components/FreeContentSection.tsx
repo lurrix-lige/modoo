@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Gift, Book, GraduationCap, Leaf, Star } from 'lucide-react-native';
-import { useTheme, spacing, borderRadius, commonColors } from '../theme';
+import { useTheme, spacing, borderRadius, commonColors, typography, responsive } from '../theme';
 import { ContentItem } from '../services';
 
 interface FreeContentSectionProps {
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
     fontWeight: '600',
   },
   contentList: {
@@ -122,15 +122,15 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   contentTitle: {
-    fontSize: 14,
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     fontWeight: '500',
     marginBottom: 4,
   },
   contentDesc: {
-    fontSize: 12,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
     marginBottom: 4,
   },
   duration: {
-    fontSize: 11,
+    fontSize: responsive.scaledFontSize(11),  // 11px 非常小，使用固定值
   },
 });

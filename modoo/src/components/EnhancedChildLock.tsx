@@ -28,6 +28,7 @@ import {
   borderRadius,
   typography,
   commonColors,
+  responsive,
 } from "../theme";
 
 interface EnhancedChildLockProps {
@@ -523,8 +524,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: spacing.xl,
   },
-  mathNumber: { fontSize: 48, fontWeight: typography.fontWeight.bold },
-  mathOperator: { fontSize: 36, marginHorizontal: spacing.md },
+  mathNumber: { fontSize: responsive.scaledFontSize(typography.fontSize.xxxl), fontWeight: typography.fontWeight.bold },
+  mathOperator: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), marginHorizontal: spacing.md },
   answerBox: {
     width: 80,
     height: 60,
@@ -534,7 +535,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: spacing.md,
   },
-  answerText: { fontSize: 36, fontWeight: typography.fontWeight.bold },
+  answerText: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), fontWeight: typography.fontWeight.bold },
   rotationContainer: { alignItems: "center", marginBottom: spacing.xl },
   rotationHint: { fontSize: typography.fontSize.sm, marginBottom: spacing.lg },
   rotationCircle: {
@@ -585,7 +586,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: spacing.sm,
   },
-  keyText: { fontSize: 24, fontWeight: typography.fontWeight.semibold },
+  keyText: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), fontWeight: typography.fontWeight.semibold },
   submitButton: {
     height: 56,
     borderRadius: borderRadius.md,
@@ -610,6 +611,6 @@ const styles = StyleSheet.create({
   },
   lockoutSubtitle: { fontSize: typography.fontSize.sm, marginTop: spacing.xs },
   lockoutContent: { padding: spacing.xxl, alignItems: "center" },
-  lockoutTimer: { fontSize: 64, fontWeight: typography.fontWeight.bold },
+  lockoutTimer: { fontSize: responsive.scaledFontSize(typography.fontSize.xxxl), fontWeight: typography.fontWeight.bold },
   lockoutText: { fontSize: typography.fontSize.md, marginTop: spacing.sm },
 });

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Animated } from 'react-native';
 import { Lock, Shield, CheckCircle, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, commonColors } from '../theme';
+import { useTheme, spacing, borderRadius, typography, commonColors, responsive } from '../theme';
 
 interface ChildLockModalProps {
   visible: boolean;
@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   mathNumber: {
-    fontSize: 48,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
     fontWeight: typography.fontWeight.bold,
   },
   mathOperator: {
-    fontSize: 36,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     marginHorizontal: spacing.md,
   },
   answerBox: {
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.md,
   },
   answerText: {
-    fontSize: 36,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     fontWeight: typography.fontWeight.bold,
   },
   errorText: {
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   keyText: {
-    fontSize: 24,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     fontWeight: typography.fontWeight.semibold,
   },
   cancelButton: {
