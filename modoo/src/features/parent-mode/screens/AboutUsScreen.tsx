@@ -135,7 +135,7 @@ export default function AboutUsScreen() {
         </View>
 
         <Text style={[styles.copyright, { color: colors.textSecondary }]}>
-          æ¼?2024-2026 {t('about.companyNameValue')}
+          Â©2024-2026 {t('about.companyNameValue')}
         </Text>
         <Text style={[styles.rights, { color: colors.textSecondary }]}>
           {t('about.allRightsReserved')}
