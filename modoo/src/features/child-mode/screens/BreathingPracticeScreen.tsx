@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Play, Pause, RefreshCw, CheckCircle, Settings, Sun } from 'lucide-react-native';
+import { ArrowLeft, Play, Pause, RefreshCw, CheckCircle, Settings } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +15,6 @@ import { useTheme, spacing, borderRadius, typography, commonColors, sharedStyles
 import { BreathingBalloon, ErrorToast } from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { logger } from '../../../utils/logger';
-import { setStatusBarHidden } from 'expo-status-bar';
 
 type BreathingPracticeNavigationProp = NativeStackNavigationProp<ChildrenStackParamList>;
 
@@ -54,7 +52,6 @@ export default function BreathingPracticeScreen() {
     visible: false,
     message: '',
   });
-  const [statusBarHidden, setStatusBarHidden] = useState(false);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -89,20 +86,6 @@ export default function BreathingPracticeScreen() {
       }
     };
   }, [isActive]);
-
-  // 状态栏控制
-  useEffect(() => {
-    setStatusBarHidden(statusBarHidden);
-
-    return () => {
-      setStatusBarHidden(false);
-    };
-  }, [statusBarHidden]);
-
-  // 切换全屏模式（隐藏状态栏）
-  const toggleFullscreen = useCallback(() => {
-    setStatusBarHidden(prev => !prev);
-  }, []);
 
   const runBreathingCycle = () => {
     let phaseIndex = 0;
@@ -197,9 +180,7 @@ export default function BreathingPracticeScreen() {
               <ArrowLeft size={24} color={colors.textPrimary} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('breathing.exercises')}</Text>
-            <TouchableOpacity style={styles.fullscreenButton} onPress={toggleFullscreen}>
-              <Sun size={24} color={statusBarHidden ? colors.primary : colors.textPrimary} />
-            </TouchableOpacity>
+            <View style={styles.placeholder} />
           </View>
 
           <View style={styles.content}>
@@ -327,7 +308,7 @@ export default function BreathingPracticeScreen() {
         )}
       </View>
 
-      <SafeAreaView style={[styles.footer, { backgroundColor: colors.surface }]} edges={['bottom']}>
+      <View style={[styles.footer, { backgroundColor: colors.surface }]}>
             <TouchableOpacity
               style={[
                 styles.mainButton,
@@ -336,12 +317,12 @@ export default function BreathingPracticeScreen() {
               onPress={togglePractice}
               disabled={isLoading}
             >
-              {isActive ? <Pause size={32} color={colors.textPrimary} /> : <Play size={32} color={colors.textPrimary} />}
+              {isActive ? <Pause size={24} color={colors.textPrimary} /> : <Play size={24} color={colors.textPrimary} />}
               <Text style={[styles.mainButtonText, { color: commonColors.white }]}>
                 {isActive ? t('breathing.pause') : t('common.start')}
               </Text>
             </TouchableOpacity>
-          </SafeAreaView>
+          </View>
 
           <ErrorToast
             visible={practiceError.visible}
@@ -374,8 +355,8 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
   },
-  fullscreenButton: {
-    padding: spacing.sm,
+  placeholder: {
+    width: 40,
   },
   content: {
     flex: 1,
@@ -465,7 +446,7 @@ const styles = StyleSheet.create({
   },
   mainButton: {
     ...sharedStyles.rowCenter,
-    height: 64,
+    height: 56,
     borderRadius: borderRadius.md,
     gap: spacing.sm,
   },

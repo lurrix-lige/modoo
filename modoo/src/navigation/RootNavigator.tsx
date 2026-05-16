@@ -163,11 +163,7 @@ function ChildrenStackNavigator() {
       <ChildrenStack.Screen name="ChildrenTab" component={ChildrenTabNavigator} />
       <ChildrenStack.Screen name="StoryPlayer" component={StoryPlayerScreen} />
       <ChildrenStack.Screen name="CourseDetail" component={CourseDetailScreen} />
-      <ChildrenStack.Screen 
-        name="BreathingPractice" 
-        component={BreathingPracticeScreen} 
-        options={{ presentation: 'fullScreenModal' }}
-      />
+      <ChildrenStack.Screen name="BreathingPractice" component={BreathingPracticeScreen} />
       <ChildrenStack.Screen name="CourseLearning" component={CourseLearningScreen} />
     </ChildrenStack.Navigator>
   );
