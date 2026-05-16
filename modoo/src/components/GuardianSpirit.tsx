@@ -3,7 +3,8 @@
  * 
  * 提供可复用的守护精灵动画展示功能，支持多种动画效果和配置选项。
  * 支持双层圆形设计，与 ChildrenHomeScreen 保持视觉一致性。
- 
+ * 支持显示精灵名称，自动处理断行和对齐。
+ * 
  * @component
  * @example
  * // 双层圆形设计（与 ChildrenHomeScreen 一致）
@@ -25,7 +26,7 @@
  * />
  */
 import React, { useRef, useEffect } from 'react';
-import { View, Animated, StyleSheet, TouchableWithoutFeedback, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, Animated, StyleSheet, TouchableWithoutFeedback, StyleProp, ViewStyle } from 'react-native';
 import { Moon, Star, ShieldCheck, Zap } from 'lucide-react-native';
 import { iconSizes, commonColors } from '../theme';
 
@@ -116,6 +117,29 @@ export interface GuardianSpiritProps {
   animated?: boolean;
 
   /**
+   * 精灵名称（显示在图标下方）
+   */
+  name?: string;
+
+  /**
+   * 名称文字颜色
+   * @default commonColors.black
+   */
+  nameColor?: string;
+
+  /**
+   * 名称文字大小
+   * @default 14
+   */
+  nameSize?: number;
+
+  /**
+   * 名称最大宽度（用于断行）
+   * @default 80
+   */
+  nameMaxWidth?: number;
+
+  /**
    * 圆角半径（相对于尺寸的比例）
    * @default 0.5（圆形）
    */
@@ -144,7 +168,7 @@ export interface GuardianSpiritProps {
 
 /**
  * 图标映射表 */
-const iconMap: Record<GuardianIconType, React.ComponentType<{ size: number; color: string }>> = {
+const iconMap: Record<GuardianIconType, any> = {
   'moon': Moon,
   'star': Star,
   'shield-checkmark': ShieldCheck,
@@ -163,6 +187,9 @@ const DEFAULT_ICON_COLOR = commonColors.white;
 const DEFAULT_ANIMATED = true;
 const DEFAULT_BORDER_RADIUS_RATIO = 0.5;
 const DEFAULT_SHOW_INNER_CIRCLE = true;
+const DEFAULT_NAME_COLOR = commonColors.black;
+const DEFAULT_NAME_SIZE = 14;
+const DEFAULT_NAME_MAX_WIDTH = 80;
 const DEFAULT_INNER_SIZE_RATIO = 0.7;
 
 /**
@@ -182,6 +209,10 @@ export default function GuardianSpirit({
   iconColor = DEFAULT_ICON_COLOR,
   animated = DEFAULT_ANIMATED,
   borderRadiusRatio = DEFAULT_BORDER_RADIUS_RATIO,
+  name,
+  nameColor = DEFAULT_NAME_COLOR,
+  nameSize = DEFAULT_NAME_SIZE,
+  nameMaxWidth = DEFAULT_NAME_MAX_WIDTH,
   onPress,
   onLongPress,
   style,
@@ -335,11 +366,11 @@ export default function GuardianSpirit({
   // 是否需要可触摸
   const isTouchable = onPress || onLongPress;
 
-  // 渲染内容
-  const content = (
+  // 渲染精灵图标
+  const spiritIcon = (
     <Animated.View
       style={[
-        styles.outerContainer,
+        styles.iconContainer,
         {
           width: size,
           height: size,
@@ -375,6 +406,27 @@ export default function GuardianSpirit({
     </Animated.View>
   );
 
+  // 如果有名称，包装在容器中
+  const content = (
+    <View style={styles.spiritContainer}>
+      {spiritIcon}
+      {name && (
+        <Text
+          style={[
+            styles.nameText,
+            {
+              color: nameColor,
+              fontSize: nameSize,
+              maxWidth: nameMaxWidth,
+            },
+          ]}
+        >
+          {name}
+        </Text>
+      )}
+    </View>
+  );
+
   // 如果有点击或长按事件，包装在 TouchableWithoutFeedback 中
   if (isTouchable) {
     return (
@@ -388,12 +440,24 @@ export default function GuardianSpirit({
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
+  spiritContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   innerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  nameText: {
+    textAlign: 'center',
+    fontWeight: '600',
+    marginTop: 8,
+    lineHeight: 1.4,
+    flexShrink: 1,
   },
 });

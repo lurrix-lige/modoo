@@ -31,15 +31,15 @@ export default function AboutUsScreen() {
   const { colors } = useTheme();
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:support@dozoo.com');
+    Linking.openURL(`mailto:${APP_CONFIG.SUPPORT_EMAIL}`);
   };
 
   const handleVisitWebsite = () => {
-    Linking.openURL('https://www.dozoo.com');
+    Linking.openURL(APP_CONFIG.WEBSITE_URL);
   };
 
   const handleRateApp = () => {
-    Linking.openURL('https://apps.apple.com/app/dozoo');
+    Linking.openURL(APP_CONFIG.APP_STORE_URL);
   };
 
   const renderNavItem = (
@@ -98,7 +98,7 @@ export default function AboutUsScreen() {
           )}
           {renderNavItem(
             t('about.visitWebsite'),
-            'www.dozoo.com',
+            t('about.visitWebsiteUrl'),
             'globe-outline',
             handleVisitWebsite
           )}
@@ -116,7 +116,7 @@ export default function AboutUsScreen() {
               {t('about.company')}
             </Text>
           </View>
-          <View style={styles.infoItem}>
+          <View style={styles.infoItemBlock}>
             <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>
               {t('about.companyName')}
             </Text>
@@ -124,7 +124,7 @@ export default function AboutUsScreen() {
               {t('about.companyNameValue')}
             </Text>
           </View>
-          <View style={styles.infoItem}>
+          <View style={styles.infoItemBlock}>
             <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>
               {t('about.businessLicense')}
             </Text>
@@ -240,9 +240,13 @@ const styles = StyleSheet.create({
   infoItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+  },
+  infoItemBlock: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   infoLabel: {
     fontSize: typography.fontSize.md,

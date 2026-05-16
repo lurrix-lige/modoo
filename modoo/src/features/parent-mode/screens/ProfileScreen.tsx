@@ -347,7 +347,8 @@ const styles = StyleSheet.create({
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
   },
   childModeCard: {
-    ...sharedStyles.rowBetween,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginHorizontal: spacing.xl,
     marginTop: spacing.lg,
     padding: spacing.lg,
@@ -355,10 +356,15 @@ const styles = StyleSheet.create({
     ...shadows.medium,
   },
   childModeContent: {
-    ...sharedStyles.rowStart,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    flexWrap: 'wrap',
   },
   childModeText: {
     marginLeft: spacing.md,
+    flexShrink: 1,
+    maxWidth: responsive.moderateScale(200),
   },
   childModeTitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
@@ -369,7 +375,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   menuSection: {
-    marginHorizontal: spacing.xxxl,
+    marginHorizontal: spacing.xl,
     marginTop: spacing.xxl,
     borderRadius: borderRadius.xl,
     ...shadows.small,

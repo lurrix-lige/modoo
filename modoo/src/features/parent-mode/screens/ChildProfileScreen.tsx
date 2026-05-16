@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { ArrowLeft, Moon, Sun, User, Mars, Venus, Cloud, Clock, Cake, Bed, Plus, X, CheckCircle, Camera, ChevronRight, Check, Zap } from 'lucide-react-native';
+import GuardianSpirit from '../../../components/GuardianSpirit';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -297,9 +298,13 @@ export default function ChildProfileScreen() {
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('childProfile.guardianTitle')}</Text>
           {guardianSpirit && (
             <View style={styles.guardianContent}>
-              <View style={[styles.guardianIcon, { backgroundColor: guardianSpirit.color }]}>
-                {guardianSpirit.id === 'moon' ? <Moon size={responsive.isLargeScreen ? componentIconSizes.childProfile.guardianIconLarge : componentIconSizes.childProfile.guardianIcon} color={commonColors.white} /> : <Sun size={responsive.isLargeScreen ? componentIconSizes.childProfile.guardianIconLarge : componentIconSizes.childProfile.guardianIcon} color={commonColors.white} />}
-              </View>
+              <GuardianSpirit
+                icon={guardianSpirit.icon}
+                size={responsive.isLargeScreen ? 64 : 56}
+                color={guardianSpirit.color}
+                animationType="none"
+                animated={false}
+              />
               <View style={styles.guardianInfo}>
                 <Text style={[styles.guardianName, { color: colors.textPrimary }]}>{t(guardianSpirit.nameKey)}</Text>
                 <Text style={[styles.guardianDesc, { color: colors.textSecondary }]}>
@@ -429,19 +434,25 @@ export default function ChildProfileScreen() {
                 style={[
                   styles.ipButton,
                   {
-                    backgroundColor: selectedSpirit === spirit.id ? colors.primary : colors.surface,
-                    borderColor: selectedSpirit === spirit.id ? colors.primary : colors.border,
+                    backgroundColor: colors.surface,
+                    borderColor: selectedSpirit === spirit.id ? spirit.color : colors.border,
+                    borderWidth: selectedSpirit === spirit.id ? 3 : 2,
                   },
                 ]}
                 onPress={() => setSelectedSpirit(spirit.id)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.ipIcon, { backgroundColor: spirit.color }]}>
-                  {spirit.id === 'moon' ? <Moon size={responsive.isLargeScreen ? componentIconSizes.childProfile.ipIconLarge : componentIconSizes.childProfile.ipIcon} color={commonColors.white} /> : <Sun size={responsive.isLargeScreen ? componentIconSizes.childProfile.ipIconLarge : componentIconSizes.childProfile.ipIcon} color={commonColors.white} />}
-                </View>
-                <Text style={[styles.ipName, { color: selectedSpirit === spirit.id ? commonColors.white : colors.textPrimary }]}>
-                  {t(spirit.nameKey)}
-                </Text>
+                <GuardianSpirit
+                  icon={spirit.icon}
+                  size={responsive.isLargeScreen ? 64 : 56}
+                  color={spirit.color}
+                  animationType="none"
+                  animated={false}
+                  name={t(spirit.nameKey)}
+                  nameColor={selectedSpirit === spirit.id ? commonColors.white : colors.textPrimary}
+                  nameSize={responsive.scaledFontSize(typography.fontSize.md)}
+                  nameMaxWidth={responsive.moderateScale(80)}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -639,25 +650,21 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     ...shadows.small,
     marginBottom: spacing.xl,
+    alignItems: 'center',
   },
   sectionTitle: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.md,
+    textAlign: 'center',
   },
   guardianContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
   },
-  guardianIcon: {
-    width: responsive.isLargeScreen ? 64 : 56,
-    height: responsive.isLargeScreen ? 64 : 56,
-    borderRadius: responsive.isLargeScreen ? 32 : 28,
-    ...sharedStyles.columnCenter,
-    marginRight: spacing.md,
-  },
   guardianInfo: {
-    flex: 1,
+    alignItems: 'center',
+    textAlign: 'center',
   },
   guardianName: {
     fontSize: typography.fontSize.md,
@@ -667,6 +674,7 @@ const styles = StyleSheet.create({
   guardianDesc: {
     fontSize: typography.fontSize.sm,
     lineHeight: typography.lineHeight.normal,
+    textAlign: 'center',
   },
 
   problemsCard: {
@@ -743,20 +751,23 @@ const styles = StyleSheet.create({
   ipButton: {
     flex: 1,
     ...sharedStyles.columnCenter,
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
+    minHeight: responsive.moderateScale(100),
   },
-  ipIcon: {
-    width: responsive.isLargeScreen ? 72 : 64,
-    height: responsive.isLargeScreen ? 72 : 64,
-    borderRadius: responsive.isLargeScreen ? 36 : 32,
-    ...sharedStyles.columnCenter,
+  ipIconContainer: {
+    width: responsive.isLargeScreen ? 64 : 56,
+    height: responsive.isLargeScreen ? 64 : 56,
     marginBottom: spacing.sm,
   },
   ipName: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
+    textAlign: 'center',
+    maxWidth: responsive.moderateScale(80),
+    flexShrink: 1,
   },
   problemsGrid: {
     flexDirection: 'row',

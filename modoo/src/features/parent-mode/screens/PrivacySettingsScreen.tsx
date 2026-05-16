@@ -7,10 +7,9 @@ import {
   Switch,
   TouchableOpacity,
   Alert,
-  Linking,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, Shield, ChevronRight, CheckCircle, Database, Lock, Eye, Bell } from 'lucide-react-native';
+import { ArrowLeft, Shield, ChevronRight, Database, Eye, Bell } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -79,8 +78,8 @@ export default function PrivacySettingsScreen() {
 
   const handleExportData = () => {
     Alert.alert(
-      t('privacy.exportData'),
-      t('privacy.exportDataDesc'),
+      t('settings.exportData'),
+      t('settings.exportDataDesc'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -88,9 +87,9 @@ export default function PrivacySettingsScreen() {
           onPress: async () => {
             try {
               await apiService.exportUserData();
-              Alert.alert(t('common.success'), t('privacy.exportSuccess'));
+              Alert.alert(t('common.success'), t('settings.exportSuccess'));
             } catch (error) {
-              Alert.alert(t('common.error'), t('privacy.exportFailed'));
+              Alert.alert(t('common.error'), t('settings.exportFailed'));
             }
           },
         },
@@ -100,19 +99,19 @@ export default function PrivacySettingsScreen() {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      t('privacy.deleteAccount'),
-      t('privacy.deleteAccountConfirm'),
+      t('settings.deleteAccount'),
+      t('settings.deleteAccountConfirm'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
-          text: t('privacy.delete'),
+          text: t('settings.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await apiService.deleteAccount();
-              Alert.alert(t('common.success'), t('privacy.deleteSuccess'));
+              Alert.alert(t('common.success'), t('settings.deleteSuccess'));
             } catch (error) {
-              Alert.alert(t('common.error'), t('privacy.deleteFailed'));
+              Alert.alert(t('common.error'), t('settings.deleteFailed'));
             }
           },
         },
@@ -208,14 +207,14 @@ export default function PrivacySettingsScreen() {
             {t('settings.account')}
           </Text>
           {renderNavigationItem(
-            t('privacy.exportData'),
-            t('privacy.exportDataDesc'),
+            t('settings.exportData'),
+            t('settings.exportDataDesc'),
             'download-outline',
             handleExportData
           )}
           {renderNavigationItem(
-            t('privacy.deleteAccount'),
-            t('privacy.deleteAccountDesc'),
+            t('settings.deleteAccount'),
+            t('settings.deleteAccountDesc'),
             'trash-outline',
             handleDeleteAccount
           )}

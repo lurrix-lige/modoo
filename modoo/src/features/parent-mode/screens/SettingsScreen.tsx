@@ -127,41 +127,42 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
             {t('settings.themePreview')}
           </Text>
-          <View style={styles.themePreviewContainer}>
-            {getThemeOptions().map((theme) => (
-              <TouchableOpacity
-                key={theme.mode}
-                style={[
-                  styles.themePreviewCard,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: themeMode === theme.mode ? colors.primary : colors.border,
-                    borderWidth: themeMode === theme.mode ? 2 : 1,
-                  },
-                ]}
-                onPress={() => handleThemeSelect(theme.mode)}
-              >
-                <View style={styles.themePreviewIcon}>
-                  {(() => { const IconComp = settingsIconMap[theme.icon] || Palette; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={themeMode === theme.mode ? colors.primary : colors.textSecondary} />; })()}
-                </View>
-                <Text
+          <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
+            <View style={styles.themePreviewContainer}>
+              {getThemeOptions().map((theme) => (
+                <TouchableOpacity
+                  key={theme.mode}
                   style={[
-                    styles.themePreviewLabel,
-                    { color: themeMode === theme.mode ? colors.primary : colors.textPrimary },
+                    styles.themePreviewCard,
+                    {
+                      borderColor: themeMode === theme.mode ? colors.primary : colors.border,
+                      borderWidth: themeMode === theme.mode ? 2 : 1,
+                    },
                   ]}
+                  onPress={() => handleThemeSelect(theme.mode)}
                 >
-                  {theme.label}
-                </Text>
-                <Text style={[styles.themePreviewDesc, { color: colors.textSecondary }]}>
-                  {theme.description}
-                </Text>
-                {themeMode === theme.mode && (
-                  <View style={[styles.themeSelectedBadge, { backgroundColor: colors.primary }]}>
-                    <Check size={responsive.moderateScaleForIcon(iconSizes.sm)} color={commonColors.white} />
+                  <View style={styles.themePreviewIcon}>
+                    {(() => { const IconComp = settingsIconMap[theme.icon] || Palette; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={themeMode === theme.mode ? colors.primary : colors.textSecondary} />; })()}
                   </View>
-                )}
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.themePreviewLabel,
+                      { color: themeMode === theme.mode ? colors.primary : colors.textPrimary },
+                    ]}
+                  >
+                    {theme.label}
+                  </Text>
+                  <Text style={[styles.themePreviewDesc, { color: colors.textSecondary }]}>
+                    {theme.description}
+                  </Text>
+                  {themeMode === theme.mode && (
+                    <View style={[styles.themeSelectedBadge, { backgroundColor: colors.primary }]}>
+                      <Check size={responsive.moderateScaleForIcon(iconSizes.sm)} color={commonColors.white} />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
 
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
   settingRight: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
   settingLabel: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
@@ -257,11 +259,15 @@ const styles = StyleSheet.create({
   settingValue: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     marginRight: spacing.xs,
+    flexShrink: 1,
+    maxWidth: responsive.moderateScale(120),
   },
   themePreviewContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
   },
   themePreviewCard: {
     flex: 1,
