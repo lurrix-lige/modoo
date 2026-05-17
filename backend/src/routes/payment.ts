@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { prisma, authenticate, AuthenticatedRequest } from '../utils/database';
 import { customError } from '../utils/errors';
-import { successResponse } from '../utils/apiResponse';
+import { successResponse, ErrorCodes } from '../utils/apiResponse';
 import {
   createWechatPayUnifiedOrder,
   verifyWechatPaySignature,
@@ -23,16 +23,16 @@ export async function paymentRoutes(fastify: FastifyInstance) {
     const { planId } = request.body as { planId: string };
 
     if (!planId) {
-      throw customError('VALIDATION_ERROR', '缺少planId参数', 400);
+      throw customError(ErrorCodes.VALIDATION_REQUIRED_FIELD, '缺少planId参数', 400);
     }
 
     const plan = await getPricingPlanById(planId);
     if (!plan) {
-      throw customError('NOT_FOUND', '定价方案不存在', 404);
+      throw customError(ErrorCodes.RESOURCE_NOT_FOUND, '定价方案不存在', 404);
     }
 
     if (!plan.isActive) {
-      throw customError('INVALID_PLAN', '该定价方案已停用', 400);
+      throw customError(ErrorCodes.BIZ_PLAN_INACTIVE, '该定价方案已停用', 400);
     }
 
     const order = await createOrder({
@@ -210,7 +210,7 @@ export async function paymentRoutes(fastify: FastifyInstance) {
       const { orderId, refundAmount, refundReason } = request.body;
 
       if (!orderId) {
-        throw customError('VALIDATION_ERROR', '缺少orderId参数', 400);
+        throw customError(ErrorCodes.VALIDATION_REQUIRED_FIELD, '缺少orderId参数', 400);
       }
 
       const order = await prisma.order.findUnique({
@@ -219,25 +219,25 @@ export async function paymentRoutes(fastify: FastifyInstance) {
       });
 
       if (!order) {
-        throw customError('NOT_FOUND', '订单不存在', 404);
+        throw customError(ErrorCodes.RESOURCE_NOT_FOUND, '订单不存在', 404);
       }
 
       if (order.userId !== userId) {
-        throw customError('FORBIDDEN', '无权操作此订单', 403);
+        throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权操作此订单', 403);
       }
 
       if (order.status === 'REFUNDED') {
-        throw customError('INVALID_STATUS', '订单已退款', 400);
+        throw customError('BIZ_ORDER_REFUNDED' as any, '订单已退款', 400);
       }
 
       if (!order.transactionId) {
-        throw customError('INVALID_STATUS', '该订单无微信交易号，无法退款', 400);
+        throw customError('BIZ_REFUND_INVALID' as any, '该订单无微信交易号，无法退款', 400);
       }
 
       const actualRefundAmount = refundAmount || order.finalAmount;
 
       if (actualRefundAmount <= 0 || actualRefundAmount > order.finalAmount) {
-        throw customError('INVALID_AMOUNT', '退款金额无效', 400);
+        throw customError(ErrorCodes.VALIDATION_OUT_OF_RANGE, '退款金额无效', 400);
       }
 
       try {
@@ -304,11 +304,11 @@ export async function paymentRoutes(fastify: FastifyInstance) {
       const order = await getOrderById(orderId);
 
       if (!order) {
-        throw customError('NOT_FOUND', '订单不存在', 404);
+        throw customError(ErrorCodes.RESOURCE_NOT_FOUND, '订单不存在', 404);
       }
 
       if (order.userId !== userId) {
-        throw customError('FORBIDDEN', '无权访问此订单', 403);
+        throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权访问此订单', 403);
       }
 
       return successResponse(order);

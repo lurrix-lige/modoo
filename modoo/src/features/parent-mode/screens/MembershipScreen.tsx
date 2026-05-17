@@ -28,6 +28,7 @@ import { MembershipPlanCard } from '../../../components/MembershipPlanCard';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
 import { apiService, MembershipPlan } from '../../../services';
+import { useWechatPay } from '../../../hooks';
 import { formatCurrency } from '../../../utils/currency';
 import { logger } from '../../../utils/logger';
 
@@ -53,6 +54,7 @@ export default function MembershipScreen() {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAppStore();
+  const { purchaseWithWechat, isLoading: isWechatLoading, error: wechatError, isWechatInstalled } = useWechatPay();
   const [selectedPlan, setSelectedPlan] = useState<string>('quarterly');
   const [isProcessing, setIsProcessing] = useState(false);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
@@ -86,21 +88,40 @@ export default function MembershipScreen() {
 
   const handleSubscribe = async () => {
     if (!isAuthenticated) {
-      // 未登录时直接跳转登录页面，让用户选择套餐
-      navigation.getParent()?.navigate('Auth', { 
-        fromScreen: 'Membership', 
-        selectedPlanId: selectedPlan 
+      navigation.getParent()?.navigate('Auth', {
+        fromScreen: 'Membership',
+        selectedPlanId: selectedPlan
       });
+      return;
+    }
+
+    if (!isWechatInstalled) {
+      Alert.alert(t('common.hint'), t('membership.wechatNotInstalled'));
+      return;
+    }
+
+    const selectedPlanData = plans.find(p => p.id === selectedPlan);
+    if (!selectedPlanData) {
+      Alert.alert(t('common.error'), t('membership.planNotSelected'));
       return;
     }
 
     setIsProcessing(true);
     try {
-      await apiService.subscribe(selectedPlan, true); // 暂时 suppressError，返回错误提示
-      const { setPaidStatus } = useAppStore.getState();
-      setPaidStatus(true);
-      Alert.alert(t('membership.openSuccess'), t('membership.openSuccessDesc'));
-      navigation.goBack();
+      const result = await purchaseWithWechat(selectedPlan, selectedPlanData.nameKey);
+
+      if (result.success) {
+        const { setPaidStatus } = useAppStore.getState();
+        setPaidStatus(true);
+        Alert.alert(t('membership.openSuccess'), t('membership.openSuccessDesc'));
+        navigation.goBack();
+      } else {
+        logger.warn('WeChat pay failed', { error: result.error, errorCode: result.errorCode });
+        if (result.errorCode === 'USER_CANCEL') {
+          return;
+        }
+        Alert.alert(t('membership.openFailed'), result.error || t('membership.payFailedDesc'));
+      }
     } catch (error) {
       logger.error('Failed to subscribe', { error });
       Alert.alert(t('membership.openFailed'), t('membership.openFailedDesc'));

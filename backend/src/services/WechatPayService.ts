@@ -2,8 +2,8 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import { customError } from '../utils/errors';
 
-const WECHAT_PAY_API = 'https://api.mch.weixin.qq.com';
-const WECHAT_PAY_SANDBOX_API = 'https://api.mch.weixin.qq.com/sandboxnew';
+const WECHAT_PAY_API = process.env.WECHAT_PAY_API || 'https://api.mch.weixin.qq.com';
+const WECHAT_PAY_SANDBOX_API = process.env.WECHAT_PAY_SANDBOX_API || 'https://api.mch.weixin.qq.com/sandboxnew';
 
 export interface UnifiedOrderParams {
   orderId: string;
