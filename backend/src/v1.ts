@@ -14,6 +14,7 @@ import { contentRoutes } from './routes/content';
 import { i18nRoutes } from './routes/i18n';
 import { guardianSpiritRoutes } from './routes/guardianSpirit';
 import { staticRoutes } from './routes/static';
+import { paymentRoutes } from './routes/payment';
 
 export async function registerV1Routes(fastify: FastifyInstance) {
   await fastify.register(async (instance) => {
@@ -31,6 +32,7 @@ export async function registerV1Routes(fastify: FastifyInstance) {
     await instance.register(contentRoutes, { prefix: '/content' });
     await instance.register(i18nRoutes, { prefix: '/i18n' });
     await instance.register(guardianSpiritRoutes, { prefix: '/guardian-spirits' });
+    await instance.register(paymentRoutes, { prefix: '/payment' });
     await instance.register(staticRoutes, { prefix: '' });
   }, { prefix: '/api/v1' });
 }

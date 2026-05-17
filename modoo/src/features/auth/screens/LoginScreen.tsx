@@ -36,6 +36,7 @@ import { AuthStackParamList, RootStackParamList } from '../../../navigation/type
 import { authService, apiService } from '../../../services';
 import { loginNavigationStrategyFactory } from '../../../services/LoginNavigationStrategy';
 import { appleService } from '../../../services/AppleService';
+import { wechatAuthService } from '../../../services/WechatAuthService';
 import { normalizeSleepProblems, parseGender, parseGuardianIP } from '../../../utils/childProfile';
 
 /**
@@ -200,12 +201,41 @@ export default function LoginScreen() {
 
   /**
    * 微信登录处理
-   * @description 微信登录入口（当前为预留接口，暂未实现）
-   * @note 尚未实现，调用时提示"功能未实现"
+   * @description 使用微信授权登录
    */
   const handleWeChatLogin = async () => {
-    Alert.alert(t('common.hint'), t('auth.wechatNotImplemented'));
-    return;
+    if (!wechatAuthService.isInstalled()) {
+      Alert.alert(t('common.hint'), t('auth.wechatNotInstalled'));
+      return;
+    }
+
+    setWechatLoading(true);
+    try {
+      const { code } = await wechatAuthService.login();
+      const user = await authService.wechatLogin(code);
+
+      setAuthenticated(true, user);
+
+      await syncChildProfile();
+
+      const parentNavigation = navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
+      parentNavigation && loginNavigationStrategyFactory.navigate(parentNavigation, {
+        fromScreen,
+        selectedPlanId,
+        childProfile: await authService.getChild(),
+      });
+    } catch (error: any) {
+      if (error.code === 'USER_CANCELLED' || error.code === -2) {
+        return;
+      }
+      if (error.code === 'NOT_INSTALLED') {
+        Alert.alert(t('common.hint'), t('auth.wechatNotInstalled'));
+        return;
+      }
+      Alert.alert(t('common.error'), error.message || t('auth.wechatLoginFailed'));
+    } finally {
+      setWechatLoading(false);
+    }
   };
 
   /**

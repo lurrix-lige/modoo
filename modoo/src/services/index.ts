@@ -5,6 +5,8 @@ export * from './HealthCheckService';
 export * from './ErrorHandler';
 export * from './NotificationService';
 export * from './ShareService';
+export { wechatAuthService } from './WechatAuthService';
+export { wechatPayService } from './WechatPayService';
 
 // Re-export from infrastructure layer for backward compatibility
 export { storageService } from '../infrastructure/storage';
