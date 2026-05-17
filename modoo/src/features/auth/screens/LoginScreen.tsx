@@ -22,7 +22,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { Moon, Lock } from 'lucide-react-native';
+import { Moon, PhoneCall, Key } from 'lucide-react-native';
 import { WechatIcon } from '../../../components/icons/WechatIcon';
 import { AppleIcon } from '../../../components/icons/AppleIcon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -80,7 +80,7 @@ export default function LoginScreen() {
    */
   useEffect(() => {
     const timer = setTimeout(() => {
-      phoneInputRef.current?.focus();
+     // phoneInputRef.current?.focus();
     }, 100);
 
     return () => clearTimeout(timer);
@@ -216,10 +216,10 @@ export default function LoginScreen() {
    * - 手机号长度必须为11位
    *
    * 发送后逻辑
-   * - 启动60秒倒计�?
-   * - 倒计时期间禁用发送按�?
+   * - 启动60秒倒计时
+   * - 倒计时期间禁用发送按钮
    *
-   * @see handleLogin 使用验证码进行登�?
+   * @see handleLogin 使用验证码进行登录
    */
   const handleGetCode = async () => {
     if (phone.length !== 11) {
@@ -311,58 +311,6 @@ export default function LoginScreen() {
 
         {/* ------------------- 登录表单 ------------------- */}
         <View style={styles.form}>
-          {/* 手机号输入框 */}
-          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
-            <Lock size={20} color={colors.textSecondary} />
-            <TextInput
-              ref={phoneInputRef}
-              style={[styles.input, { color: colors.textPrimary }]}
-              placeholder={t('auth.phonePlaceholder')}
-              placeholderTextColor={colors.textPlaceholder}
-              value={phone}
-              onChangeText={handlePhoneChange}
-              keyboardType="phone-pad"
-              maxLength={11}
-              underlineColorAndroid="transparent"
-            />
-          </View>
-
-          {/* 验证码输入框 + 发送按钮 */}
-          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
-            <Lock size={20} color={colors.textSecondary} />
-            <TextInput
-              ref={codeInputRef}
-              style={[styles.input, { color: colors.textPrimary }]}
-              placeholder={t('auth.codePlaceholder')}
-              placeholderTextColor={colors.textPlaceholder}
-              value={code}
-              onChangeText={setCode}
-              keyboardType="number-pad"
-              maxLength={6}
-              underlineColorAndroid="transparent"
-            />
-            <TouchableOpacity
-              style={[styles.codeButton, { backgroundColor: countdown > 0 ? colors.disabled : colors.primary }]}
-              onPress={handleGetCode}
-              disabled={countdown > 0}
-            >
-              <Text style={[styles.codeText, { color: commonColors.white }]}>
-                {countdown > 0 ? t('auth.countdownSeconds', { count: countdown }) : t('auth.sendCode')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* 登录按钮 */}
-          <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={styles.loginButton} />
-
-          {/* ------------------- 分隔线 ------------------- */}
-          <View style={styles.divider}>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-            <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
-              {t('auth.or')}
-            </Text>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          </View>
 
           {/* ------------------- 第三方登录按钮 ------------------- */}
           <View style={styles.socialButtons}>
@@ -397,6 +345,62 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+
+          {/* 手机号输入框 */}
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
+            <PhoneCall size={20} color={colors.textSecondary} />
+            <TextInput
+              ref={phoneInputRef}
+              style={[styles.input, { color: colors.textPrimary }]}
+              placeholder={t('auth.phonePlaceholder')}
+              placeholderTextColor={colors.textPlaceholder}
+              value={phone}
+              onChangeText={handlePhoneChange}
+              keyboardType="phone-pad"
+              maxLength={11}
+              underlineColorAndroid="transparent"
+            />
+          </View>
+
+          {/* 验证码输入框 + 发送按钮 */}
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
+            <Key size={20} color={colors.textSecondary} />
+            <TextInput
+              ref={codeInputRef}
+              style={[styles.input, { color: colors.textPrimary }]}
+              placeholder={t('auth.codePlaceholder')}
+              placeholderTextColor={colors.textPlaceholder}
+              value={code}
+              onChangeText={setCode}
+              keyboardType="number-pad"
+              maxLength={6}
+              underlineColorAndroid="transparent"
+            />
+            <TouchableOpacity
+              style={[styles.codeButton, { backgroundColor: countdown > 0 ? colors.disabled : colors.primary }]}
+              onPress={handleGetCode}
+              disabled={countdown > 0}
+            >
+              <Text style={[styles.codeText, { color: commonColors.white }]}>
+                {countdown > 0 ? t('auth.countdownSeconds', { count: countdown }) : t('auth.sendCode')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* 登录按钮 */}
+          <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={styles.loginButton} />
+
+          {/* ------------------- 分隔线 ------------------- */}
+          <View style={styles.divider}>
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
+              {t('auth.or')}
+            </Text>
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+          </View>
+
+          
         </View>
 
         {/* ------------------- 用户协议 ------------------- */}
@@ -455,7 +459,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     ...sharedStyles.rowStart,
     borderRadius: borderRadius.md,
-    borderWidth: 1,
+    borderWidth: 0,
     paddingHorizontal: spacing.md,
     height: responsive.verticalScale(56),
     marginBottom: spacing.md,
@@ -492,6 +496,8 @@ const styles = StyleSheet.create({
   },
   socialButtons: {
     ...sharedStyles.rowBetween,
+    marginHorizontal:0,
+    marginBottom: spacing.md,
   },
   socialButton: {
     flex: 1,
