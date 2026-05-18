@@ -431,19 +431,36 @@
   },
   "article": {
     "fearResponse": {
-      "title": "恐惧反应"
+      "title": "当孩子说'妈妈我怕'时该如何回应",
+      "summary": "用正确的方式回应孩子的恐惧，让他们感到安全"
     },
     "sleepEnvironment": {
-      "title": "睡眠环境"
+      "title": "营造安全的睡眠环境",
+      "summary": "如何为孩子创造一个安全舒适的睡眠环境"
     },
     "desensitization": {
-      "title": "脱敏训练"
+      "title": "循序渐进的脱敏训练",
+      "summary": "科学的脱敏方法帮助孩子逐渐适应黑暗"
     },
     "overcomeFear": {
-      "title": "克服恐惧"
+      "title": "如何帮助孩子克服怕黑心理",
+      "summary": "了解孩子怕黑的心理原因，以及科学的应对方法"
     },
     "bedtimeRitual": {
-      "title": "睡前仪式"
+      "title": "睡前仪式的重要性",
+      "summary": "建立良好的睡前仪式，帮助孩子更好地入睡"
+    },
+    "nightWakes": {
+      "title": "夜间醒来的常见原因及应对方法",
+      "summary": "分析孩子夜间醒来的原因，提供实用的应对策略"
+    },
+    "parentMistakes": {
+      "title": "家长常犯的5个错误",
+      "summary": "避免这些常见错误，更好地帮助孩子克服恐惧"
+    },
+    "positiveReinforcement": {
+      "title": "正向强化的力量",
+      "summary": "使用正向强化帮助孩子建立自信"
     }
   },
   "membership": {

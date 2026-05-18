@@ -41,21 +41,9 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
     }
   };
 
-  // 检测字符串是否为国际化 key（包含点号格式，如 breathing.balanced）
-  const isTranslationKey = (str: string | undefined): boolean => {
-    if (!str) return false;
-    return /^[a-z]+\.[a-z]/.test(str.toLowerCase());
-  };
-
-  // 使用国际化 key 或直接值
-  // 优先使用 titleKey/descriptionKey，如果没有则检查 title/description 是否为翻译 key
-  const title = item.titleKey 
-    ? t(item.titleKey) 
-    : (isTranslationKey(item.title) ? t(item.title!) : (item.title || ''));
-    
-  const description = item.descriptionKey 
-    ? t(item.descriptionKey) 
-    : (isTranslationKey(item.description) ? t(item.description!) : (item.description || ''));
+  // 使用国际化 key 进行翻译，如果没有则使用直接值
+  const title = item.titleKey ? t(item.titleKey) : (item.title || '');
+  const description = item.descriptionKey ? t(item.descriptionKey) : (item.description || '');
 
   return (
     <Card style={styles.contentCard} onPress={onPress} variant="glass" elevated>

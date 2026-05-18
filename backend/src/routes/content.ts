@@ -7,7 +7,9 @@ interface ContentItem {
   id: string;
   type: 'story' | 'breathing' | 'course' | 'article';
   title: string;
+  titleKey?: string;
   description: string;
+  descriptionKey?: string;
   duration?: number;
   isPremium: boolean;
   priority: number;
@@ -52,7 +54,9 @@ export async function contentRoutes(fastify: FastifyInstance) {
         id: story.id,
         type: 'story',
         title: story.title,
+        titleKey: story.titleKey,
         description: story.description || '温馨睡前童话',
+        descriptionKey: story.descriptionKey,
         duration: story.duration,
         isPremium: false,
         priority: index + 1,
@@ -66,7 +70,9 @@ export async function contentRoutes(fastify: FastifyInstance) {
         id: course.id,
         type: 'course',
         title: course.name,
+        titleKey: course.nameKey ? `${course.nameKey}.title` : undefined,
         description: course.description,
+        descriptionKey: course.descriptionKey ? `${course.descriptionKey}.desc` : undefined,
         duration: course.totalLessons * 300,
         isPremium: false,
         priority: 100 + index + 1,
@@ -79,10 +85,12 @@ export async function contentRoutes(fastify: FastifyInstance) {
       contentItems.push({
         id: exercise.id,
         type: 'breathing',
-        title: exercise.nameKey,
-        description: exercise.descriptionKey || '放松身心助眠',
+        title: '', // 呼吸练习没有直接的标题值，依赖国际化
+        titleKey: exercise.nameKey,
+        description: '', // 呼吸练习没有直接的描述值，依赖国际化
+        descriptionKey: exercise.descriptionKey,
         duration: JSON.parse(exercise.phasesJson).reduce((acc: number, phase: any) => acc + phase.duration, 0),
-        isPremium: false,
+        isPremium: exercise.isPremium,
         priority: 200 + index + 1,
         icon: 'leaf',
       });
@@ -93,7 +101,9 @@ export async function contentRoutes(fastify: FastifyInstance) {
         id: article.id,
         type: 'article',
         title: article.title,
+        titleKey: article.titleKey,
         description: article.summary,
+        descriptionKey: article.summaryKey,
         duration: article.readTime * 60,
         isPremium: false,
         priority: 300 + index + 1,
