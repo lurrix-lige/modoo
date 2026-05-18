@@ -18,8 +18,8 @@ export const authenticate = async (
   reply: FastifyReply
 ) => {
   try {
-    await request.jwtVerify();
-    const userId = (request.user as any).userId;
+    await (request as any).jwtVerify();
+    const userId = ((request as any).user as any).userId;
     
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -41,8 +41,8 @@ export const optionalAuth = async (
   reply: FastifyReply
 ) => {
   try {
-    await request.jwtVerify();
-    (request as AuthenticatedRequest).userId = (request.user as any).userId;
+    await (request as any).jwtVerify();
+    (request as AuthenticatedRequest).userId = ((request as any).user as any).userId;
   } catch {
     // Ignore error for optional auth
   }

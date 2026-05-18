@@ -1,25 +1,18 @@
 import { FastifyInstance } from 'fastify';
-import { prisma, optionalAuth, AuthenticatedRequest, getChildId } from '../utils/database';
-import { customError } from '../utils/errors';
-import { requireMembership } from '../middleware/authorization';
+import { prisma, optionalAuth, AuthenticatedRequest } from '../utils/database';
 
 interface ContentItem {
   id: string;
   type: 'story' | 'breathing' | 'course' | 'article';
   title: string;
-  titleKey?: string;
+  titleKey?: string | null;
   description: string;
-  descriptionKey?: string;
+  descriptionKey?: string | null;
   duration?: number;
   isPremium: boolean;
   priority: number;
   coverUrl?: string;
   icon?: string;
-}
-
-interface RecommendationResult {
-  featuredContent: ContentItem[];
-  categoryContent: Map<string, ContentItem[]>;
 }
 
 export async function contentRoutes(fastify: FastifyInstance) {
@@ -70,9 +63,9 @@ export async function contentRoutes(fastify: FastifyInstance) {
         id: course.id,
         type: 'course',
         title: course.name,
-        titleKey: course.nameKey ? `${course.nameKey}.title` : undefined,
+        titleKey: course.nameKey,
         description: course.description,
-        descriptionKey: course.descriptionKey ? `${course.descriptionKey}.desc` : undefined,
+        descriptionKey: course.descriptionKey,
         duration: course.totalLessons * 300,
         isPremium: false,
         priority: 100 + index + 1,
@@ -82,6 +75,13 @@ export async function contentRoutes(fastify: FastifyInstance) {
     });
 
     exercises.forEach((exercise, index) => {
+      let duration = 0;
+      try {
+        const phases = JSON.parse(exercise.phasesJson);
+        duration = phases.reduce((acc: number, phase: any) => acc + phase.duration, 0);
+      } catch {
+        duration = 0;
+      }
       contentItems.push({
         id: exercise.id,
         type: 'breathing',
@@ -89,7 +89,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         titleKey: exercise.nameKey,
         description: '', // 呼吸练习没有直接的描述值，依赖国际化
         descriptionKey: exercise.descriptionKey,
-        duration: JSON.parse(exercise.phasesJson).reduce((acc: number, phase: any) => acc + phase.duration, 0),
+        duration,
         isPremium: exercise.isPremium,
         priority: 200 + index + 1,
         icon: 'leaf',
