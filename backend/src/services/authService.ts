@@ -2,12 +2,13 @@ import { FastifyInstance } from "fastify";
 import { prisma } from "../utils/database";
 import { customError } from "../utils/errors";
 import { nanoid } from "nanoid";
+import { config } from "../config";
 import { validateAccount } from "./accountValidationService";
 import { verifyCode } from "./verificationService";
 import { findOrCreateUserByPhone, findOrCreateUserByApple, findOrCreateUserByWechat } from "./userService";
 
-const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "7d";
-const REFRESH_TOKEN_EXPIRES_DAYS = parseInt(process.env.REFRESH_TOKEN_EXPIRES_DAYS || "14");
+const ACCESS_TOKEN_EXPIRES_IN = config.jwt.accessTokenExpiresIn;
+const REFRESH_TOKEN_EXPIRES_DAYS = config.jwt.refreshTokenExpiresDays;
 
 export interface LoginResult {
   accessToken: string;

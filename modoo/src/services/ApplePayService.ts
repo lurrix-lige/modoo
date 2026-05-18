@@ -16,6 +16,7 @@ export interface ApplePayResult {
   transactionId?: string;
   error?: string;
   errorCode?: ApplePayErrorCode;
+  orderInfo?: ApplePayOrderInfo;
 }
 
 export interface ApplePayOrderInfo {
@@ -72,10 +73,33 @@ export class ApplePayService {
       const response: any = await apiService.post('/payment/apple/create-order', { planId });
       
       if (response && response.data) {
+        const orderInfo: ApplePayOrderInfo = {
+          orderId: response.data.orderId,
+          orderNo: response.data.orderNo,
+          countryCode: response.data.countryCode || 'CN',
+          currencyCode: response.data.currencyCode || 'CNY',
+          merchantIdentifier: response.data.merchantIdentifier || 'merchant.com.modoo',
+          merchantCapabilities: response.data.merchantCapabilities || ['supports3DS', 'supportsCredit', 'supportsDebit'],
+          supportedNetworks: response.data.supportedNetworks || ['amex', 'masterCard', 'visa', 'discover'],
+          total: {
+            label: response.data.total?.label || '会员订阅',
+            amount: response.data.total?.amount || '0.01',
+            type: 'final',
+          },
+          lineItems: response.data.lineItems || [{
+            label: response.data.total?.label || '会员订阅',
+            amount: response.data.total?.amount || '0.01',
+          }],
+          metadata: {
+            orderId: response.data.orderNo,
+          },
+        };
+
         return {
           success: true,
           orderId: response.data.orderId,
           orderNo: response.data.orderNo,
+          orderInfo,
         };
       }
 

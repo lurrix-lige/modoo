@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as jose from 'jose';
 import { customError } from '../utils/errors';
+import { config } from '../config';
 
 interface ApplePublicKey {
   kid: string;
@@ -35,9 +36,9 @@ const APPLE_AUTH_KEYS_URL = 'https://appleid.apple.com/auth/keys';
 const APPLE_ISSUER = 'https://appleid.apple.com';
 
 export async function verifyAppleIdToken(idToken: string): Promise<AppleIdTokenPayload> {
-  const APPLE_APP_ID = process.env.APPLE_APP_ID;
+  const { apple } = config;
   
-  if (!APPLE_APP_ID) {
+  if (!apple.appId) {
     throw customError('CONFIG_ERROR', 'APPLE_APP_ID not configured', 500);
   }
 
@@ -46,7 +47,7 @@ export async function verifyAppleIdToken(idToken: string): Promise<AppleIdTokenP
     
     const { payload } = await jose.jwtVerify(idToken, JWKS, {
       issuer: APPLE_ISSUER,
-      audience: APPLE_APP_ID,
+      audience: apple.appId,
     });
 
     const typedPayload = payload as AppleIdTokenPayload;

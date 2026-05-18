@@ -1,4 +1,6 @@
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+import { config } from '../config';
+
+const LOG_LEVEL = config.logger.level;
 
 const levels = {
   debug: 0,

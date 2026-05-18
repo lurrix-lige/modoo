@@ -1,4 +1,5 @@
 import { customError } from "../utils/errors";
+import { config as appConfig } from "../config";
 
 export interface AccountValidationConfig {
   enabled: boolean;
@@ -10,12 +11,12 @@ export interface AccountValidationConfig {
 }
 
 const DEFAULT_CONFIG: AccountValidationConfig = {
-  enabled: process.env.ACCOUNT_VALIDATION_ENABLED !== "false",
-  phonePattern: process.env.PHONE_VALIDATION_PATTERN || "^1[3-9]\\d{9}$",
-  minPhoneLength: parseInt(process.env.MIN_PHONE_LENGTH || "11"),
-  maxPhoneLength: parseInt(process.env.MAX_PHONE_LENGTH || "11"),
-  blockedPrefixes: (process.env.BLOCKED_PHONE_PREFIXES || "").split(",").filter(Boolean),
-  blockedPhones: (process.env.BLOCKED_PHONES || "").split(",").filter(Boolean),
+  enabled: appConfig.accountValidation.enabled,
+  phonePattern: appConfig.accountValidation.phonePattern,
+  minPhoneLength: appConfig.accountValidation.minPhoneLength,
+  maxPhoneLength: appConfig.accountValidation.maxPhoneLength,
+  blockedPrefixes: appConfig.accountValidation.blockedPrefixes,
+  blockedPhones: appConfig.accountValidation.blockedPhones,
 };
 
 let config: AccountValidationConfig = { ...DEFAULT_CONFIG };

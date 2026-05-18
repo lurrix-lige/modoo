@@ -1,17 +1,15 @@
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-
-const SENTRY_DSN = process.env.SENTRY_DSN || '';
-const NODE_ENV = process.env.NODE_ENV || 'development';
+import { config } from '../config';
 
 export function initSentry(): void {
-  if (!SENTRY_DSN || NODE_ENV === 'development') {
+  if (!config.sentry.dsn || config.server.env === 'development') {
     return;
   }
 
   Sentry.init({
-    dsn: SENTRY_DSN,
-    environment: NODE_ENV,
+    dsn: config.sentry.dsn,
+    environment: config.sentry.environment,
     integrations: [
       Sentry.httpIntegration(),
       nodeProfilingIntegration(),

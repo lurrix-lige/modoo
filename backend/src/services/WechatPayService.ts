@@ -1,9 +1,7 @@
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { customError } from '../utils/errors';
-
-const WECHAT_PAY_API = process.env.WECHAT_PAY_API || 'https://api.mch.weixin.qq.com';
-const WECHAT_PAY_SANDBOX_API = process.env.WECHAT_PAY_SANDBOX_API || 'https://api.mch.weixin.qq.com/sandboxnew';
+import { config } from '../config';
 
 export interface UnifiedOrderParams {
   orderId: string;
@@ -67,22 +65,19 @@ export async function createWechatPayUnifiedOrder(params: UnifiedOrderParams): P
     notifyUrl,
   } = params;
 
-  const APP_ID = process.env.WECHAT_APP_ID;
-  const MCH_ID = process.env.WECHAT_MCH_ID;
-  const API_KEY = process.env.WECHAT_API_KEY;
-  const IS_SANDBOX = process.env.WECHAT_ENV === 'sandbox';
+  const { wechat } = config;
 
-  if (!APP_ID || !MCH_ID || !API_KEY) {
+  if (!wechat.appId || !wechat.mchId || !wechat.apiKey) {
     throw customError('CONFIG_ERROR', '微信支付配置不完整，请联系管理员', 500);
   }
 
-  const baseUrl = IS_SANDBOX ? WECHAT_PAY_SANDBOX_API : WECHAT_PAY_API;
+  const baseUrl = wechat.isSandbox ? wechat.sandboxApi : wechat.payApi;
   const nonceStr = generateNonceStr();
   const totalFee = Math.round(amount * 100);
 
   const signParams: Record<string, string> = {
-    appid: APP_ID,
-    mch_id: MCH_ID,
+    appid: wechat.appId,
+    mch_id: wechat.mchId,
     nonce_str: nonceStr,
     body: `Modoo会员-${planName}`,
     out_trade_no: orderId,
@@ -92,7 +87,7 @@ export async function createWechatPayUnifiedOrder(params: UnifiedOrderParams): P
     trade_type: 'APP',
   };
 
-  signParams.sign = generateSign(signParams, API_KEY);
+  signParams.sign = generateSign(signParams, wechat.apiKey);
 
   const xmlBody = Object.entries(signParams)
     .map(([k, v]) => `<${k}><![CDATA[${v}]]></${k}>`)
@@ -114,14 +109,14 @@ export async function createWechatPayUnifiedOrder(params: UnifiedOrderParams): P
     const packageStr = `Sign=WXPay`;
 
     const paySignParams: Record<string, string> = {
-      appid: APP_ID,
-      partnerid: MCH_ID,
+      appid: wechat.appId,
+      partnerid: wechat.mchId,
       prepayid: result.prepay_id!,
       package: packageStr,
       nonce_str: nonceStr,
       timestamp,
     };
-    paySignParams.sign = generateSign(paySignParams, API_KEY);
+    paySignParams.sign = generateSign(paySignParams, wechat.apiKey);
 
     return {
       prepayId: result.prepay_id!,
@@ -153,24 +148,21 @@ export async function applyWechatPayRefund(params: RefundParams): Promise<{
     refundReason,
   } = params;
 
-  const APP_ID = process.env.WECHAT_APP_ID;
-  const MCH_ID = process.env.WECHAT_MCH_ID;
-  const API_KEY = process.env.WECHAT_API_KEY;
-  const IS_SANDBOX = process.env.WECHAT_ENV === 'sandbox';
+  const { wechat } = config;
 
-  if (!APP_ID || !MCH_ID || !API_KEY) {
+  if (!wechat.appId || !wechat.mchId || !wechat.apiKey) {
     throw customError('CONFIG_ERROR', '微信支付配置不完整', 500);
   }
 
-  const baseUrl = IS_SANDBOX ? WECHAT_PAY_SANDBOX_API : WECHAT_PAY_API;
+  const baseUrl = wechat.isSandbox ? wechat.sandboxApi : wechat.payApi;
   const nonceStr = generateNonceStr();
   const totalFeeYuan = Math.round(totalAmount * 100);
   const refundFeeYuan = Math.round(refundAmount * 100);
   const outRefundNo = `REF${Date.now()}${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
   const signParams: Record<string, string> = {
-    appid: APP_ID,
-    mch_id: MCH_ID,
+    appid: wechat.appId,
+    mch_id: wechat.mchId,
     nonce_str: nonceStr,
     transaction_id: transactionId,
     out_refund_no: outRefundNo,
@@ -182,7 +174,7 @@ export async function applyWechatPayRefund(params: RefundParams): Promise<{
     signParams.refund_desc = refundReason;
   }
 
-  signParams.sign = generateSign(signParams, API_KEY);
+  signParams.sign = generateSign(signParams, wechat.apiKey);
 
   const xmlBody = Object.entries(signParams)
     .map(([k, v]) => `<${k}><![CDATA[${v}]]></${k}>`)
@@ -210,14 +202,12 @@ export async function applyWechatPayRefund(params: RefundParams): Promise<{
   }
 }
 
-export function getWechatPayConfig(): {
-  appId: string;
-  mchId: string;
-  isSandbox: boolean;
-} {
+export function getWechatPayConfig() {
+  const { wechat } = config;
+  
   return {
-    appId: process.env.WECHAT_APP_ID || '',
-    mchId: process.env.WECHAT_MCH_ID || '',
-    isSandbox: process.env.WECHAT_ENV === 'sandbox',
+    appId: wechat.appId,
+    mchId: wechat.mchId,
+    isSandbox: wechat.isSandbox,
   };
 }

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { prisma, authenticate, AuthenticatedRequest } from "../utils/database";
 import { customError } from "../utils/errors";
+import { config } from "../config";
 import { sendVerificationCode } from "../services/verificationService";
 import { validateAccount } from "../services/accountValidationService";
 import {
@@ -27,7 +28,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       success: true,
       data: {
         message: "验证码已发送",
-        expiresIn: parseInt(process.env.VERIFICATION_EXPIRY_MINUTES || "5") * 60,
+        expiresIn: config.verification.expiryMinutes * 60,
       },
       timestamp: new Date().toISOString(),
     };
@@ -48,7 +49,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       success: true,
       data: {
         message: "验证码已发送",
-        expiresIn: parseInt(process.env.VERIFICATION_EXPIRY_MINUTES || "5") * 60,
+        expiresIn: config.verification.expiryMinutes * 60,
       },
       timestamp: new Date().toISOString(),
     };
@@ -85,12 +86,9 @@ export async function authRoutes(fastify: FastifyInstance) {
     }
 
     try {
-      const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID;
-      const APPLE_KEY_ID = process.env.APPLE_KEY_ID;
-      const APPLE_PRIVATE_KEY = process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-      const APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID;
+      const { apple } = config;
 
-      if (!APPLE_TEAM_ID || !APPLE_KEY_ID || !APPLE_PRIVATE_KEY || !APPLE_CLIENT_ID) {
+      if (!apple.teamId || !apple.keyId || !apple.privateKey || !apple.clientId) {
         throw customError("CONFIG_ERROR", "Apple登录配置不完整，请联系管理员", 500);
       }
 
@@ -137,10 +135,9 @@ export async function authRoutes(fastify: FastifyInstance) {
     }
 
     try {
-      const WECHAT_APP_ID = process.env.WECHAT_APP_ID;
-      const WECHAT_APP_SECRET = process.env.WECHAT_APP_SECRET;
+      const { wechat } = config;
 
-      if (!WECHAT_APP_ID || !WECHAT_APP_SECRET) {
+      if (!wechat.appId || !wechat.appSecret) {
         throw customError("CONFIG_ERROR", "微信登录配置不完整，请联系管理员", 500);
       }
 
@@ -148,8 +145,8 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       const tokenResponse = await axios.get("https://api.weixin.qq.com/sns/oauth2/access_token", {
         params: {
-          appid: WECHAT_APP_ID,
-          secret: WECHAT_APP_SECRET,
+          appid: wechat.appId,
+          secret: wechat.appSecret,
           code,
           grant_type: "authorization_code",
         },

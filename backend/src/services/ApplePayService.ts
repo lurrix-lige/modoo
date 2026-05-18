@@ -1,6 +1,7 @@
 import { customError } from '../utils/errors';
 import { prisma } from '../utils/database';
 import crypto from 'crypto';
+import { config } from '../config';
 
 export interface CreateApplePaySessionParams {
   planId: string;
@@ -17,9 +18,17 @@ export interface ApplePaySessionResult {
   total: {
     label: string;
     amount: string;
+    type: string;
   };
+  lineItems: Array<{
+    label: string;
+    amount: string;
+  }>;
   supportedNetworks: string[];
   merchantCapabilities: string[];
+  metadata: {
+    orderId: string;
+  };
 }
 
 export interface VerifyApplePayPaymentParams {
@@ -35,18 +44,9 @@ export interface VerifyApplePayPaymentResult {
   error?: string;
 }
 
-const APPLE_PAY_CONFIG = {
-  merchantIdentifier: process.env.APPLE_PAY_MERCHANT_ID || 'merchant.com.modoo',
-  merchantId: process.env.APPLE_PAY_MERCHANT_ID || 'merchant.com.modoo',
-  countryCode: process.env.APPLE_PAY_COUNTRY_CODE || 'CN',
-  currencyCode: process.env.APPLE_PAY_CURRENCY_CODE || 'CNY',
-  displayName: process.env.APPLE_PAY_DISPLAY_NAME || 'Modoo',
-  supportedNetworks: ['amex', 'masterCard', 'visa', 'discover', 'jcb'],
-  merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'],
-};
-
 export async function createApplePaySession(params: CreateApplePaySessionParams): Promise<ApplePaySessionResult> {
   const { planId, userId } = params;
+  const { applePay } = config;
   
   const plan = await prisma.pricingPlan.findUnique({
     where: { id: planId },
@@ -90,16 +90,26 @@ export async function createApplePaySession(params: CreateApplePaySessionParams)
   return {
     orderId: order.id,
     orderNo: order.orderNo,
-    countryCode: APPLE_PAY_CONFIG.countryCode,
-    currencyCode: APPLE_PAY_CONFIG.currencyCode,
-    merchantIdentifier: APPLE_PAY_CONFIG.merchantIdentifier,
-    merchantId: APPLE_PAY_CONFIG.merchantId,
+    countryCode: applePay.countryCode,
+    currencyCode: applePay.currencyCode,
+    merchantIdentifier: applePay.merchantId,
+    merchantId: applePay.merchantId,
     total: {
-      label: APPLE_PAY_CONFIG.displayName,
+      label: applePay.displayName,
       amount: plan.currentPrice.toFixed(2),
+      type: 'final',
     },
-    supportedNetworks: APPLE_PAY_CONFIG.supportedNetworks,
-    merchantCapabilities: APPLE_PAY_CONFIG.merchantCapabilities,
+    lineItems: [
+      {
+        label: applePay.displayName,
+        amount: plan.currentPrice.toFixed(2),
+      },
+    ],
+    supportedNetworks: applePay.supportedNetworks,
+    merchantCapabilities: applePay.merchantCapabilities,
+    metadata: {
+      orderId: order.orderNo,
+    },
   };
 }
 
@@ -205,31 +215,15 @@ export async function verifyApplePayPayment(params: VerifyApplePayPaymentParams)
   }
 }
 
-export async function formatApplePayOrder(orderNo: string, itemName: string, amount: number): Promise<{
-  countryCode: string;
-  currencyCode: string;
-  merchantIdentifier: string;
-  merchantCapabilities: string[];
-  supportedNetworks: string[];
-  total: {
-    label: string;
-    amount: string;
-    type: string;
-  };
-  lineItems: Array<{
-    label: string;
-    amount: string;
-  }>;
-  metadata: {
-    orderId: string;
-  };
-}> {
+export async function formatApplePayOrder(orderNo: string, itemName: string, amount: number) {
+  const { applePay } = config;
+  
   return {
-    countryCode: APPLE_PAY_CONFIG.countryCode,
-    currencyCode: APPLE_PAY_CONFIG.currencyCode,
-    merchantIdentifier: APPLE_PAY_CONFIG.merchantIdentifier,
-    merchantCapabilities: APPLE_PAY_CONFIG.merchantCapabilities,
-    supportedNetworks: APPLE_PAY_CONFIG.supportedNetworks,
+    countryCode: applePay.countryCode,
+    currencyCode: applePay.currencyCode,
+    merchantIdentifier: applePay.merchantId,
+    merchantCapabilities: applePay.merchantCapabilities,
+    supportedNetworks: applePay.supportedNetworks,
     total: {
       label: itemName,
       amount: amount.toFixed(2),
@@ -274,13 +268,15 @@ function generateOrderNo(): string {
 }
 
 export function getApplePayConfig() {
+  const { applePay } = config;
+  
   return {
-    merchantIdentifier: APPLE_PAY_CONFIG.merchantIdentifier,
-    merchantId: APPLE_PAY_CONFIG.merchantId,
-    countryCode: APPLE_PAY_CONFIG.countryCode,
-    currencyCode: APPLE_PAY_CONFIG.currencyCode,
-    displayName: APPLE_PAY_CONFIG.displayName,
-    supportedNetworks: APPLE_PAY_CONFIG.supportedNetworks,
-    merchantCapabilities: APPLE_PAY_CONFIG.merchantCapabilities,
+    merchantIdentifier: applePay.merchantId,
+    merchantId: applePay.merchantId,
+    countryCode: applePay.countryCode,
+    currencyCode: applePay.currencyCode,
+    displayName: applePay.displayName,
+    supportedNetworks: applePay.supportedNetworks,
+    merchantCapabilities: applePay.merchantCapabilities,
   };
 }

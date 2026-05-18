@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
-import { applePayService, ApplePayResult, ApplePayErrorCode } from '../services/ApplePayService';
+import { applePayService, ApplePayResult, ApplePayErrorCode, ApplePayOrderInfo } from '../services/ApplePayService';
 
 export interface UseApplePayResult {
   purchaseWithApple: (planId: string, planName?: string) => Promise<ApplePayResult>;
@@ -46,13 +46,16 @@ export function useApplePay(): UseApplePayResult {
         return createResult;
       }
 
-      const orderNo = createResult.orderNo!;
-      const orderId = createResult.orderId!;
+      const orderNo = createResult.orderNo;
+      const orderId = createResult.orderId;
+      const orderInfo = createResult.orderInfo;
 
-      const config = await applePayService.getPaymentConfig();
-      const amount = config.total?.amount || '0.01';
+      if (!orderInfo || !orderNo || !orderId) {
+        setError('订单信息不完整');
+        return { success: false, error: '订单信息不完整', errorCode: ApplePayErrorCode.ORDER_CREATE_FAILED };
+      }
 
-      const paymentResult = await performApplePay(orderNo, planName || '会员订阅', amount);
+      const paymentResult = await performApplePay(orderInfo);
 
       if (!paymentResult.success) {
         setError(paymentResult.error || '支付失败');
@@ -78,7 +81,7 @@ export function useApplePay(): UseApplePayResult {
     }
   }, [isApplePayAvailable]);
 
-  const performApplePay = async (orderNo: string, itemName: string, amount: string): Promise<{ success: boolean; paymentData?: string; error?: string }> => {
+  const performApplePay = async (orderInfo: ApplePayOrderInfo): Promise<{ success: boolean; paymentData?: string; error?: string }> => {
     try {
       if (Platform.OS !== 'ios') {
         return { success: false, error: 'Apple Pay 仅支持 iOS 设备' };
@@ -91,22 +94,19 @@ export function useApplePay(): UseApplePayResult {
         return { success: false, error: 'Apple Pay 模块未安装', };
       }
 
-      const config = await applePayService.getPaymentConfig();
-      const merchantIdentifier = config.merchantIdentifier || 'merchant.com.modoo';
-
       const paymentRequest = {
-        countryCode: config.countryCode || 'CN',
-        currencyCode: config.currencyCode || 'CNY',
-        merchantIdentifier,
+        countryCode: orderInfo.countryCode,
+        currencyCode: orderInfo.currencyCode,
+        merchantIdentifier: orderInfo.merchantIdentifier,
         paymentSummaryItems: [
           {
-            label: itemName,
-            amount,
-            type: 'final',
+            label: orderInfo.total.label,
+            amount: orderInfo.total.amount,
+            type: orderInfo.total.type,
           },
         ],
-        supportedNetworks: config.supportedNetworks || ['amex', 'masterCard', 'visa', 'discover'],
-        merchantCapabilities: config.merchantCapabilities || ['supports3DS', 'supportsCredit', 'supportsDebit'],
+        supportedNetworks: orderInfo.supportedNetworks,
+        merchantCapabilities: orderInfo.merchantCapabilities,
       };
 
       // @ts-ignore: Apple Pay module type

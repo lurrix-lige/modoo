@@ -1,13 +1,13 @@
 import { prisma } from "../utils/database";
 import { customError } from "../utils/errors";
 import { logger } from "../utils/logger";
+import { config } from "../config";
 
-const VERIFICATION_EXPIRY =
-  parseInt(process.env.VERIFICATION_EXPIRY_MINUTES || "5") * 60 * 1000;
-const MAX_ATTEMPTS = parseInt(process.env.MAX_VERIFICATION_ATTEMPTS || "5");
-const MAX_VERIFY_ATTEMPTS = parseInt(process.env.MAX_VERIFY_ATTEMPTS || "3");
-const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === "true";
-const RATE_LIMIT_WINDOW = parseInt(process.env.VERIFICATION_RATE_LIMIT_WINDOW_MS || "60000");
+const VERIFICATION_EXPIRY = config.verification.expiryMinutes * 60 * 1000;
+const MAX_ATTEMPTS = config.verification.maxAttempts;
+const MAX_VERIFY_ATTEMPTS = config.verification.maxVerifyAttempts;
+const ENABLE_REAL_SMS = config.verification.enableRealSms;
+const RATE_LIMIT_WINDOW = config.verification.rateLimitWindowMs;
 
 interface VerificationAttempt {
   phone: string;

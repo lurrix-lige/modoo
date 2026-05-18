@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { customError } from './errors';
+import { config } from '../config';
 
 export const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  log: config.database.log as any,
 });
 
 export interface AuthenticatedRequest extends FastifyRequest {

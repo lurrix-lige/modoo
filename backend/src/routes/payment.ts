@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma, authenticate, AuthenticatedRequest } from '../utils/database';
 import { customError } from '../utils/errors';
 import { successResponse, ErrorCodes } from '../utils/apiResponse';
+import { config } from '../config';
 import {
   createWechatPayUnifiedOrder,
   verifyWechatPaySignature,
@@ -52,7 +53,7 @@ export async function paymentRoutes(fastify: FastifyInstance) {
       || (request as any).ip
       || '127.0.0.1';
 
-    const notifyUrl = `${process.env.API_BASE_URL || 'http://localhost:3000'}/api/v1/payment/wechat/notify`;
+    const notifyUrl = `${config.server.apiBaseUrl}/api/v1/payment/wechat/notify`;
 
     try {
       const payParams = await createWechatPayUnifiedOrder({
@@ -79,16 +80,16 @@ export async function paymentRoutes(fastify: FastifyInstance) {
 
   fastify.post('/wechat/notify', async (request, reply) => {
     const body = request.body as Record<string, string>;
-    const API_KEY = process.env.WECHAT_API_KEY!;
+    const { wechat } = config;
 
-    if (!API_KEY) {
+    if (!wechat.apiKey) {
       fastify.log.error('WECHAT_API_KEY not configured');
       return reply.type('application/xml').send(
         '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[系统配置错误]]></return_msg></xml>'
       );
     }
 
-    const isValid = await verifyWechatPaySignature(body, API_KEY);
+    const isValid = await verifyWechatPaySignature(body, wechat.apiKey);
     if (!isValid) {
       fastify.log.warn({ body }, 'Invalid WeChat pay signature');
       return reply.type('application/xml').send(

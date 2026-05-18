@@ -7,6 +7,7 @@ import { registerV1Routes } from './v1';
 import { registerCronJobs } from './services/CronService';
 import { errorHandler } from './middleware/errorHandler';
 import { initSentry } from './utils/sentry';
+import { config } from './config';
 
 const fastify = Fastify({
   logger: {
@@ -30,7 +31,7 @@ const start = async () => {
   });
 
   await fastify.register(jwt, {
-    secret: process.env.JWT_SECRET || 'dozoo-super-secret-key-change-in-production',
+    secret: config.jwt.secret,
   });
 
   await fastify.register(rateLimit, {
@@ -56,8 +57,7 @@ const start = async () => {
   await registerCronJobs(fastify);
 
   try {
-    const host = process.env.HOST || '0.0.0.0';
-    const port = parseInt(process.env.PORT || '3000', 10);
+    const { host, port } = config.server;
     await fastify.listen({ port, host });
     fastify.log.info(`Server running at http://${host}:${port}`);
     fastify.log.info(`API v1 available at http://${host}:${port}/api/v1`);
