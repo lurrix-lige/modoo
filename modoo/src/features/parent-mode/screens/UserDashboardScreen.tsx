@@ -24,6 +24,7 @@ type UserDashboardNavigationProp = NativeStackNavigationProp<ParentStackParamLis
 
 function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -40,16 +41,32 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
     }
   };
 
+  // 检测字符串是否为国际化 key（包含点号格式，如 breathing.balanced）
+  const isTranslationKey = (str: string | undefined): boolean => {
+    if (!str) return false;
+    return /^[a-z]+\.[a-z]/.test(str.toLowerCase());
+  };
+
+  // 使用国际化 key 或直接值
+  // 优先使用 titleKey/descriptionKey，如果没有则检查 title/description 是否为翻译 key
+  const title = item.titleKey 
+    ? t(item.titleKey) 
+    : (isTranslationKey(item.title) ? t(item.title!) : (item.title || ''));
+    
+  const description = item.descriptionKey 
+    ? t(item.descriptionKey) 
+    : (isTranslationKey(item.description) ? t(item.description!) : (item.description || ''));
+
   return (
     <Card style={styles.contentCard} onPress={onPress} variant="glass" elevated>
       <View style={[styles.contentIcon, { backgroundColor: colors.primary + '20' }]}>
         {(() => { const IconComp = dashboardIconMap[getIcon(item.type)] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />; })()}
       </View>
       <Text style={[styles.contentTitle, { color: colors.textPrimary }]} numberOfLines={1}>
-        {item.title}
+        {title}
       </Text>
       <Text style={[styles.contentDesc, { color: colors.textSecondary }]} numberOfLines={1}>
-        {item.description}
+        {description}
       </Text>
       {item.isPremium && (
         <View style={[styles.premiumBadge, { backgroundColor: colors.primary + '20' }]}>
