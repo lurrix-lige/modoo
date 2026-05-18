@@ -1,12 +1,118 @@
+/**
+ * 后端环境变量配置管理
+ * 
+ * 命名规范：
+ * - 后端变量无需 EXPO_PUBLIC_ 前缀
+ * - 第三方服务变量使用服务商名称作为前缀（WECHAT_, APPLE_）
+ * - 变量名使用大写蛇形命名法（UPPER_SNAKE_CASE）
+ * 
+ * 使用方式：
+ * import { config } from './config';
+ * const port = config.server.port;
+ */
+
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const config = {
+// ============================================
+// 类型定义
+// ============================================
+
+export interface ServerConfig {
+  host: string;
+  port: number;
+  env: 'development' | 'staging' | 'production';
+  apiBaseUrl: string;
+}
+
+export interface JwtConfig {
+  secret: string;
+  accessTokenExpiresIn: string;
+  refreshTokenExpiresDays: number;
+}
+
+export interface DatabaseConfig {
+  url: string;
+  log: string[];
+}
+
+export interface VerificationConfig {
+  expiryMinutes: number;
+  maxAttempts: number;
+  maxVerifyAttempts: number;
+  enableRealSms: boolean;
+  rateLimitWindowMs: number;
+}
+
+export interface AccountValidationConfig {
+  enabled: boolean;
+  phonePattern: string;
+  minPhoneLength: number;
+  maxPhoneLength: number;
+  blockedPrefixes: string[];
+  blockedPhones: string[];
+}
+
+export interface SentryConfig {
+  dsn: string;
+  environment: string;
+}
+
+export interface LoggerConfig {
+  level: string;
+}
+
+export interface WechatConfig {
+  appId: string;
+  appSecret: string;
+  mchId: string;
+  apiKey: string;
+  env: 'sandbox' | 'production';
+  isSandbox: boolean;
+  payApi: string;
+  sandboxApi: string;
+}
+
+export interface AppleConfig {
+  appId: string;
+  teamId: string;
+  keyId: string;
+  privateKey: string;
+  clientId: string;
+}
+
+export interface ApplePayConfig {
+  merchantId: string;
+  displayName: string;
+  countryCode: string;
+  currencyCode: string;
+  supportedNetworks: string[];
+  merchantCapabilities: string[];
+}
+
+export interface Config {
+  server: ServerConfig;
+  jwt: JwtConfig;
+  database: DatabaseConfig;
+  verification: VerificationConfig;
+  accountValidation: AccountValidationConfig;
+  sentry: SentryConfig;
+  logger: LoggerConfig;
+  wechat: WechatConfig;
+  apple: AppleConfig;
+  applePay: ApplePayConfig;
+}
+
+// ============================================
+// 配置定义
+// ============================================
+
+export const config: Config = {
   server: {
     host: process.env.HOST || '0.0.0.0',
     port: parseInt(process.env.PORT || '3000', 10),
-    env: process.env.NODE_ENV || 'development',
+    env: (process.env.NODE_ENV as ServerConfig['env']) || 'development',
     apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
   },
 
@@ -18,7 +124,7 @@ export const config = {
 
   database: {
     url: process.env.DATABASE_URL || 'file:./dev.db',
-    log: (process.env.NODE_ENV === 'development') ? ['query', 'error', 'warn'] : ['error'],
+    log: config.server.env === 'development' ? ['query', 'error', 'warn'] : ['error'],
   },
 
   verification: {
@@ -52,7 +158,7 @@ export const config = {
     appSecret: process.env.WECHAT_APP_SECRET || '',
     mchId: process.env.WECHAT_MCH_ID || '',
     apiKey: process.env.WECHAT_API_KEY || '',
-    env: process.env.WECHAT_ENV || 'sandbox',
+    env: (process.env.WECHAT_ENV as WechatConfig['env']) || 'sandbox',
     isSandbox: process.env.WECHAT_ENV === 'sandbox',
     payApi: process.env.WECHAT_PAY_API || 'https://api.mch.weixin.qq.com',
     sandboxApi: process.env.WECHAT_PAY_SANDBOX_API || 'https://api.mch.weixin.qq.com/sandboxnew',
@@ -76,4 +182,29 @@ export const config = {
   },
 };
 
-export type Config = typeof config;
+// ============================================
+// 配置校验
+// ============================================
+export function validateConfig(): void {
+  const missingConfigs: string[] = [];
+  
+  if (!config.jwt.secret || config.jwt.secret === 'dozoo-super-secret-key-change-in-production') {
+    missingConfigs.push('JWT_SECRET (使用了默认值，请在生产环境中配置)');
+  }
+  
+  if (!config.wechat.appId) {
+    missingConfigs.push('WECHAT_APP_ID');
+  }
+  
+  if (!config.wechat.mchId && config.wechat.env === 'production') {
+    missingConfigs.push('WECHAT_MCH_ID (生产环境必需)');
+  }
+  
+  if (!config.wechat.apiKey && config.wechat.env === 'production') {
+    missingConfigs.push('WECHAT_API_KEY (生产环境必需)');
+  }
+  
+  if (missingConfigs.length > 0) {
+    console.warn(`[CONFIG WARNING] Missing or invalid environment variables:\n  - ${missingConfigs.join('\n  - ')}`);
+  }
+}

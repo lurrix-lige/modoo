@@ -3,9 +3,9 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
-const API_BASE = process.env.EXPO_PUBLIC_API_URL 
-        ? `${process.env.EXPO_PUBLIC_API_URL}/api/i18n` 
-        : 'http://localhost:3000/api/i18n';
+// 从环境变量获取配置，与 src/config/env.ts 保持一致
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE = `${API_BASE_URL}/api/i18n`;
 const LOCALES_DIR = path.resolve(__dirname, '../src/i18n/locales');
 
 function fetchData(url) {
