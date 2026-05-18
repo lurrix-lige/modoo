@@ -1,6 +1,7 @@
 import { Platform, Alert } from 'react-native';
+import { CONFIG } from '../config/env';
 
-const WECHAT_APP_ID = process.env.WECHAT_APP_ID;
+const WECHAT_APP_ID = CONFIG.wechat.APP_ID;
 
 export interface WechatAuthResult {
   code: string;

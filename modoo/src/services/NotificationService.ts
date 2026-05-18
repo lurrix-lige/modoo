@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { apiService } from '../infrastructure/api';
 import { logger } from '../utils/logger';
+import { CONFIG } from '../config/env';
 
 const ENABLE_PUSH_NOTIFICATIONS = false;
 
@@ -44,7 +45,7 @@ export class NotificationService {
 
     try {
       const token = await Notifications.getExpoPushTokenAsync({
-        projectId: process.env.EXPO_PROJECT_ID || '6335c453-5681-44e5-a1ae-859938c80375',
+        projectId: CONFIG.expo.PROJECT_ID,
       });
       this.token = token.data;
       await this.registerTokenWithBackend();

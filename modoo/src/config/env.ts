@@ -49,6 +49,23 @@ export const I18N_CONFIG = {
   SUPPORTED_LANGUAGES: ['zh-CN', 'en'] as const,
 };
 
+// Wechat Configuration
+export const WECHAT_CONFIG = {
+  APP_ID: process.env.WECHAT_APP_ID || '',
+};
+
+// Apple Configuration
+export const APPLE_CONFIG = {
+  TEAM_ID: process.env.APPLE_TEAM_ID || '',
+  APP_ID: process.env.APPLE_APP_ID || '',
+  CLIENT_ID: process.env.APPLE_CLIENT_ID || '',
+};
+
+// Expo Configuration
+export const EXPO_CONFIG = {
+  PROJECT_ID: process.env.EXPO_PROJECT_ID || '6335c453-5681-44e5-a1ae-859938c80375',
+};
+
 // Unified Config Export
 export const CONFIG = {
   app: APP_CONFIG,
@@ -57,4 +74,7 @@ export const CONFIG = {
   auth: AUTH_CONFIG,
   storage: STORAGE_KEYS,
   i18n: I18N_CONFIG,
+  wechat: WECHAT_CONFIG,
+  apple: APPLE_CONFIG,
+  expo: EXPO_CONFIG,
 } as const;
