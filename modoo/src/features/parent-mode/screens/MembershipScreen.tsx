@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { ArrowLeft, Star, Headphones, BookOpen, MessageSquare, Check, CheckCircle } from 'lucide-react-native';
+import { WechatIcon } from '../../../components/icons/WechatIcon';
+import { AppleIcon } from '../../../components/icons/AppleIcon';
 
 const membershipIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'arrow-back': ArrowLeft,
@@ -28,7 +23,7 @@ import { MembershipPlanCard } from '../../../components/MembershipPlanCard';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
 import { apiService, MembershipPlan } from '../../../services';
-import { useWechatPay } from '../../../hooks';
+import { useWechatPay, useApplePay } from '../../../hooks';
 import { formatCurrency } from '../../../utils/currency';
 import { logger } from '../../../utils/logger';
 
@@ -48,6 +43,8 @@ const BENEFITS: Benefit[] = [
   { icon: 'star', titleKey: 'membership.benefits.guardian', descKey: 'membership.benefits.guardianDesc' },
 ];
 
+type PaymentMethod = 'wechat' | 'apple';
+
 export default function MembershipScreen() {
   const navigation = useNavigation<MembershipNavigationProp>();
   const route = useRoute<MembershipRouteProp>();
@@ -55,7 +52,9 @@ export default function MembershipScreen() {
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAppStore();
   const { purchaseWithWechat, isLoading: isWechatLoading, error: wechatError, isWechatInstalled } = useWechatPay();
+  const { purchaseWithApple, isLoading: isAppleLoading, error: appleError, isApplePayAvailable } = useApplePay();
   const [selectedPlan, setSelectedPlan] = useState<string>('quarterly');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('wechat');
   const [isProcessing, setIsProcessing] = useState(false);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,20 +94,26 @@ export default function MembershipScreen() {
       return;
     }
 
-    if (!isWechatInstalled) {
-      Alert.alert(t('common.hint'), t('membership.wechatNotInstalled'));
-      return;
-    }
-
     const selectedPlanData = plans.find(p => p.id === selectedPlan);
     if (!selectedPlanData) {
       Alert.alert(t('common.error'), t('membership.planNotSelected'));
       return;
     }
 
+    if (selectedPaymentMethod === 'wechat' && !isWechatInstalled) {
+      Alert.alert(t('common.hint'), t('membership.wechatNotInstalled'));
+      return;
+    }
+
+    if (selectedPaymentMethod === 'apple' && !isApplePayAvailable) {
+      Alert.alert(t('common.hint'), t('membership.applePayNotAvailable'));
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      const result = await purchaseWithWechat(selectedPlan, selectedPlanData.nameKey);
+      const purchaseFn = selectedPaymentMethod === 'wechat' ? purchaseWithWechat : purchaseWithApple;
+      const result = await purchaseFn(selectedPlan, selectedPlanData.nameKey);
 
       if (result.success) {
         const { setPaidStatus } = useAppStore.getState();
@@ -116,7 +121,7 @@ export default function MembershipScreen() {
         Alert.alert(t('membership.openSuccess'), t('membership.openSuccessDesc'));
         navigation.goBack();
       } else {
-        logger.warn('WeChat pay failed', { error: result.error, errorCode: result.errorCode });
+        logger.warn(`${selectedPaymentMethod} pay failed`, { error: result.error, errorCode: result.errorCode });
         if (result.errorCode === 'USER_CANCEL') {
           return;
         }
@@ -202,6 +207,49 @@ export default function MembershipScreen() {
           <TouchableOpacity onPress={() => {}}>
             <Text style={[styles.linkText, { color: colors.primary }]}>{t('membership.agreement.privacy')}</Text>
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.paymentSection}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('membership.selectPayment')}</Text>
+          <View style={styles.paymentOptions}>
+            <TouchableOpacity
+              style={[
+                styles.paymentOption,
+                { backgroundColor: selectedPaymentMethod === 'wechat' ? colors.primary + '10' : colors.surface },
+                { borderColor: selectedPaymentMethod === 'wechat' ? colors.primary : colors.border },
+              ]}
+              onPress={() => isWechatInstalled && setSelectedPaymentMethod('wechat')}
+              disabled={!isWechatInstalled}
+            >
+              <WechatIcon size={24} color={selectedPaymentMethod === 'wechat' ? colors.primary : colors.textSecondary} />
+              <Text style={[styles.paymentOptionText, { color: selectedPaymentMethod === 'wechat' ? colors.primary : colors.textPrimary }]}>
+                {t('membership.wechatPay')}
+              </Text>
+              {selectedPaymentMethod === 'wechat' && (
+                <CheckCircle size={20} color={colors.primary} />
+              )}
+            </TouchableOpacity>
+
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                style={[
+                  styles.paymentOption,
+                  { backgroundColor: selectedPaymentMethod === 'apple' ? colors.primary + '10' : colors.surface },
+                  { borderColor: selectedPaymentMethod === 'apple' ? colors.primary : colors.border },
+                ]}
+                onPress={() => isApplePayAvailable && setSelectedPaymentMethod('apple')}
+                disabled={!isApplePayAvailable}
+              >
+                <AppleIcon size={24} color={selectedPaymentMethod === 'apple' ? colors.primary : colors.textSecondary} />
+                <Text style={[styles.paymentOptionText, { color: selectedPaymentMethod === 'apple' ? colors.primary : colors.textPrimary }]}>
+                  {t('membership.applePay')}
+                </Text>
+                {selectedPaymentMethod === 'apple' && (
+                  <CheckCircle size={20} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </ScrollView>
 
@@ -391,6 +439,27 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
     textDecorationLine: 'underline',
+  },
+  paymentSection: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.xl,
+  },
+  paymentOptions: {
+    gap: spacing.md,
+  },
+  paymentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 2,
+    ...shadows.small,
+  },
+  paymentOptionText: {
+    flex: 1,
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.medium,
+    marginLeft: spacing.md,
   },
   footer: {
     position: 'absolute',

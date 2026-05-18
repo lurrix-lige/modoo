@@ -5,3 +5,4 @@ export { useVisitTracker } from './useVisitTracker';
 export { useFadeIn, useParallax } from './useAnimatedComponents';
 export { useResponsive } from './useResponsive';
 export { useWechatPay } from './useWechatPay';
+export { useApplePay } from './useApplePay';

@@ -9,6 +9,12 @@ import {
   getWechatPayConfig,
 } from '../services/WechatPayService';
 import {
+  createApplePaySession,
+  verifyApplePayPayment,
+  formatApplePayOrder,
+  getApplePayConfig,
+} from '../services/ApplePayService';
+import {
   createOrder,
   getOrderById,
   getOrderByOrderNo,
@@ -328,11 +334,152 @@ export async function paymentRoutes(fastify: FastifyInstance) {
   );
 
   fastify.get('/config', async (request, reply) => {
-    const config = getWechatPayConfig();
+    const wechatConfig = getWechatPayConfig();
+    const appleConfig = getApplePayConfig();
     return successResponse({
-      appId: config.appId,
-      mchId: config.mchId,
-      isSandbox: config.isSandbox,
+      wechat: {
+        appId: wechatConfig.appId,
+        mchId: wechatConfig.mchId,
+        isSandbox: wechatConfig.isSandbox,
+      },
+      apple: {
+        merchantId: appleConfig.merchantId,
+        displayName: appleConfig.displayName,
+        countryCode: appleConfig.countryCode,
+        currencyCode: appleConfig.currencyCode,
+      },
+    });
+  });
+
+  fastify.post('/apple/create-order', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = (request as AuthenticatedRequest).userId!;
+    const { planId } = request.body as { planId: string };
+
+    if (!planId) {
+      throw customError(ErrorCodes.VALIDATION_REQUIRED_FIELD, '缺少planId参数', 400);
+    }
+
+    const plan = await getPricingPlanById(planId);
+    if (!plan) {
+      throw customError(ErrorCodes.RESOURCE_NOT_FOUND, '定价方案不存在', 404);
+    }
+
+    if (!plan.isActive) {
+      throw customError(ErrorCodes.BIZ_PLAN_INACTIVE, '该定价方案已停用', 400);
+    }
+
+    const order = await createOrder({
+      userId,
+      planId: plan.id,
+      paymentMethod: 'APPLE_PAY',
+      metadata: { channel: 'apple', planKey: plan.planKey },
+    });
+
+    const orderInfo = await formatApplePayOrder(order.orderNo, plan.nameKey, plan.currentPrice);
+
+    return successResponse({
+      orderId: order.id,
+      orderNo: order.orderNo,
+      orderInfo,
+    });
+  });
+
+  fastify.post('/apple/verify-payment', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = (request as AuthenticatedRequest).userId!;
+    const { paymentData, orderNo } = request.body as { paymentData: string; orderNo: string };
+
+    if (!paymentData || !orderNo) {
+      throw customError(ErrorCodes.VALIDATION_REQUIRED_FIELD, '缺少paymentData或orderNo参数', 400);
+    }
+
+    const order = await getOrderByOrderNo(orderNo);
+
+    if (!order) {
+      throw customError(ErrorCodes.RESOURCE_NOT_FOUND, '订单不存在', 404);
+    }
+
+    if (order.userId !== userId) {
+      throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权操作此订单', 403);
+    }
+
+    if (order.status !== 'PENDING') {
+      throw customError(ErrorCodes.VALIDATION_OUT_OF_RANGE, '订单状态无效', 400);
+    }
+
+    const result = await verifyApplePayPayment({ paymentData, orderId: order.id });
+
+    if (!result.success) {
+      throw customError(ErrorCodes.VALIDATION_OUT_OF_RANGE, result.error || '支付验证失败', 400);
+    }
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status: 'COMPLETED',
+        paidAt: new Date(),
+        transactionId: result.transactionId,
+        paymentMethod: 'APPLE_PAY',
+      },
+    });
+
+    const planId = order.items[0]?.planId;
+    if (planId) {
+      const plan = await getPricingPlanById(planId);
+      if (plan) {
+        const now = new Date();
+        const durationDays = plan.durationDays;
+        const currentPeriodEnd = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
+        const benefits = await prisma.benefit.findMany({
+          where: { isActive: true },
+        });
+
+        const subscription = await prisma.subscription.create({
+          data: {
+            userId: order.userId,
+            planId: plan.id,
+            status: 'ACTIVE',
+            currentPeriodStart: now,
+            currentPeriodEnd,
+            benefits: {
+              create: benefits.map(benefit => ({
+                benefitId: benefit.id,
+                expiresAt: currentPeriodEnd,
+                usageLimit: benefit.value ? JSON.parse(benefit.value)?.maxUsages : undefined,
+              })),
+            },
+          },
+          include: {
+            plan: true,
+            benefits: { include: { benefit: true } },
+          },
+        });
+
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { subscriptionId: subscription.id },
+        });
+
+        await prisma.paymentTransaction.create({
+          data: {
+            orderId: order.id,
+            subscriptionId: subscription.id,
+            userId: order.userId,
+            type: 'PAYMENT',
+            status: 'SUCCESS',
+            amount: order.finalAmount,
+            currency: 'CNY',
+            paymentMethod: 'APPLE_PAY',
+            transactionId: result.transactionId,
+          },
+        });
+      }
+    }
+
+    return successResponse({
+      orderId: order.id,
+      transactionId: result.transactionId,
+      status: 'completed',
     });
   });
 }
