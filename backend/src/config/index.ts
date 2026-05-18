@@ -124,7 +124,7 @@ export const config: Config = {
 
   database: {
     url: process.env.DATABASE_URL || 'file:./dev.db',
-    log: config.server.env === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   },
 
   verification: {
