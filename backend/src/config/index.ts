@@ -24,6 +24,7 @@ export interface ServerConfig {
   port: number;
   env: 'development' | 'staging' | 'production';
   apiBaseUrl: string;
+  corsOrigins: string[];
 }
 
 export interface JwtConfig {
@@ -72,6 +73,8 @@ export interface WechatConfig {
   isSandbox: boolean;
   payApi: string;
   sandboxApi: string;
+  oauthApi: string;
+  userInfoApi: string;
 }
 
 export interface AppleConfig {
@@ -80,6 +83,8 @@ export interface AppleConfig {
   keyId: string;
   privateKey: string;
   clientId: string;
+  authKeysUrl: string;
+  issuer: string;
 }
 
 export interface ApplePayConfig {
@@ -114,11 +119,12 @@ export const config: Config = {
     port: parseInt(process.env.PORT || '3000', 10),
     env: (process.env.NODE_ENV as ServerConfig['env']) || 'development',
     apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
+    corsOrigins: (process.env.CORS_ORIGINS || '').split(',').filter(Boolean),
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'dozoo-super-secret-key-change-in-production',
-    accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || '7d',
+    secret: process.env.JWT_SECRET || '',
+    accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || '15m',
     refreshTokenExpiresDays: parseInt(process.env.REFRESH_TOKEN_EXPIRES_DAYS || '14'),
   },
 
@@ -162,6 +168,8 @@ export const config: Config = {
     isSandbox: process.env.WECHAT_ENV === 'sandbox',
     payApi: process.env.WECHAT_PAY_API || 'https://api.mch.weixin.qq.com',
     sandboxApi: process.env.WECHAT_PAY_SANDBOX_API || 'https://api.mch.weixin.qq.com/sandboxnew',
+    oauthApi: process.env.WECHAT_OAUTH_API || 'https://api.weixin.qq.com/sns/oauth2/access_token',
+    userInfoApi: process.env.WECHAT_USERINFO_API || 'https://api.weixin.qq.com/sns/userinfo',
   },
 
   apple: {
@@ -170,6 +178,8 @@ export const config: Config = {
     keyId: process.env.APPLE_KEY_ID || '',
     privateKey: process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, '\n') || '',
     clientId: process.env.APPLE_CLIENT_ID || '',
+    authKeysUrl: process.env.APPLE_AUTH_KEYS_URL || 'https://appleid.apple.com/auth/keys',
+    issuer: process.env.APPLE_ISSUER || 'https://appleid.apple.com',
   },
 
   applePay: {
@@ -187,23 +197,24 @@ export const config: Config = {
 // ============================================
 export function validateConfig(): void {
   const missingConfigs: string[] = [];
-  
-  if (!config.jwt.secret || config.jwt.secret === 'dozoo-super-secret-key-change-in-production') {
-    missingConfigs.push('JWT_SECRET (使用了默认值，请在生产环境中配置)');
+
+  if (!config.jwt.secret) {
+    console.error('[CONFIG FATAL] JWT_SECRET is required. Set it in your .env file.');
+    process.exit(1);
   }
-  
+
   if (!config.wechat.appId) {
     missingConfigs.push('WECHAT_APP_ID');
   }
-  
+
   if (!config.wechat.mchId && config.wechat.env === 'production') {
     missingConfigs.push('WECHAT_MCH_ID (生产环境必需)');
   }
-  
+
   if (!config.wechat.apiKey && config.wechat.env === 'production') {
     missingConfigs.push('WECHAT_API_KEY (生产环境必需)');
   }
-  
+
   if (missingConfigs.length > 0) {
     console.warn(`[CONFIG WARNING] Missing or invalid environment variables:\n  - ${missingConfigs.join('\n  - ')}`);
   }

@@ -4,8 +4,6 @@ import { customError, ErrorCodes } from '../utils/errors';
 
 export async function requireAuth(request: FastifyRequest, reply: FastifyReply) {
   try {
-   // TODO:临时处理，后续根据实际情况调整
-   // return;
     await request.jwtVerify();
   } catch (error: any) {
     const errorCode = error.code === 'FST_JWT_NO_AUTHORIZATION_IN_HEADER' 

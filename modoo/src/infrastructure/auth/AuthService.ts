@@ -134,8 +134,6 @@ class AuthService {
   }
 
   isAuthenticated(): boolean {
-    // TODO:临时处理，后续根据实际情况调整
-    //return true;
     if (!this.accessToken) return false;
     if (Date.now() >= this.tokenExpiresAt) return false;
     if (this.isSessionTimedOut()) return false;

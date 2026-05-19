@@ -32,21 +32,18 @@ export interface AppleUserInfo {
   isPrivateEmail: boolean;
 }
 
-const APPLE_AUTH_KEYS_URL = 'https://appleid.apple.com/auth/keys';
-const APPLE_ISSUER = 'https://appleid.apple.com';
-
 export async function verifyAppleIdToken(idToken: string): Promise<AppleIdTokenPayload> {
   const { apple } = config;
-  
+
   if (!apple.appId) {
     throw customError('CONFIG_ERROR', 'APPLE_APP_ID not configured', 500);
   }
 
   try {
-    const JWKS = jose.createRemoteJWKSet(new URL(APPLE_AUTH_KEYS_URL));
-    
+    const JWKS = jose.createRemoteJWKSet(new URL(apple.authKeysUrl));
+
     const { payload } = await jose.jwtVerify(idToken, JWKS, {
-      issuer: APPLE_ISSUER,
+      issuer: apple.issuer,
       audience: apple.appId,
     });
 
@@ -73,7 +70,7 @@ export async function verifyAppleIdToken(idToken: string): Promise<AppleIdTokenP
 
 export async function fetchApplePublicKeys(): Promise<ApplePublicKey[]> {
   try {
-    const response = await axios.get(APPLE_AUTH_KEYS_URL);
+    const response = await axios.get(config.apple.authKeysUrl);
     return response.data.keys;
   } catch (error) {
     throw customError('APPLE_AUTH_ERROR', 'Failed to fetch Apple public keys', 500);
@@ -82,7 +79,7 @@ export async function fetchApplePublicKeys(): Promise<ApplePublicKey[]> {
 
 export async function getAppleUserInfo(idToken: string): Promise<AppleUserInfo> {
   const payload = await verifyAppleIdToken(idToken);
-  
+
   return {
     appleId: payload.sub,
     email: payload.email || null,

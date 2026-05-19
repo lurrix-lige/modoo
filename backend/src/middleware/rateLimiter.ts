@@ -1,3 +1,4 @@
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { errorResponse, ErrorCodes } from '../utils/apiResponse';
 
 interface RateLimitConfig {
@@ -13,13 +14,13 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
-export function rateLimiter(config: RateLimitConfig = DEFAULT_CONFIG) {
-  return (req: any, res: any, next: any) => {
-    const clientId = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+export function createRateLimiter(config: RateLimitConfig = DEFAULT_CONFIG) {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    const clientId = request.ip || (request.headers['x-forwarded-for'] as string) || 'unknown';
     const now = Date.now();
-    
+
     let entry = rateLimitStore.get(clientId);
-    
+
     if (!entry || now > entry.resetTime) {
       entry = {
         count: 1,
@@ -27,7 +28,7 @@ export function rateLimiter(config: RateLimitConfig = DEFAULT_CONFIG) {
       };
     } else if (entry.count >= config.maxRequests) {
       const remainingTime = Math.ceil((entry.resetTime - now) / 1000);
-      return res.status(429).json(
+      return reply.status(429).send(
         errorResponse(
           ErrorCodes.SYS_RATE_LIMITED,
           config.message || `请求过于频繁，请 ${remainingTime} 秒后再试`
@@ -36,19 +37,17 @@ export function rateLimiter(config: RateLimitConfig = DEFAULT_CONFIG) {
     } else {
       entry.count++;
     }
-    
+
     rateLimitStore.set(clientId, entry);
-    
-    res.setHeader('X-RateLimit-Limit', config.maxRequests);
-    res.setHeader('X-RateLimit-Remaining', config.maxRequests - entry.count);
-    res.setHeader('X-RateLimit-Reset', Math.ceil(entry.resetTime / 1000));
-    
-    next();
+
+    reply.header('X-RateLimit-Limit', config.maxRequests);
+    reply.header('X-RateLimit-Remaining', config.maxRequests - entry.count);
+    reply.header('X-RateLimit-Reset', Math.ceil(entry.resetTime / 1000));
   };
 }
 
 export function strictRateLimiter() {
-  return rateLimiter({
+  return createRateLimiter({
     windowMs: 60 * 1000,
     maxRequests: 10,
     message: '请求过于频繁，请稍后重试',

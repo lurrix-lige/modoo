@@ -4,6 +4,7 @@ import { customError } from "../utils/errors";
 import { config } from "../config";
 import { sendVerificationCode } from "../services/verificationService";
 import { validateAccount } from "../services/accountValidationService";
+import { strictRateLimiter } from "../middleware/rateLimiter";
 import {
   loginWithPhone,
   loginWithApple,
@@ -13,8 +14,20 @@ import {
 } from "../services/authService";
 
 export async function authRoutes(fastify: FastifyInstance) {
-  // 新的标准 URL：/send-code (kebab-case)
-  fastify.post("/send-code", async (request, reply) => {
+  const sendCodeRateLimit = strictRateLimiter();
+
+  fastify.post("/send-code", {
+    preHandler: [sendCodeRateLimit],
+    schema: {
+      body: {
+        type: 'object',
+        required: ['phone'],
+        properties: {
+          phone: { type: 'string', minLength: 11, maxLength: 11 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { phone } = request.body as { phone: string };
 
     if (!phone) {
@@ -34,8 +47,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
   });
 
-  // 向后兼容：/sendCode (camelCase)
-  fastify.post("/sendCode", async (request, reply) => {
+  fastify.post("/sendCode", { preHandler: [sendCodeRateLimit] }, async (request, reply) => {
     const { phone } = request.body as { phone: string };
 
     if (!phone) {
@@ -55,7 +67,18 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.post("/login", async (request, reply) => {
+  fastify.post("/login", {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['phone', 'code'],
+        properties: {
+          phone: { type: 'string', minLength: 11, maxLength: 11 },
+          code: { type: 'string', minLength: 4, maxLength: 6 },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const { phone, code } = request.body as { phone: string; code: string };
 
     if (!phone || !code) {
@@ -143,7 +166,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       const axios = require("axios");
 
-      const tokenResponse = await axios.get("https://api.weixin.qq.com/sns/oauth2/access_token", {
+      const tokenResponse = await axios.get(config.wechat.oauthApi, {
         params: {
           appid: wechat.appId,
           secret: wechat.appSecret,
@@ -162,7 +185,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       let wechatAvatar = "";
 
       try {
-        const userInfoResponse = await axios.get("https://api.weixin.qq.com/sns/userinfo", {
+        const userInfoResponse = await axios.get(config.wechat.userInfoApi, {
           params: {
             access_token,
             openid,
