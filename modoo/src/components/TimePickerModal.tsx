@@ -51,9 +51,6 @@ const PICKER_CONFIG = {
   SNAP_THRESHOLD: 0.3,       // 吸附阈值，超过此比例自动吸附到下一项
 } as const;
 
-// 调试开关
-const DEBUG_MODE = true;
-
 export default function TimePickerModal({
   visible,
   onClose,
@@ -131,10 +128,6 @@ export default function TimePickerModal({
         const hourOffset = getScrollOffset(h);
         const minuteOffset = getScrollOffset(m / 5);
 
-        console.log(`[TimePicker] Initial time: ${initialTime}`);
-        console.log(`[TimePicker] Hours: ${h}, scroll offset: ${hourOffset}`);
-        console.log(`[TimePicker] Minutes: ${m}, scroll offset: ${minuteOffset}`);
-
         if (hourScrollRef.current) {
           hourScrollRef.current.scrollTo({
             y: hourOffset,
@@ -182,14 +175,6 @@ export default function TimePickerModal({
     // 边界检测：确保不超出范围
     const clampedIndex = Math.max(0, Math.min(maxIndex, targetIndex));
 
-    /*** 调试日志
-    if (DEBUG_MODE) {
-      console.log(`[TimePicker:${pickerType}] 原始偏移量: ${offset.toFixed(2)}`);
-      console.log(`[TimePicker:${pickerType}] 原始索引: ${rawIndex.toFixed(4)}`);
-      console.log(`[TimePicker:${pickerType}] 整数部分: ${integerPart}, 小数部分: ${fractionalPart.toFixed(4)}`);
-      console.log(`[TimePicker:${pickerType}] 计算目标索引: ${targetIndex}, 边界修正后: ${clampedIndex}`);
-    }
-    */
     return clampedIndex;
   };
 
@@ -203,16 +188,14 @@ export default function TimePickerModal({
       return;
     }
 
-    const { contentOffset, velocity } = event.nativeEvent;
+    const { contentOffset } = event.nativeEvent;
 
     // 安全检查：确保 contentOffset 存在
     if (!contentOffset) {
-      console.warn('[TimePicker:Hour] contentOffset is undefined');
       return;
     }
 
     const y = contentOffset.y;
-    const scrollVelocity = velocity?.y ?? 0;
 
     // 计算目标索引
     const clampedIndex = calculateTargetIndex(y, 23, 'Hour');
@@ -222,13 +205,6 @@ export default function TimePickerModal({
 
     // 计算目标滚动位置
     const targetOffset = getScrollOffset(clampedIndex);
-
-    // 调试日志
-    if (DEBUG_MODE) {
-      console.log(`[TimePicker:Hour] 滚动速度: ${scrollVelocity.toFixed(4)}`);
-      console.log(`[TimePicker:Hour] 目标偏移量: ${targetOffset}, 实际偏移量: ${y.toFixed(2)}`);
-      console.log(`[TimePicker:Hour] 最终选中值: ${clampedIndex}`);
-    }
 
     // 确保滚动到精确位置
     isProgrammaticScroll.current.hour = true;
@@ -252,7 +228,6 @@ export default function TimePickerModal({
 
     // 安全检查：确保 contentOffset 存在
     if (!contentOffset) {
-      console.warn('[TimePicker:Minute] contentOffset is undefined');
       return;
     }
 
@@ -266,13 +241,6 @@ export default function TimePickerModal({
 
     // 计算目标滚动位置
     const targetOffset = getScrollOffset(clampedIndex);
-
-    // 调试日志
-    //if (DEBUG_MODE) {
-    //console.log(`[TimePicker:Minute] 滚动速度: ${scrollVelocity.toFixed(4)}`);
-    //console.log(`[TimePicker:Minute] 目标偏移量: ${targetOffset}, 实际偏移量: ${y.toFixed(2)}`);
-    //console.log(`[TimePicker:Minute] 最终选中值: ${clampedIndex * 5}`);
-    // }
 
     // 确保滚动到精确位置
     isProgrammaticScroll.current.minute = true;

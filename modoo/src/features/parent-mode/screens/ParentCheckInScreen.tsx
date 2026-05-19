@@ -13,6 +13,7 @@ import { Star, Moon, Sun, Footprints, Stamp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
+import { logger } from '../../../utils/logger';
 
 type CheckInNavigationProp = NativeStackNavigationProp<ParentStackParamList, 'ParentCheckIn'>;
 
@@ -35,10 +36,10 @@ export default function CheckInScreen() {
     actions: { handleCheckIn, goToPrevMonth, goToNextMonth },
   } = useCheckIn({
     onSuccess: () => {
-      console.log('[ParentCheckInScreen] Check-in successful');
+      logger.info('Check-in successful', { screen: 'ParentCheckIn' });
     },
     onError: (error) => {
-      console.error('[ParentCheckInScreen] Check-in failed', error);
+      logger.error('Check-in failed', { screen: 'ParentCheckIn', error });
     },
     enableValidation: true,
     showAlerts: true,
