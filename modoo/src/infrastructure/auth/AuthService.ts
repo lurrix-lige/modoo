@@ -317,7 +317,27 @@ class AuthService {
     await this.setUser(user);
     this.startSessionCheck();
 
+    // 异步迁移匿名用户数据（不阻塞登录流程）
+    this.migrateAnonymousData();
+
     return user;
+  }
+
+  /**
+   * 迁移匿名用户数据到正式用户
+   */
+  private async migrateAnonymousData(): Promise<void> {
+    try {
+      const anonymousId = await storageService.getAnonymousId();
+      if (anonymousId) {
+        const apiService = await getApiService();
+        const result = await apiService.migrateAnonymousData(anonymousId);
+        logger.info('Anonymous data migrated successfully', { migratedRecords: result.data });
+      }
+    } catch (error) {
+      logger.warn('Failed to migrate anonymous data', { error });
+      // 迁移失败不影响登录流程，数据可以稍后再迁移
+    }
   }
 
   async sendVerificationCode(phone: string): Promise<void> {
@@ -379,6 +399,9 @@ class AuthService {
     await this.setUser(user);
     this.startSessionCheck();
 
+    // 异步迁移匿名用户数据（不阻塞登录流程）
+    this.migrateAnonymousData();
+
     return user;
   }
 
@@ -402,6 +425,9 @@ class AuthService {
 
     await this.setUser(user);
     this.startSessionCheck();
+
+    // 异步迁移匿名用户数据（不阻塞登录流程）
+    this.migrateAnonymousData();
 
     return user;
   }

@@ -32,9 +32,9 @@ class ApiService {
     if (error instanceof ApiError) {
       // 认证错误绝对不重试
       const authErrorCodes: string[] = [
-        'UNAUTHORIZED', 
-        'INVALID_TOKEN', 
-        'TOKEN_EXPIRED', 
+        'UNAUTHORIZED',
+        'INVALID_TOKEN',
+        'TOKEN_EXPIRED',
         'REFRESH_TOKEN_FAILED',
         ErrorCodes.AUTH_TOKEN_MISSING,
         ErrorCodes.AUTH_TOKEN_INVALID,
@@ -45,7 +45,7 @@ class ApiService {
       if (authErrorCodes.includes(error.code) || error.statusCode === 401) {
         return false;
       }
-      
+
       // 只有网络错误、服务器错误等可重试
       const retryableCodes: string[] = [ErrorCodes.SYS_TIMEOUT, ErrorCodes.SYS_SERVICE_UNAVAILABLE, ErrorCodes.SYS_INTERNAL_ERROR];
       const retryableStatuses = [408, 429, 500, 502, 503, 504];
@@ -71,7 +71,7 @@ class ApiService {
       'Accept-Language': i18n.language,
       ...(options.headers as Record<string, string>),
     };
-    
+
     // 只有当请求有 body 时才设置 Content-Type
     if (options.body) {
       headers['Content-Type'] = 'application/json';
@@ -133,7 +133,7 @@ class ApiService {
     // 处理 401 错误 - 可能需要刷新 Token
     if (response.status === 401 && authService.isAuthenticated() && refreshAttempts < MAX_REFRESH_RETRIES) {
       logger.debug(`[ApiService] 401 response, attempting to refresh token (attempt ${refreshAttempts + 1})`);
-      
+
       const newToken = await this.tryRefreshToken();
       if (newToken) {
         // 刷新成功，用新 Token 重试
@@ -210,30 +210,30 @@ class ApiService {
       logger.debug(`[ApiService] Starting token refresh`);
       const newToken = await authService.refreshAccessToken();
       logger.debug(`[ApiService] Token refresh successful`);
-      
+
       this.refreshSubscribers.forEach(callback => callback(newToken));
       this.refreshSubscribers = [];
-      
+
       return newToken;
     } catch (error: any) {
       logger.error(`[ApiService] Token refresh failed`, { error });
-      
+
       // 确保清除认证状态
       await authService.clearAuth();
-      
+
       // 通知所有订阅者刷新失败
       this.refreshSubscribers.forEach(callback => callback(null));
       this.refreshSubscribers = [];
-      
+
       // 检查是否是认证错误，如果是，通知错误处理器
       const errorCode = error?.code || 'REFRESH_TOKEN_FAILED';
       const isAuthError = errorHandler.isUnauthorizedError(errorCode, error?.statusCode);
-      
+
       if (isAuthError) {
         const displayMessage = errorHandler.getErrorMessage(errorCode, error?.message || i18n.t('auth.tokenRefreshFailed'));
         errorHandler.handleError(errorCode, displayMessage, 'error', { isAuthError });
       }
-      
+
       return null;
     } finally {
       this.isRefreshing = false;
@@ -346,11 +346,11 @@ class ApiService {
 
   async post<T>(endpoint: string, body?: any, suppressError?: boolean): Promise<T> {
     const requestOptions: RequestInit = { method: 'POST' };
-    
+
     if (body !== undefined && body !== null) {
       requestOptions.body = JSON.stringify(body);
     }
-    
+
     return this.request<T>(endpoint, requestOptions, 0, suppressError);
   }
 
@@ -786,6 +786,46 @@ class ApiService {
         colorKey: 'primary',
       },
     ];
+  }
+
+  // ==============================================
+  // 👤 匿名用户管理 API
+  // ==============================================
+
+  /**
+   * 生成新的匿名用户ID
+   * GET /api/v1/anonymous/generate
+   */
+  async generateAnonymousId(deviceId?: string): Promise<AnonymousGenerateResponse> {
+    const options: RequestInit = { method: 'GET' };
+    if (deviceId) {
+      options.headers = { 'x-device-id': deviceId };
+    }
+    return this.request<AnonymousGenerateResponse>('/anonymous/generate', options, 0, true);
+  }
+
+  /**
+   * 验证匿名用户ID是否有效
+   * POST /api/v1/anonymous/validate
+   */
+  async validateAnonymousId(anonymousId: string): Promise<AnonymousValidateResponse> {
+    return this.post<AnonymousValidateResponse>('/anonymous/validate', { anonymousId }, true);
+  }
+
+  /**
+   * 获取匿名用户统计数据
+   * POST /api/v1/anonymous/stats
+   */
+  async getAnonymousStats(anonymousId: string): Promise<AnonymousStatsResponse> {
+    return this.post<AnonymousStatsResponse>('/anonymous/stats', { anonymousId }, true);
+  }
+
+  /**
+   * 登录后迁移匿名用户数据
+   * POST /api/v1/anonymous/migrate
+   */
+  async migrateAnonymousData(anonymousId: string): Promise<AnonymousMigrationResponse> {
+    return this.post<AnonymousMigrationResponse>('/anonymous/migrate', { anonymousId });
   }
 }
 
@@ -1558,6 +1598,58 @@ export interface AnalyticsFeatureUsage {
   count: number;
   lastUsedAt: string;
   totalDurationMs: number;
+}
+
+// ==============================================
+// 👤 匿名用户管理类型定义
+// ==============================================
+
+export interface AnonymousUser {
+  id: string;
+  createdAt: Date;
+  expiresAt: Date;
+  deviceId?: string;
+  lastActiveAt?: Date;
+}
+
+export interface AnonymousGenerateResponse {
+  success: boolean;
+  data: {
+    anonymousId: string;
+    expiresAt: string;
+  };
+  message: string;
+}
+
+export interface AnonymousValidateResponse {
+  success: boolean;
+  data: {
+    isValid: boolean;
+    isNotExpired: boolean;
+    isValidAndActive: boolean;
+  };
+}
+
+export interface AnonymousStatsResponse {
+  success: boolean;
+  data: {
+    playHistory: number;
+    favorites: number;
+    checkIns: number;
+    lessonProgress: number;
+  };
+}
+
+export interface AnonymousMigrationResponse {
+  success: boolean;
+  data: {
+    playHistory: number;
+    favorites: number;
+    checkIns: number;
+    lessonProgress: number;
+    shares: number;
+  };
+  message: string;
 }
 
 export const apiService = new ApiService();

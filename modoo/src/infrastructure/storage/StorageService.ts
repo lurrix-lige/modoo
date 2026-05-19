@@ -154,30 +154,57 @@ class StorageService {
   // ==============================================
   
   /**
-   * 生成匿名用户ID
+   * 生成本地匿名用户ID（降级方案）
    */
-  private generateAnonymousId(): string {
+  private generateLocalAnonymousId(): string {
     const randomStr = Math.random().toString(36).substring(2, 15) + 
                       Math.random().toString(36).substring(2, 15);
     return `anonymous_${randomStr}`;
   }
 
   /**
-   * 获取或创建匿名用户ID
+   * 获取或创建匿名用户ID（优先使用后端API）
    */
   async getOrCreateAnonymousId(): Promise<string> {
     try {
       let anonymousId = await AsyncStorage.getItem(STORAGE_KEYS.ANONYMOUS_ID);
       
       if (!anonymousId) {
-        anonymousId = this.generateAnonymousId();
-        await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
+        // 优先使用后端API生成匿名ID
+        try {
+          const { apiService } = await import('../api/ApiService');
+          const result = await apiService.generateAnonymousId();
+          anonymousId = result.data.anonymousId;
+          await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
+          logger.info('Anonymous ID generated from backend', { anonymousId });
+        } catch (apiError) {
+          // 后端API调用失败，降级使用本地生成
+          logger.warn('Failed to get anonymous ID from backend, falling back to local generation', { apiError });
+          anonymousId = this.generateLocalAnonymousId();
+          await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
+        }
+      } else {
+        // 验证现有匿名ID是否有效
+        try {
+          const { apiService } = await import('../api/ApiService');
+          const validation = await apiService.validateAnonymousId(anonymousId);
+          if (!validation.data.isValidAndActive) {
+            // ID无效或过期，重新生成
+            const result = await apiService.generateAnonymousId();
+            anonymousId = result.data.anonymousId;
+            await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
+            logger.info('Anonymous ID refreshed due to expiration', { anonymousId });
+          }
+        } catch (validationError) {
+          // 验证失败，继续使用现有ID
+          logger.warn('Failed to validate anonymous ID', { validationError });
+        }
       }
       
       return anonymousId;
     } catch (error) {
       logger.error('Failed to get or create anonymous ID', { error });
-      return this.generateAnonymousId();
+      return this.generateLocalAnonymousId();
     }
   }
 

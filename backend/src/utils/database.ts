@@ -67,9 +67,10 @@ export async function getChildId(request: FastifyRequest): Promise<string | null
   return child?.id || null;
 }
 
-// 生成匿名用户ID
+// 生成匿名用户ID（委托给专用服务）
 export function generateAnonymousId(): string {
-  const randomStr = Math.random().toString(36).substring(2, 15) + 
-                    Math.random().toString(36).substring(2, 15);
-  return `anonymous_${randomStr}`;
+  const { AnonymousUserService } = require('../services/AnonymousUserService');
+  return AnonymousUserService.generateAnonymousId();
 }
+
+export { AnonymousUserService } from '../services/AnonymousUserService';
