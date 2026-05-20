@@ -113,7 +113,7 @@ describe("AuthService", () => {
       const result = await refreshAccessToken(mockFastify as any, "valid-refresh-token");
 
       expect(prisma.refreshToken.findUnique).toHaveBeenCalledWith({
-        where: { token: "valid-refresh-token" },
+        where: { token: 'ba518c093e1e0df01cfe01436563cd37f6a1f47697fcc620e818a2d062665083' },
       });
       expect(mockFastify.jwt.sign).toHaveBeenCalled();
       expect(result.accessToken).toBe("mock-access-token");

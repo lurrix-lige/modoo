@@ -2,10 +2,15 @@ import { FastifyInstance } from "fastify";
 import { prisma } from "../utils/database";
 import { customError } from "../utils/errors";
 import { nanoid } from "nanoid";
+import crypto from "crypto";
 import { config } from "../config";
 import { validateAccount } from "./accountValidationService";
 import { verifyCode } from "./verificationService";
 import { findOrCreateUserByPhone, findOrCreateUserByApple, findOrCreateUserByWechat } from "./userService";
+
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
 
 const ACCESS_TOKEN_EXPIRES_IN = config.jwt.accessTokenExpiresIn;
 const REFRESH_TOKEN_EXPIRES_DAYS = config.jwt.refreshTokenExpiresDays;
@@ -41,7 +46,7 @@ async function generateTokens(fastify: FastifyInstance, userId: string): Promise
   await prisma.refreshToken.create({
     data: {
       userId,
-      token: refreshToken,
+      token: hashToken(refreshToken),
       expiresAt: refreshTokenExpiry,
     },
   });
@@ -158,7 +163,7 @@ export async function refreshAccessToken(
   refreshToken: string,
 ): Promise<TokenPair> {
   const storedToken = await prisma.refreshToken.findUnique({
-    where: { token: refreshToken },
+    where: { token: hashToken(refreshToken) },
   });
 
   if (!storedToken || storedToken.expiresAt < new Date()) {

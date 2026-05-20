@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import i18n from '../../i18n';
 import { storageService } from '../storage/StorageService';
 import { AUTH_CONFIG, STORAGE_KEYS } from '../../config/env';
@@ -57,9 +58,9 @@ class AuthService {
   async initialize(): Promise<boolean> {
     try {
       const [accessToken, refreshToken, expiresAtStr, lastActivityStr, isPaidStr, user] = await Promise.all([
-        AsyncStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
-        AsyncStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN),
-        AsyncStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRES_AT),
+        SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
+        SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
+        SecureStore.getItemAsync(STORAGE_KEYS.TOKEN_EXPIRES_AT),
         AsyncStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY_AT),
         AsyncStorage.getItem(STORAGE_KEYS.IS_PAID),
         storageService.getUser(),
@@ -163,9 +164,9 @@ class AuthService {
     this.lastActivityAt = Date.now();
 
     await Promise.all([
-      AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken),
-      AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken),
-      AsyncStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRES_AT, tokens.expiresAt.toString()),
+      SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken),
+      SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken),
+      SecureStore.setItemAsync(STORAGE_KEYS.TOKEN_EXPIRES_AT, tokens.expiresAt.toString()),
       AsyncStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY_AT, this.lastActivityAt.toString()),
     ]);
   }
@@ -236,12 +237,14 @@ class AuthService {
       this.checkInterval = null;
     }
 
-    await AsyncStorage.multiRemove([
-      STORAGE_KEYS.ACCESS_TOKEN,
-      STORAGE_KEYS.REFRESH_TOKEN,
-      STORAGE_KEYS.TOKEN_EXPIRES_AT,
-      STORAGE_KEYS.LAST_ACTIVITY_AT,
-      STORAGE_KEYS.IS_PAID,
+    await Promise.all([
+      SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN_EXPIRES_AT),
+      AsyncStorage.multiRemove([
+        STORAGE_KEYS.LAST_ACTIVITY_AT,
+        STORAGE_KEYS.IS_PAID,
+      ]),
     ]);
 
     await storageService.clearAll();
