@@ -135,14 +135,14 @@ export const AUTH_CONFIG: AuthConfig = {
 // Storage Keys
 // ============================================
 export const STORAGE_KEYS: StorageKeys = {
-  ACCESS_TOKEN: '@modoo_access_token',
-  REFRESH_TOKEN: '@modoo_refresh_token',
-  TOKEN_EXPIRES_AT: '@modoo_token_expires_at',
-  LAST_ACTIVITY_AT: '@modoo_last_activity_at',
-  IS_PAID: '@modoo_is_paid',
-  LANGUAGE_PREFERENCE: '@modoo_language_preference',
+  ACCESS_TOKEN: 'modoo_access_token',
+  REFRESH_TOKEN: 'modoo_refresh_token',
+  TOKEN_EXPIRES_AT: 'modoo_token_expires_at',
+  LAST_ACTIVITY_AT: 'modoo_last_activity_at',
+  IS_PAID: 'modoo_is_paid',
+  LANGUAGE_PREFERENCE: 'modoo_language_preference',
   VISIT_RECORD: 'modoo_visit_record',
-  HEALTH_CHECK: '@modoo_health_check',
+  HEALTH_CHECK: 'modoo_health_check',
 };
 
 // ============================================
