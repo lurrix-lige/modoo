@@ -100,7 +100,7 @@ class ApiService {
     }
 
     // 3. 添加匿名用户ID（如果用户未登录且不是匿名接口本身，防止循环调用）
-    if (!authService.isAuthenticated() && endpoint !== '/anonymous/generate') {
+    if (!authService.isAuthenticated() && !endpoint.startsWith('/anonymous')) {
       try {
         const anonymousId = await storageService.getOrCreateAnonymousId();
         headers['x-anonymous-id'] = anonymousId;
