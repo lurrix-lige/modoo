@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
-import { SafeAreaContainer } from '../../../components';
+import { SafeAreaContainer, ErrorToast } from '../../../components';
 
 import { ArrowLeft, User, Star } from 'lucide-react-native';
 
@@ -61,6 +61,7 @@ export default function ExpertConsultScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [experts, setExperts] = useState<Expert[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const { scheduleBookingReminder } = useNotifications();
 
@@ -75,8 +76,9 @@ export default function ExpertConsultScreen() {
       const response = await apiService.getExperts();
 
       setExperts(response.experts);
-    } catch (error) {
-      logger.error('Failed to load experts', { error });
+    } catch (err) {
+      logger.error('Failed to load experts', { error: err });
+      setLoadError(t('common.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -347,6 +349,11 @@ export default function ExpertConsultScreen() {
         onDismiss={() => setShowAuthModal(false)}
         title={t('expertConsult.loginToBook')}
         message={t('expertConsult.loginMessage')}
+      />
+      <ErrorToast
+        visible={!!loadError}
+        message={loadError || ''}
+        onDismiss={() => setLoadError(null)}
       />
     </SafeAreaContainer>
   );

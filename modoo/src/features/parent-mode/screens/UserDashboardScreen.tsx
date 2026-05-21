@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaContainer } from '../../../components';
+import { SafeAreaContainer, ErrorToast } from '../../../components';
 import { BookOpen, Leaf, GraduationCap, FileText, Star } from 'lucide-react-native';
 
 const dashboardIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
@@ -111,6 +111,7 @@ export default function UserDashboardScreen() {
     categories: { [key: string]: ContentItem[] };
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadContent();
@@ -124,8 +125,9 @@ export default function UserDashboardScreen() {
         featured: recommendations.featuredContent,
         categories: recommendations.categoryContent,
       });
-    } catch (error) {
-      logger.error('Failed to load content', { error });
+    } catch (err) {
+      logger.error('Failed to load content', { error: err });
+      setError(t('common.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -137,8 +139,9 @@ export default function UserDashboardScreen() {
         const isPaid = await authService.checkPaidStatus();
         const { setPaidStatus } = useAppStore.getState();
         setPaidStatus(isPaid);
-      } catch (error) {
-        logger.error('Failed to check paid status', { error });
+      } catch (err) {
+        logger.error('Failed to check paid status', { error: err });
+        setError(t('common.loadFailed'));
       }
     }
   };
@@ -254,6 +257,7 @@ export default function UserDashboardScreen() {
           style={styles.startButton}
         />
       </View>
+      <ErrorToast visible={!!error} message={error || ''} onDismiss={() => setError(null)} />
     </SafeAreaContainer>
   );
 }

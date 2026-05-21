@@ -8,7 +8,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaContainer, PermissionGate } from '../../../components';
+import { SafeAreaContainer, PermissionGate, ErrorToast } from '../../../components';
 import {
   Play,
   Check,
@@ -52,6 +52,7 @@ export default function CourseDetailScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     loadCourseData();
@@ -65,6 +66,7 @@ export default function CourseDetailScreen() {
       setLessons(courseData.lessons || []);
     } catch (error) {
       logger.error('Failed to load course', { error });
+      setLoadError(t('common.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +80,7 @@ export default function CourseDetailScreen() {
       setLessons(courseData.lessons || []);
     } catch (error) {
       logger.error('Failed to refresh course', { error });
+      setLoadError(t('common.loadFailed'));
     } finally {
       setIsRefreshing(false);
     }
@@ -279,6 +282,11 @@ export default function CourseDetailScreen() {
           </View>
         </SafeAreaContainer>
       )}
+      <ErrorToast
+        visible={!!loadError}
+        message={loadError || ''}
+        onDismiss={() => setLoadError(null)}
+      />
     </PermissionGate>
   );
 }

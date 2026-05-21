@@ -10,7 +10,7 @@ import {
   GestureResponderEvent,
   LayoutChangeEvent,
 } from 'react-native';
-import { SafeAreaContainer, PermissionGate } from '../../../components';
+import { SafeAreaContainer, PermissionGate, ErrorToast } from '../../../components';
 import {
   Play,
   Pause,
@@ -70,6 +70,7 @@ export default function CourseLearningScreen() {
 
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [isTrackLoaded, setIsTrackLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const hasCompletedRef = useRef(false);
 
   // --- D1: Background volume slider ---
@@ -297,8 +298,9 @@ export default function CourseLearningScreen() {
       if (lessonData) {
         setCurrentLesson(lessonData);
       }
-    } catch (error) {
-      logger.error('Failed to load lesson', { error });
+    } catch (loadErr) {
+      logger.error('Failed to load lesson', { error: loadErr });
+      setLoadError(t('common.loadFailed'));
     }
   };
 
@@ -576,6 +578,11 @@ export default function CourseLearningScreen() {
           </ScrollView>
         </SafeAreaContainer>
       )}
+      <ErrorToast
+        visible={!!loadError}
+        message={loadError || ''}
+        onDismiss={() => setLoadError(null)}
+      />
     </PermissionGate>
   );
 }
