@@ -292,6 +292,8 @@ export default function ChildrenHomeScreen() {
               <TouchableOpacity
                 style={[styles.settingsButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.getParent()?.getParent()?.navigate('ChildLock')}
+                accessibilityLabel={t('home.parentLock')}
+                accessible={true}
               >
                 <User
                   size={responsive.moderateScaleForIcon(iconSizes.lg)}

@@ -465,7 +465,7 @@ export default function LoginScreen() {
             <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
               &nbsp; {t('auth.agreement')} &nbsp;
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity accessible={true} accessibilityRole="link">
               <Text style={[styles.linkText, { color: colors.primaryDark }]}>
                 {t('auth.userAgreement')}
               </Text>
@@ -473,7 +473,7 @@ export default function LoginScreen() {
             <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
               &nbsp; {t('auth.and')} &nbsp;
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity accessible={true} accessibilityRole="link">
               <Text style={[styles.linkText, { color: colors.primaryDark }]}>
                 {t('auth.privacyPolicy')}
               </Text>

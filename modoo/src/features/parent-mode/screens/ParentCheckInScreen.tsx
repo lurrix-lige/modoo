@@ -118,7 +118,12 @@ export default function CheckInScreen() {
             </Text>
             <View style={styles.starsRow}>
               {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity key={star} onPress={() => setQuality(star)}>
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setQuality(star)}
+                  accessibilityLabel={`${t('checkIn.sleepQuality')} ${star}/5`}
+                  accessible={true}
+                >
                   <Star
                     size={32}
                     color={star <= quality ? colors.warning : colors.border}
