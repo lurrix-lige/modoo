@@ -488,7 +488,9 @@ export default function CourseLearningScreen() {
 
               {/* Background music volume slider */}
               <View style={styles.volumeRow}>
-                <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
+                <View
+                  style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}
+                >
                   <Music size={20} color={colors.primary} />
                 </View>
                 <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
@@ -500,7 +502,10 @@ export default function CourseLearningScreen() {
                   {...bgPanResponder.panHandlers}
                 >
                   <Animated.View
-                    style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]}
+                    style={[
+                      styles.sliderFill,
+                      { backgroundColor: colors.primary, width: bgFillWidth },
+                    ]}
                   />
                   <Animated.View
                     style={[
@@ -519,7 +524,9 @@ export default function CourseLearningScreen() {
 
               {/* Voice guide volume slider */}
               <View style={styles.volumeRow}>
-                <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
+                <View
+                  style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}
+                >
                   <Volume2 size={20} color={colors.primary} />
                 </View>
                 <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>

@@ -42,7 +42,11 @@ export default function ChildLockScreen() {
         </Text>
       </View>
 
-      <EnhancedChildLock visible={showChildLock} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <EnhancedChildLock
+        visible={showChildLock}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </View>
   );
 }

@@ -41,7 +41,9 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
   const [lastProgressSave, setLastProgressSave] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [blocked, setBlocked] = useState(false);
-  const [blockReason, setBlockReason] = useState<'not_authenticated' | 'no_membership' | null>(null);
+  const [blockReason, setBlockReason] = useState<'not_authenticated' | 'no_membership' | null>(
+    null,
+  );
 
   const { userState } = useAppStore();
   const { isAuthenticated, isPaid } = userState;

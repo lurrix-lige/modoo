@@ -114,28 +114,24 @@ export default function PrivacySettingsScreen() {
         style: 'destructive',
         onPress: () => {
           // 二次确认：防止误触
-          Alert.alert(
-            t('settings.deleteAccount'),
-            t('settings.deleteAccountFinal'),
-            [
-              { text: t('common.cancel'), style: 'cancel' },
-              {
-                text: t('settings.delete'),
-                style: 'destructive',
-                onPress: async () => {
-                  setIsDeleting(true);
-                  try {
-                    await apiService.deleteAccount();
-                    Alert.alert(t('common.success'), t('settings.deleteSuccess'));
-                  } catch (error) {
-                    Alert.alert(t('common.error'), t('settings.deleteFailed'));
-                  } finally {
-                    setIsDeleting(false);
-                  }
-                },
+          Alert.alert(t('settings.deleteAccount'), t('settings.deleteAccountFinal'), [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('settings.delete'),
+              style: 'destructive',
+              onPress: async () => {
+                setIsDeleting(true);
+                try {
+                  await apiService.deleteAccount();
+                  Alert.alert(t('common.success'), t('settings.deleteSuccess'));
+                } catch (error) {
+                  Alert.alert(t('common.error'), t('settings.deleteFailed'));
+                } finally {
+                  setIsDeleting(false);
+                }
               },
-            ],
-          );
+            },
+          ]);
         },
       },
     ]);

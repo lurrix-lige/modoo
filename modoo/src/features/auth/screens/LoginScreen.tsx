@@ -361,8 +361,6 @@ export default function LoginScreen() {
 
           {/* ------------------- 登录表单 ------------------- */}
           <View style={styles.form}>
-
-
             {/* 手机号输入框 */}
             <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
               <PhoneCall size={20} color={colors.textSecondary} />
@@ -479,9 +477,7 @@ export default function LoginScreen() {
                 {t('auth.privacyPolicy')}
               </Text>
             </TouchableOpacity>
-            <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
-              &nbsp;.
-            </Text>
+            <Text style={[styles.agreementText, { color: colors.textSecondary }]}>&nbsp;.</Text>
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

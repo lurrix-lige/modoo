@@ -132,13 +132,19 @@ export default function CourseDetailScreen() {
               <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
               <View style={styles.skeletonStatsRow}>
                 {[1, 2, 3].map((i) => (
-                  <View key={i} style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
+                  <View
+                    key={i}
+                    style={[styles.skeletonTextSm, { backgroundColor: colors.border }]}
+                  />
                 ))}
               </View>
             </View>
             <View style={[styles.skeletonTitle, { backgroundColor: colors.border }]} />
             {[1, 2, 3, 4].map((i) => (
-              <View key={i} style={[styles.skeletonLessonCard, { backgroundColor: colors.surface }]}>
+              <View
+                key={i}
+                style={[styles.skeletonLessonCard, { backgroundColor: colors.surface }]}
+              >
                 <View style={[styles.skeletonLessonNum, { backgroundColor: colors.border }]} />
                 <View style={styles.skeletonLessonInfo}>
                   <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
@@ -205,7 +211,10 @@ export default function CourseDetailScreen() {
                 <View style={styles.statItem}>
                   <Trophy size={20} color={colors.warning} />
                   <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                    {Math.floor(((course.completedLessons || 0) / (course.totalLessons || 1)) * 100)}%
+                    {Math.floor(
+                      ((course.completedLessons || 0) / (course.totalLessons || 1)) * 100,
+                    )}
+                    %
                   </Text>
                 </View>
               </View>

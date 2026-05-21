@@ -187,7 +187,9 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
           <View style={[styles.container, { backgroundColor: colors.surface }]}>
             <View style={[styles.lockoutHeader, { backgroundColor: colors.error }]}>
               <Lock size={48} color={commonColors.white} />
-              <Text style={[styles.lockoutTitle, { color: commonColors.white }]}>{t('childLock.locked')}</Text>
+              <Text style={[styles.lockoutTitle, { color: commonColors.white }]}>
+                {t('childLock.locked')}
+              </Text>
               <Text style={[styles.lockoutSubtitle, { color: whiteSemiTransparent }]}>
                 {t('childLock.tooManyAttempts')}
               </Text>
@@ -202,7 +204,9 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
               style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
               onPress={onCancel}
             >
-              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t('childLock.cancel')}</Text>
+              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+                {t('childLock.cancel')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -357,7 +361,9 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
                 style={[styles.submitButton, { backgroundColor: colors.primary }]}
                 onPress={handleSubmit}
               >
-                <Text style={[styles.submitButtonText, { color: commonColors.white }]}>{t('childLock.confirm')}</Text>
+                <Text style={[styles.submitButtonText, { color: commonColors.white }]}>
+                  {t('childLock.confirm')}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -366,7 +372,9 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
             style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
             onPress={onCancel}
           >
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t('childLock.cancel')}</Text>
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+              {t('childLock.cancel')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
