@@ -1678,21 +1678,14 @@ export interface AnonymousUser {
 }
 
 export interface AnonymousGenerateResponse {
-  success: boolean;
-  data: {
-    anonymousId: string;
-    expiresAt: string;
-  };
-  message: string;
+  anonymousId: string;
+  expiresAt: string;
 }
 
 export interface AnonymousValidateResponse {
-  success: boolean;
-  data: {
-    isValid: boolean;
-    isNotExpired: boolean;
-    isValidAndActive: boolean;
-  };
+  isValid: boolean;
+  isNotExpired: boolean;
+  isValidAndActive: boolean;
 }
 
 export interface AnonymousStatsResponse {
