@@ -953,6 +953,7 @@ export interface LoginResponse {
     phone: string;
     nickname: string;
     avatar?: string;
+    createdAt?: string;
   };
 }
 

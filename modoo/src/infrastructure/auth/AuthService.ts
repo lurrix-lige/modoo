@@ -326,7 +326,7 @@ class AuthService {
       phone: data.user.phone,
       nickname: data.user.nickname,
       avatar: data.user.avatar,
-      createdAt: data.user.createdAt,
+      createdAt: data.user.createdAt || new Date().toISOString(),
     };
 
     await this.setUser(user);
@@ -375,7 +375,7 @@ class AuthService {
       phone: data.user.phone,
       nickname: data.user.nickname,
       avatar: data.user.avatar,
-      createdAt: data.user.createdAt,
+      createdAt: data.user.createdAt || new Date().toISOString(),
     };
 
     await this.setUser(user);
@@ -409,7 +409,7 @@ class AuthService {
       phone: data.user.phone || '',
       nickname: data.user.nickname || 'Apple User',
       avatar: data.user.avatar || data.appleAvatar,
-      createdAt: data.user.createdAt,
+      createdAt: data.user.createdAt || new Date().toISOString(),
     };
 
     await this.setUser(user);
@@ -436,7 +436,7 @@ class AuthService {
       phone: data.user.phone || '',
       nickname: data.user.nickname || data.wechatNickname || 'WeChat User',
       avatar: data.user.avatar || data.wechatAvatar,
-      createdAt: data.user.createdAt,
+      createdAt: data.user.createdAt || new Date().toISOString(),
     };
 
     await this.setUser(user);
