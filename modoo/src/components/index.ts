@@ -4,7 +4,6 @@ export { Card, StoryCard, DataCard } from './Card';
 export { BreathingBalloon } from './BreathingBalloon';
 export { default as GuardianSpirit } from './GuardianSpirit';
 export { MiniPlayer } from './MiniPlayer';
-export { ChildLockModal } from './ChildLockModal';
 export { EnhancedChildLock } from './EnhancedChildLock';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { ErrorToast, ErrorAlert } from './ErrorToast';

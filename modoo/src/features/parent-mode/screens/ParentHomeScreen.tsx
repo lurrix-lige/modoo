@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Platform,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import {
@@ -33,7 +34,7 @@ import {
   iconSizes,
 } from '../../../theme';
 import { useAppStore } from '../../../store';
-import { DataCard, Button, SettingsPopover, ResponsiveGrid } from '../../../components';
+import { DataCard, Button, SettingsPopover, ResponsiveGrid, ErrorToast } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, authService, type SleepStatsResponse } from '../../../services';
 import { DateLabelUtils } from '../../../utils/date';
@@ -49,6 +50,11 @@ export default function ParentHomeScreen() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<{ visible: boolean; message: string }>({
+    visible: false,
+    message: '',
+  });
 
   const [chartTab, setChartTab] = useState<'week' | 'month'>('week');
 
@@ -95,10 +101,30 @@ export default function ParentHomeScreen() {
         navigation.getParent()?.navigate('Auth', { fromScreen: 'ParentHome' });
         return;
       }
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const [articlesResponse, sleepStatsResponse] = await Promise.all([
+        apiService.getArticles(),
+        apiService.getSleepStats(chartTab),
+      ]);
+
+      setArticles(articlesResponse.articles);
+      setSleepStats(sleepStatsResponse);
+      chartCache.current[chartTab] = sleepStatsResponse;
+      lastFetchTime.current[chartTab] = Date.now();
+    } catch (error: any) {
+      logger.error('Failed to refresh data', { error });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [chartTab]);
 
   const loadChartData = useCallback(async () => {
     if (isFetching.current) return;
@@ -167,7 +193,18 @@ export default function ParentHomeScreen() {
   return (
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
       {}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
         {}
         <View style={styles.header}>
           <View style={styles.headerRow}>
@@ -520,6 +557,14 @@ export default function ParentHomeScreen() {
           </TouchableOpacity>
         </ResponsiveGrid>
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }

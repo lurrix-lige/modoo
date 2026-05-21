@@ -16,6 +16,7 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService } from '../../../services';
+import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 type PrivacySettingsNavigationProp = NativeStackNavigationProp<ParentStackParamList>;
@@ -24,6 +25,12 @@ interface PrivacySettings {
   dataCollection: boolean;
   analytics: boolean;
   personalizedRecommendations: boolean;
+}
+
+interface PrivacyError {
+  visible: boolean;
+  message: string;
+  code?: string;
 }
 
 const privacyIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
@@ -44,6 +51,7 @@ export default function PrivacySettingsScreen() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<PrivacyError>({ visible: false, message: '' });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -51,8 +59,9 @@ export default function PrivacySettingsScreen() {
       try {
         const savedSettings = await apiService.getPrivacySettings();
         setSettings(savedSettings);
-      } catch (error) {
-        logger.error('Failed to load privacy settings', { error });
+      } catch (err) {
+        logger.error('Failed to load privacy settings', { error: err });
+        setError({ visible: true, message: t('common.loadFailed') });
       } finally {
         setLoading(false);
       }
@@ -68,13 +77,16 @@ export default function PrivacySettingsScreen() {
     setLoading(true);
     try {
       await apiService.updatePrivacySettings(newSettings);
-    } catch (error) {
-      logger.error('Failed to update privacy settings', { error });
+    } catch (err) {
+      logger.error('Failed to update privacy settings', { error: err });
       setSettings(settings);
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setLoading(false);
     }
   };
+
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleExportData = () => {
     Alert.alert(t('settings.exportData'), t('settings.exportDataDesc'), [
@@ -94,18 +106,36 @@ export default function PrivacySettingsScreen() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(t('settings.deleteAccount'), t('settings.deleteAccountConfirm'), [
+    if (isDeleting) return;
+    Alert.alert(t('settings.deleteAccount'), t('settings.deleteAccountWarning'), [
       { text: t('common.cancel'), style: 'cancel' },
       {
         text: t('settings.delete'),
         style: 'destructive',
-        onPress: async () => {
-          try {
-            await apiService.deleteAccount();
-            Alert.alert(t('common.success'), t('settings.deleteSuccess'));
-          } catch (error) {
-            Alert.alert(t('common.error'), t('settings.deleteFailed'));
-          }
+        onPress: () => {
+          // 二次确认：防止误触
+          Alert.alert(
+            t('settings.deleteAccount'),
+            t('settings.deleteAccountFinal'),
+            [
+              { text: t('common.cancel'), style: 'cancel' },
+              {
+                text: t('settings.delete'),
+                style: 'destructive',
+                onPress: async () => {
+                  setIsDeleting(true);
+                  try {
+                    await apiService.deleteAccount();
+                    Alert.alert(t('common.success'), t('settings.deleteSuccess'));
+                  } catch (error) {
+                    Alert.alert(t('common.error'), t('settings.deleteFailed'));
+                  } finally {
+                    setIsDeleting(false);
+                  }
+                },
+              },
+            ],
+          );
         },
       },
     ]);
@@ -218,6 +248,15 @@ export default function PrivacySettingsScreen() {
           )}
         </View>
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        code={error.code}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }

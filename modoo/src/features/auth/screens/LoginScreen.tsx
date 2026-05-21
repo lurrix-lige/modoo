@@ -16,10 +16,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { Moon, PhoneCall, Key } from 'lucide-react-native';
@@ -334,25 +337,96 @@ export default function LoginScreen() {
 
   // ==================== 页面渲染 ====================
   return (
-    <SafeAreaContainer style={{ backgroundColor: colors.background }}>
-      {/* ------------------- 键盘输入区域 ------------------- */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+    <SafeAreaContainer style={{ backgroundColor: colors.background, flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+        style={styles.scrollView}
       >
-        {/* ------------------- 页面头部 ------------------- */}
-        <View style={styles.header}>
-          <View style={[styles.logoContainer, { backgroundColor: colors.primary }]}>
-            <Moon size={60} color={commonColors.white} />
+        {/* ------------------- 键盘输入区域 ------------------- */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboardView}
+        >
+          {/* ------------------- 页面头部 ------------------- */}
+          <View style={styles.header}>
+            <View style={[styles.logoContainer, { backgroundColor: colors.primary }]}>
+              <Moon size={60} color={commonColors.white} />
+            </View>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>{t('auth.title')}</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {t('auth.subtitle')}
+            </Text>
           </View>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>{t('auth.title')}</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {t('auth.subtitle')}
-          </Text>
-        </View>
 
-        {/* ------------------- 登录表单 ------------------- */}
-        <View style={styles.form}>
+          {/* ------------------- 登录表单 ------------------- */}
+          <View style={styles.form}>
+
+
+            {/* 手机号输入框 */}
+            <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
+              <PhoneCall size={20} color={colors.textSecondary} />
+              <TextInput
+                ref={phoneInputRef}
+                style={[styles.input, { color: colors.textPrimary }]}
+                placeholder={t('auth.phonePlaceholder')}
+                placeholderTextColor={colors.textPlaceholder}
+                value={phone}
+                onChangeText={handlePhoneChange}
+                keyboardType="phone-pad"
+                maxLength={11}
+                underlineColorAndroid="transparent"
+              />
+            </View>
+
+            {/* 验证码输入框 + 发送按钮 */}
+            <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
+              <Key size={20} color={colors.textSecondary} />
+              <TextInput
+                ref={codeInputRef}
+                style={[styles.input, { color: colors.textPrimary }]}
+                placeholder={t('auth.codePlaceholder')}
+                placeholderTextColor={colors.textPlaceholder}
+                value={code}
+                onChangeText={setCode}
+                keyboardType="number-pad"
+                maxLength={6}
+                underlineColorAndroid="transparent"
+              />
+              <TouchableOpacity
+                style={[
+                  styles.codeButton,
+                  { backgroundColor: countdown > 0 ? colors.disabled : colors.primary },
+                ]}
+                onPress={handleGetCode}
+                disabled={countdown > 0}
+              >
+                <Text style={[styles.codeText, { color: commonColors.white }]}>
+                  {countdown > 0
+                    ? t('auth.countdownSeconds', { count: countdown })
+                    : t('auth.sendCode')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* 登录按钮 */}
+            <Button
+              title={t('auth.login')}
+              onPress={handleLogin}
+              loading={loading}
+              style={styles.loginButton}
+            />
+
+            {/* ------------------- 分隔线 ------------------- */}
+            <View style={styles.divider}>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+              <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
+                {t('auth.or')}
+              </Text>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            </View>
+          </View>
+
           {/* ------------------- 第三方登录按钮 ------------------- */}
           <View style={styles.socialButtons}>
             {/* Apple 登录按钮 */}
@@ -387,90 +461,30 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* 手机号输入框 */}
-          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
-            <PhoneCall size={20} color={colors.textSecondary} />
-            <TextInput
-              ref={phoneInputRef}
-              style={[styles.input, { color: colors.textPrimary }]}
-              placeholder={t('auth.phonePlaceholder')}
-              placeholderTextColor={colors.textPlaceholder}
-              value={phone}
-              onChangeText={handlePhoneChange}
-              keyboardType="phone-pad"
-              maxLength={11}
-              underlineColorAndroid="transparent"
-            />
-          </View>
-
-          {/* 验证码输入框 + 发送按钮 */}
-          <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
-            <Key size={20} color={colors.textSecondary} />
-            <TextInput
-              ref={codeInputRef}
-              style={[styles.input, { color: colors.textPrimary }]}
-              placeholder={t('auth.codePlaceholder')}
-              placeholderTextColor={colors.textPlaceholder}
-              value={code}
-              onChangeText={setCode}
-              keyboardType="number-pad"
-              maxLength={6}
-              underlineColorAndroid="transparent"
-            />
-            <TouchableOpacity
-              style={[
-                styles.codeButton,
-                { backgroundColor: countdown > 0 ? colors.disabled : colors.primary },
-              ]}
-              onPress={handleGetCode}
-              disabled={countdown > 0}
-            >
-              <Text style={[styles.codeText, { color: commonColors.white }]}>
-                {countdown > 0
-                  ? t('auth.countdownSeconds', { count: countdown })
-                  : t('auth.sendCode')}
+          {/* ------------------- 用户协议 ------------------- */}
+          <View style={styles.agreement}>
+            <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
+              &nbsp; {t('auth.agreement')} &nbsp;
+            </Text>
+            <TouchableOpacity>
+              <Text style={[styles.linkText, { color: colors.primaryDark }]}>
+                {t('auth.userAgreement')}
               </Text>
             </TouchableOpacity>
+            <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
+              &nbsp; {t('auth.and')} &nbsp;
+            </Text>
+            <TouchableOpacity>
+              <Text style={[styles.linkText, { color: colors.primaryDark }]}>
+                {t('auth.privacyPolicy')}
+              </Text>
+            </TouchableOpacity>
+            <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
+              &nbsp;.
+            </Text>
           </View>
-
-          {/* 登录按钮 */}
-          <Button
-            title={t('auth.login')}
-            onPress={handleLogin}
-            loading={loading}
-            style={styles.loginButton}
-          />
-
-          {/* ------------------- 分隔线 ------------------- */}
-          <View style={styles.divider}>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-            <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
-              {t('auth.or')}
-            </Text>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          </View>
-        </View>
-
-        {/* ------------------- 用户协议 ------------------- */}
-        <View style={styles.agreement}>
-          <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
-            {t('auth.agreement')}
-          </Text>
-          <TouchableOpacity>
-            <Text style={[styles.linkText, { color: colors.primaryDark }]}>
-              {t('auth.userAgreement')}
-            </Text>
-          </TouchableOpacity>
-          <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
-            {t('auth.and')}
-          </Text>
-          <TouchableOpacity>
-            <Text style={[styles.linkText, { color: colors.primaryDark }]}>
-              {t('auth.privacyPolicy')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaContainer>
   );
 }
@@ -528,8 +542,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   keyboardView: {
-    flex: 1,
     padding: spacing.xl,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    minHeight: '100%',
+  },
+  scrollView: {
+    flex: 1,
   },
   linkText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),

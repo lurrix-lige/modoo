@@ -9,8 +9,6 @@ import {
   Lock,
   RefreshCw,
   CheckCircle,
-  Plus,
-  Minus,
   Moon,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -189,22 +187,22 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
           <View style={[styles.container, { backgroundColor: colors.surface }]}>
             <View style={[styles.lockoutHeader, { backgroundColor: colors.error }]}>
               <Lock size={48} color={commonColors.white} />
-              <Text style={[styles.lockoutTitle, { color: commonColors.white }]}>已锁定</Text>
+              <Text style={[styles.lockoutTitle, { color: commonColors.white }]}>{t('childLock.locked')}</Text>
               <Text style={[styles.lockoutSubtitle, { color: whiteSemiTransparent }]}>
-                验证失败次数过多，请等待
+                {t('childLock.tooManyAttempts')}
               </Text>
             </View>
             <View style={styles.lockoutContent}>
               <Text style={[styles.lockoutTimer, { color: colors.error }]}>{lockoutRemaining}</Text>
               <Text style={[styles.lockoutText, { color: colors.textSecondary }]}>
-                秒后可再次尝试
+                {t('childLock.secondsToRetry')}
               </Text>
             </View>
             <TouchableOpacity
               style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
               onPress={onCancel}
             >
-              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>取消</Text>
+              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t('childLock.cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -320,7 +318,7 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
 
             {errorCount > 0 && errorCount < 3 && (
               <Text style={[styles.attemptsText, { color: colors.textSecondary }]}>
-                {t('childLock.remainingtempts', { attempts: 3 - errorCount })}
+                {t('childLock.remainingAttempts', { attempts: 3 - errorCount })}
               </Text>
             )}
 
@@ -359,7 +357,7 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
                 style={[styles.submitButton, { backgroundColor: colors.primary }]}
                 onPress={handleSubmit}
               >
-                <Text style={[styles.submitButtonText, { color: commonColors.white }]}>确认</Text>
+                <Text style={[styles.submitButtonText, { color: commonColors.white }]}>{t('childLock.confirm')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -368,7 +366,7 @@ export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChil
             style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
             onPress={onCancel}
           >
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>取消</Text>
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t('childLock.cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>

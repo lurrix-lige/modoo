@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import {
   ArrowLeft,
@@ -77,6 +77,7 @@ export default function ExpertBookingsScreen() {
   const { colors } = useTheme();
   const [bookings, setBookings] = useState<BookingWithExpert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<{ visible: boolean; message: string; code?: string }>({
     visible: false,
     message: '',
@@ -91,18 +92,23 @@ export default function ExpertBookingsScreen() {
     setError({ visible: false, message: '' });
     try {
       const response = await apiService.getBookings();
-      const bookingsWithExpert = await Promise.all(
-        response.bookings.map(async (booking: Booking) => {
-          let expert;
+      // 收集唯一的专家ID，避免 N+1 查询
+      const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
+      const expertMap = new Map<string, any>();
+      await Promise.all(
+        uniqueExpertIds.map(async (expertId) => {
           try {
-            const expertResponse = await apiService.getExpert(booking.expertId);
-            expert = expertResponse;
+            const expertResponse = await apiService.getExpert(expertId);
+            expertMap.set(expertId, expertResponse);
           } catch {
-            expert = undefined;
+            expertMap.set(expertId, undefined);
           }
-          return { ...booking, expert };
         }),
       );
+      const bookingsWithExpert = response.bookings.map((booking: Booking) => ({
+        ...booking,
+        expert: expertMap.get(booking.expertId),
+      }));
       setBookings(bookingsWithExpert);
     } catch (error: any) {
       logger.error('Failed to load bookings', { error });
@@ -113,6 +119,34 @@ export default function ExpertBookingsScreen() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const response = await apiService.getBookings();
+      const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
+      const expertMap = new Map<string, any>();
+      await Promise.all(
+        uniqueExpertIds.map(async (expertId) => {
+          try {
+            const expertResponse = await apiService.getExpert(expertId);
+            expertMap.set(expertId, expertResponse);
+          } catch {
+            expertMap.set(expertId, undefined);
+          }
+        }),
+      );
+      const bookingsWithExpert = response.bookings.map((booking: Booking) => ({
+        ...booking,
+        expert: expertMap.get(booking.expertId),
+      }));
+      setBookings(bookingsWithExpert);
+    } catch (err) {
+      logger.error('Failed to refresh bookings', { error: err });
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -222,7 +256,18 @@ export default function ExpertBookingsScreen() {
         </Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
         {bookings.length === 0 ? (
           <View style={styles.emptyState}>
             <Calendar size={48} color={colors.textSecondary} />

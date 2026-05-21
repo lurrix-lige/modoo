@@ -330,6 +330,8 @@
     "deleteAccount": "删除账户",
     "deleteAccountDesc": "永久删除您的账户",
     "deleteAccountConfirm": "确定要删除您的账户吗？此操作不可撤销",
+    "deleteAccountWarning": "此操作将永久删除您的账户、子档案和所有数据，无法恢复。",
+    "deleteAccountFinal": "请再次确认：真的要删除账户吗？",
     "deleteSuccess": "账户已删除",
     "deleteFailed": "账户删除失败",
     "contactSupport": "联系客服",
@@ -359,6 +361,8 @@
     "deleteAccount": "删除账户",
     "deleteAccountDesc": "永久删除您的账户",
     "deleteAccountConfirm": "确定要删除您的账户吗？此操作不可撤销",
+    "deleteAccountWarning": "此操作将永久删除您的账户、子档案和所有数据，无法恢复。",
+    "deleteAccountFinal": "请再次确认：真的要删除账户吗？",
     "deleteSuccess": "账户已删除",
     "deleteFailed": "账户删除失败",
     "delete": "删除",
@@ -637,7 +641,13 @@
     "calculation": "计算",
     "graphical": "图形",
     "retryCalculation": "重新计算",
-    "retryAdjustment": "重新调整"
+    "retryAdjustment": "重新调整",
+    "rotationHint": "将月亮旋转到箭头指向的方向",
+    "locked": "已锁定",
+    "tooManyAttempts": "验证失败次数过多，请等待",
+    "secondsToRetry": "秒后可再次尝试",
+    "remainingAttempts": "剩余 {{attempts}} 次尝试",
+    "confirm": "确认"
   },
   "course": {
     "followGuide": "跟随引导进行练习",

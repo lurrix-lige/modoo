@@ -328,6 +328,8 @@
     "deleteAccount": "Delete Account",
     "deleteAccountDesc": "Permanently delete your account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone",
+    "deleteAccountWarning": "This will permanently delete your account, child profile, and all data. This cannot be recovered.",
+    "deleteAccountFinal": "Please confirm again: Are you absolutely sure?",
     "deleteSuccess": "Account deleted",
     "deleteFailed": "Account deletion failed",
     "contactSupport": "Contact Support",
@@ -595,7 +597,13 @@
     "calculation": "Math",
     "graphical": "Graph",
     "retryCalculation": "Recalculate",
-    "retryAdjustment": "Readjust"
+    "retryAdjustment": "Readjust",
+    "rotationHint": "Rotate the moon to the direction of the arrow",
+    "locked": "Locked",
+    "tooManyAttempts": "Too many failed attempts, please wait",
+    "secondsToRetry": "seconds before you can try again",
+    "remainingAttempts": "{{attempts}} attempts remaining",
+    "confirm": "Confirm"
   },
   "course": {
     "followGuide": "Follow the guide",

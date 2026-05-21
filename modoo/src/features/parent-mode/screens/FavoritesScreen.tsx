@@ -24,9 +24,16 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Article, Story, Dialogue } from '../../../services';
+import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 type FavoritesScreenNavigationProp = NativeStackNavigationProp<ParentStackParamList>;
+
+interface FavoritesError {
+  visible: boolean;
+  message: string;
+  code?: string;
+}
 
 export interface FavoriteItem {
   id: string;
@@ -50,6 +57,7 @@ export default function FavoritesScreen() {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [error, setError] = useState<FavoritesError>({ visible: false, message: '' });
 
   useEffect(() => {
     loadFavorites();
@@ -93,8 +101,9 @@ export default function FavoritesScreen() {
       );
 
       setFavorites([...articleFavorites, ...storyFavorites, ...dialogueFavorites]);
-    } catch (error) {
-      logger.error('Failed to load favorites', { error });
+    } catch (err) {
+      logger.error('Failed to load favorites', { error: err });
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setIsLoading(false);
     }
@@ -272,6 +281,15 @@ export default function FavoritesScreen() {
           </View>
         )}
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        code={error.code}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }

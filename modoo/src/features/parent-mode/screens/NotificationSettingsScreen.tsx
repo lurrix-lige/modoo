@@ -28,6 +28,7 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService } from '../../../services';
+import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 type NotificationSettingsNavigationProp = NativeStackNavigationProp<ParentStackParamList>;
@@ -38,6 +39,12 @@ interface NotificationSettings {
   reportNotification: boolean;
   expertReminder: boolean;
   activityReminder: boolean;
+}
+
+interface NotificationError {
+  visible: boolean;
+  message: string;
+  code?: string;
 }
 
 const notificationIconMap: Record<string, any> = {
@@ -65,6 +72,7 @@ export default function NotificationSettingsScreen() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<NotificationError>({ visible: false, message: '' });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -72,8 +80,9 @@ export default function NotificationSettingsScreen() {
       try {
         const savedSettings = await apiService.getNotificationSettings();
         setSettings(savedSettings);
-      } catch (error) {
-        logger.error('Failed to load notification settings', { error });
+      } catch (err) {
+        logger.error('Failed to load notification settings', { error: err });
+        setError({ visible: true, message: t('common.loadFailed') });
       } finally {
         setLoading(false);
       }
@@ -89,9 +98,10 @@ export default function NotificationSettingsScreen() {
     setLoading(true);
     try {
       await apiService.updateNotificationSettings(newSettings);
-    } catch (error) {
-      logger.error('Failed to update notification settings', { error });
+    } catch (err) {
+      logger.error('Failed to update notification settings', { error: err });
       setSettings(settings);
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setLoading(false);
     }
@@ -184,6 +194,15 @@ export default function NotificationSettingsScreen() {
           {t('settings.notificationFooter')}
         </Text>
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        code={error.code}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }

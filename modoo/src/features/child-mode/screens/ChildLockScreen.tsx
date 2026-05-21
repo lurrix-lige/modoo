@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, typography, commonColors, sharedStyles } from '../../../theme';
 import { useAppStore } from '../../../store';
-import { ChildLockModal } from '../../../components';
+import { EnhancedChildLock } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
 
 type ChildLockNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ChildLock'>;
@@ -42,7 +42,7 @@ export default function ChildLockScreen() {
         </Text>
       </View>
 
-      <ChildLockModal visible={showChildLock} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <EnhancedChildLock visible={showChildLock} onSuccess={handleSuccess} onCancel={handleCancel} />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -26,9 +26,15 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Article } from '../../../services';
+import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 type KnowledgeScreenNavigationProp = NativeStackNavigationProp<ParentStackParamList>;
+
+interface KnowledgeError {
+  visible: boolean;
+  message: string;
+}
 
 const CATEGORIES = [
   { id: 'all', labelKey: 'knowledge.all' },
@@ -45,6 +51,7 @@ export default function KnowledgeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [error, setError] = useState<KnowledgeError>({ visible: false, message: '' });
 
   useEffect(() => {
     loadData();
@@ -55,19 +62,24 @@ export default function KnowledgeScreen() {
     try {
       const response = await apiService.getArticles();
       setArticles(response.articles);
-    } catch (error) {
-      logger.error('Failed to load knowledge articles', { error });
+    } catch (err) {
+      logger.error('Failed to load knowledge articles', { error: err });
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredArticles = articles.filter((article) => {
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    const matchesSearch =
-      article.title.includes(searchKeyword) || article.summary.includes(searchKeyword);
-    return matchesCategory && matchesSearch;
-  });
+  const filteredArticles = useMemo(
+    () =>
+      articles.filter((article) => {
+        const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
+        const matchesSearch =
+          article.title.includes(searchKeyword) || article.summary.includes(searchKeyword);
+        return matchesCategory && matchesSearch;
+      }),
+    [articles, selectedCategory, searchKeyword],
+  );
 
   const renderLoadingSkeleton = () => (
     <View style={styles.skeletonContent}>
@@ -268,6 +280,14 @@ export default function KnowledgeScreen() {
           </>
         )}
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }

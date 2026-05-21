@@ -120,7 +120,7 @@ export default function GrowthRecordScreen() {
         logger.error('Failed to load growth record', { error: err });
         setError({
           hasError: true,
-          message: t('common.error.loadFailed'),
+          message: t('common.loadFailed'),
         });
       } finally {
         setIsLoading(false);

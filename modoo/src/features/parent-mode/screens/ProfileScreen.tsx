@@ -118,9 +118,16 @@ export default function ProfileScreen() {
     setProfileError({ visible: false, message: '' });
     try {
       const profileData = await apiService.getUserProfile();
-      logger.debug('Profile loaded', { profileData });
+      // 同步付费状态到 store，确保会员徽章显示正确
+      if (profileData.isPaid !== undefined) {
+        useAppStore.getState().setPaidStatus(profileData.isPaid);
+      }
     } catch (error) {
       logger.error('Failed to load profile', { error });
+      setProfileError({
+        visible: true,
+        message: t('common.loadFailed'),
+      });
     } finally {
       setIsLoading(false);
     }

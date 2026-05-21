@@ -44,6 +44,7 @@ import {
   iconSizes,
 } from '../../../theme';
 import { apiService, Service, MembershipPlan } from '../../../services';
+import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 export default function ServicesScreen() {
@@ -53,6 +54,10 @@ export default function ServicesScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [services, setServices] = useState<Service[]>([]);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
+  const [error, setError] = useState<{ visible: boolean; message: string }>({
+    visible: false,
+    message: '',
+  });
 
   useEffect(() => {
     loadData();
@@ -67,8 +72,9 @@ export default function ServicesScreen() {
       ]);
       setServices(servicesData);
       setPlans(plansData);
-    } catch (error) {
-      logger.error('Failed to load services data', { error });
+    } catch (err) {
+      logger.error('Failed to load services data', { error: err });
+      setError({ visible: true, message: t('common.loadFailed') });
     } finally {
       setIsLoading(false);
     }
@@ -213,6 +219,14 @@ export default function ServicesScreen() {
           </>
         )}
       </ScrollView>
+
+      <ErrorToast
+        visible={error.visible}
+        message={error.message}
+        severity="error"
+        duration={5000}
+        onDismiss={() => setError({ visible: false, message: '' })}
+      />
     </SafeAreaContainer>
   );
 }
