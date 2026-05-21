@@ -78,11 +78,11 @@ export class AppleAuthService {
     try {
       const { Platform } = await import('react-native');
       const isSupported = Platform.OS === 'ios' && parseFloat(Platform.Version) >= 13;
-      
+
       if (!isSupported && Platform.OS !== 'ios') {
         console.warn('Apple Sign In is only available on iOS');
       }
-      
+
       return isSupported;
     } catch {
       return false;
@@ -96,7 +96,7 @@ export class AppleAuthService {
     email?: string;
   }> {
     const { Platform } = await import('react-native');
-    
+
     if (Platform.OS !== 'ios') {
       throw new Error('Apple Sign In is only available on iOS');
     }
@@ -150,15 +150,15 @@ export class AppleAuthService {
 
   private mapErrorCode(code: string | undefined): AppleAuthErrorCode {
     if (!code) return AppleAuthErrorCode.AUTH_FAILED;
-    
+
     if (code === 'ERR_CANCELED' || code === 'ERR_REQUEST_CANCELED') {
       return AppleAuthErrorCode.USER_CANCELLED;
     }
-    
+
     if (code.includes('NOT_AVAILABLE') || code.includes('MODULE')) {
       return AppleAuthErrorCode.MODULE_NOT_AVAILABLE;
     }
-    
+
     return AppleAuthErrorCode.AUTH_FAILED;
   }
 }

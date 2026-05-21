@@ -1,6 +1,6 @@
 /**
  * 儿童首页屏幕组件
- * 
+ *
  * 该页面是儿童模式下的主界面，包含以下核心功能：
  * - 1. - 显示欢迎问候和儿童昵称
  * - 守护精灵展示区域（带呼吸动画效果）
@@ -8,19 +8,25 @@
  * - 故事列表横向滚动展示
  * - 加载骨架屏、错误状态、空状态处理
  * - 家长模式入口提示
- * 
+ *
  * @component
  */
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { BookOpen, Star, Clock, Heart, Play, User, ChevronDown, Layout, Shield, RefreshCw, Library } from 'lucide-react-native';
+import {
+  BookOpen,
+  Star,
+  Clock,
+  Heart,
+  Play,
+  User,
+  ChevronDown,
+  Layout,
+  Shield,
+  RefreshCw,
+  Library,
+} from 'lucide-react-native';
 
 /**
  * 儿童图标映射
@@ -33,15 +39,36 @@ const childrenIconMap: Record<string, React.ComponentType<{ size: number; color:
   'shield-outline': Shield,
   'moon-outline': Star,
   'star-outline': Star,
-  'refresh': RefreshCw,
+  refresh: RefreshCw,
 };
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, storyCoverColors, skeleton, minTapArea, iconSizes, commonColors, sharedStyles, responsive } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  storyCoverColors,
+  skeleton,
+  minTapArea,
+  iconSizes,
+  commonColors,
+  sharedStyles,
+  responsive,
+} from '../../../theme';
 import { useAppStore } from '../../../store';
-import { StoryCard, LoadingState, ErrorState, EmptyState, SettingsPopover, GuardianSpirit, ResponsiveGrid } from '../../../components';
+import {
+  StoryCard,
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  SettingsPopover,
+  GuardianSpirit,
+  ResponsiveGrid,
+} from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { apiService, Story } from '../../../services';
 import { logger } from '../../../utils/logger';
@@ -54,18 +81,16 @@ type ChildrenHomeNavigationProp = NativeStackNavigationProp<ChildrenStackParamLi
  * 用于筛选不同类型的故事内容
  */
 const categories = [
-  { id: 'all', icon: 'grid-outline' },           // 全部故事
-  { id: 'brave', icon: 'shield-outline' },       // 勇敢主题
-  { id: 'dream', icon: 'moon-outline' },         // 梦想主题
-  { id: 'recommended', icon: 'star-outline' },   // 推荐故事
+  { id: 'all', icon: 'grid-outline' }, // 全部故事
+  { id: 'brave', icon: 'shield-outline' }, // 勇敢主题
+  { id: 'dream', icon: 'moon-outline' }, // 梦想主题
+  { id: 'recommended', icon: 'star-outline' }, // 推荐故事
 ];
-
-
 
 /**
  * 儿童首页主组件
  * 包含欢迎问候、守护精灵、故事分类筛选、故事列表横向滚动展示、加载骨架屏、错误状态、空状态处理、家长模式入口提示
- * 
+ *
  * @returns {React.ReactElement} ChildrenHomeScreen 组件
  */
 export default function ChildrenHomeScreen() {
@@ -158,9 +183,8 @@ export default function ChildrenHomeScreen() {
   /**
    * 根据选中分类筛选故事列表
    */
-  const filteredStories = selectedCategory === 'all'
-    ? stories
-    : stories.filter(s => s.category === selectedCategory);
+  const filteredStories =
+    selectedCategory === 'all' ? stories : stories.filter((s) => s.category === selectedCategory);
 
   /**
    * 获取当前选中的守护精灵配置
@@ -186,8 +210,22 @@ export default function ChildrenHomeScreen() {
       <View style={styles.skeletonContainer}>
         <View style={styles.skeletonHeader}>
           <View style={styles.skeletonHeaderLeft}>
-            <View style={[styles.skeletonLine, { width: skeleton.subtitleWidth, backgroundColor: colors.border }]} />
-            <View style={[styles.skeletonLine, { width: skeleton.titleWidth, height: skeleton.titleHeight, backgroundColor: colors.border }]} />
+            <View
+              style={[
+                styles.skeletonLine,
+                { width: skeleton.subtitleWidth, backgroundColor: colors.border },
+              ]}
+            />
+            <View
+              style={[
+                styles.skeletonLine,
+                {
+                  width: skeleton.titleWidth,
+                  height: skeleton.titleHeight,
+                  backgroundColor: colors.border,
+                },
+              ]}
+            />
           </View>
           <View style={[styles.skeletonCircle, { backgroundColor: colors.border }]} />
         </View>
@@ -209,16 +247,15 @@ export default function ChildrenHomeScreen() {
         </View>
 
         <View style={styles.skeletonCategories}>
-          {[1, 2, 3, 4].map(i => (
-            <View
-              key={i}
-              style={[styles.skeletonCategory, { backgroundColor: colors.border }]}
-            />
+          {[1, 2, 3, 4].map((i) => (
+            <View key={i} style={[styles.skeletonCategory, { backgroundColor: colors.border }]} />
           ))}
         </View>
 
         <View style={styles.skeletonStories}>
-          <Text style={[styles.skeletonTitle, { color: colors.textSecondary }]}>{t('common.loadingSkeleton')}</Text>
+          <Text style={[styles.skeletonTitle, { color: colors.textSecondary }]}>
+            {t('common.loadingSkeleton')}
+          </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={[styles.skeletonStoryCard, { backgroundColor: colors.surface }]} />
             <View style={[styles.skeletonStoryCard, { backgroundColor: colors.surface }]} />
@@ -239,10 +276,7 @@ export default function ChildrenHomeScreen() {
       {isLoading && !isRefreshing ? (
         renderLoadingSkeleton()
       ) : (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           {/* 顶部头部区域 */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
@@ -259,7 +293,10 @@ export default function ChildrenHomeScreen() {
                 style={[styles.settingsButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.getParent()?.getParent()?.navigate('ChildLock')}
               >
-                <User size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
+                <User
+                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                  color={colors.textSecondary}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -291,14 +328,17 @@ export default function ChildrenHomeScreen() {
             </View>
 
             <View style={styles.downArrow}>
-              <ChevronDown size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
+              <ChevronDown
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                color={colors.textSecondary}
+              />
             </View>
           </TouchableOpacity>
 
           {/* 分类筛选区域 */}
           <View style={styles.categorySection}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <TouchableOpacity
                   key={cat.id}
                   style={[
@@ -310,12 +350,23 @@ export default function ChildrenHomeScreen() {
                   ]}
                   onPress={() => setSelectedCategory(cat.id)}
                 >
-                  {(() => { const IconComp = childrenIconMap[cat.icon] || Layout; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.sm)} color={selectedCategory === cat.id ? commonColors.white : colors.textSecondary} />; })()}
+                  {(() => {
+                    const IconComp = childrenIconMap[cat.icon] || Layout;
+                    return (
+                      <IconComp
+                        size={responsive.moderateScaleForIcon(iconSizes.sm)}
+                        color={
+                          selectedCategory === cat.id ? commonColors.white : colors.textSecondary
+                        }
+                      />
+                    );
+                  })()}
                   <Text
                     style={[
                       styles.categoryText,
                       {
-                        color: selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
+                        color:
+                          selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
                       },
                     ]}
                   >
@@ -329,13 +380,15 @@ export default function ChildrenHomeScreen() {
           {/* 故事列表区域 */}
           <View style={styles.storySection}>
             <View style={styles.storySectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('home.storyList')}</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                {t('home.storyList')}
+              </Text>
               {!isLoading && (
-                <TouchableOpacity
-                  style={styles.refreshButton}
-                  onPress={handleRefresh}
-                >
-                  <RefreshCw size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.primary} />
+                <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+                  <RefreshCw
+                    size={responsive.moderateScaleForIcon(iconSizes.md)}
+                    color={colors.primary}
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -410,161 +463,67 @@ export default function ChildrenHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    ...sharedStyles.rowBetween,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-  },
-  headerRight: {
-    ...sharedStyles.rowCenter,
-    gap: spacing.sm,
-  },
-  headerLeft: {},
-  greeting: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-  },
-  childName: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
-    fontWeight: typography.fontWeight.bold,
-  },
-  settingsButton: {
-    width: responsive.moderateScale(minTapArea.adult),
-    height: responsive.moderateScale(minTapArea.adult),
-    borderRadius: responsive.moderateScale(minTapArea.adult / 2),
-    ...sharedStyles.columnCenter,
-    ...shadows.small,
-  },
-  guardianSection: {
-    ...sharedStyles.columnCenter,
-    paddingVertical: spacing.xxl,
-  },
-
-  guardianBubble: {
-    ...sharedStyles.columnCenter,
-  },
-  guardianSpeech: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: typography.fontWeight.semibold,
-    textAlign: 'center',
-    maxWidth: '90%',
-    marginBottom: spacing.xs,
-  },
-  guardianHint: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-  },
-  downArrow: {
-    marginTop: spacing.md,
-  },
-  categorySection: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-  },
   categoryButton: {
     ...sharedStyles.rowStart,
+    alignItems: 'center',
+    borderRadius: borderRadius.round,
+    gap: spacing.xs,
+    marginRight: spacing.sm,
+    minWidth: responsive.moderateScale(80),
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: borderRadius.round,
-    marginRight: spacing.sm,
-    gap: spacing.xs,
-    minWidth: responsive.moderateScale(80),
-    alignItems: 'center',
+  },
+  categorySection: {
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   categoryText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     fontWeight: typography.fontWeight.medium,
   },
-  storySection: {
-    paddingHorizontal: spacing.xl,
+  childName: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
+    fontWeight: typography.fontWeight.bold,
   },
-  storySectionHeader: {
-    ...sharedStyles.rowBetween,
-  },
-  sectionTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.md,
-  },
-  refreshButton: {
-    padding: spacing.xs,
-  },
-  errorContainer: {
-    minHeight: responsive.verticalScale(200),
+  downArrow: {
+    marginTop: spacing.md,
   },
   emptyContainer: {
     minHeight: responsive.verticalScale(200),
   },
-  skeletonContainer: {
-    flex: 1,
+  errorContainer: {
+    minHeight: responsive.verticalScale(200),
   },
-  skeletonHeader: {
-    ...sharedStyles.rowBetween,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    marginBottom: spacing.xl,
+
+  greeting: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
   },
-  skeletonHeaderLeft: {
-    gap: spacing.xs,
+  guardianBubble: {
+    ...sharedStyles.columnCenter,
   },
-  skeletonLine: {
-    height: skeleton.lineHeight,
-    borderRadius: borderRadius.sm,
+  guardianHint: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
   },
-  skeletonCircle: {
-    width: responsive.moderateScale(skeleton.avatarSize),
-    height: responsive.moderateScale(skeleton.avatarSize),
-    borderRadius: responsive.moderateScale(skeleton.avatarSize / 2),
-  },
-  skeletonGuardian: {
+  guardianSection: {
     ...sharedStyles.columnCenter,
     paddingVertical: spacing.xxl,
   },
-  skeletonMoon: {
-    width: responsive.moderateScale(skeleton.moonSize),
-    height: responsive.moderateScale(skeleton.moonSize),
-    borderRadius: responsive.moderateScale(skeleton.moonSize / 2),
-    ...sharedStyles.columnCenter,
-    marginBottom: spacing.lg,
-  },
-  skeletonMoonInner: {
-    width: responsive.moderateScale(skeleton.moonInnerSize),
-    height: responsive.moderateScale(skeleton.moonInnerSize),
-    borderRadius: responsive.moderateScale(skeleton.moonInnerSize / 2),
-    ...sharedStyles.columnCenter,
-  },
-  skeletonCrater: {
-    width: responsive.moderateScale(skeleton.craterWidth),
-    height: responsive.verticalScale(skeleton.craterHeight),
-    borderRadius: responsive.moderateScale(skeleton.craterWidth / 2),
-  },
-  skeletonBubble: {
-    width: responsive.moderateScale(skeleton.bubbleWidth),
-    height: responsive.verticalScale(skeleton.bubbleHeight),
-    borderRadius: borderRadius.md,
-  },
-  skeletonCategories: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-    gap: spacing.sm,
-  },
-  skeletonCategory: {
-    width: responsive.moderateScale(skeleton.categoryWidth),
-    height: skeleton.lineHeight,
-    borderRadius: borderRadius.round,
-  },
-  skeletonStories: {
-    paddingHorizontal: spacing.xl,
-  },
-  skeletonTitle: {
+  guardianSpeech: {
     fontSize: responsive.scaledFontSize(typography.fontSize.lg),
     fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.md,
+    marginBottom: spacing.xs,
+    maxWidth: '90%',
+    textAlign: 'center',
   },
-  skeletonStoryCard: {
-    width: responsive.moderateScale(150),
-    height: responsive.verticalScale(200),
-    borderRadius: borderRadius.lg,
-    marginRight: spacing.md,
+  header: {
+    ...sharedStyles.rowBetween,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  headerLeft: {},
+  headerRight: {
+    ...sharedStyles.rowCenter,
+    gap: spacing.sm,
   },
   parentHint: {
     ...sharedStyles.columnCenter,
@@ -574,5 +533,99 @@ const styles = StyleSheet.create({
   parentHintText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     textAlign: 'center',
+  },
+  refreshButton: {
+    padding: spacing.xs,
+  },
+  sectionTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.md,
+  },
+  settingsButton: {
+    borderRadius: responsive.moderateScale(minTapArea.adult / 2),
+    height: responsive.moderateScale(minTapArea.adult),
+    width: responsive.moderateScale(minTapArea.adult),
+    ...sharedStyles.columnCenter,
+    ...shadows.small,
+  },
+  skeletonBubble: {
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(skeleton.bubbleHeight),
+    width: responsive.moderateScale(skeleton.bubbleWidth),
+  },
+  skeletonCategories: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
+  },
+  skeletonCategory: {
+    borderRadius: borderRadius.round,
+    height: skeleton.lineHeight,
+    width: responsive.moderateScale(skeleton.categoryWidth),
+  },
+  skeletonCircle: {
+    borderRadius: responsive.moderateScale(skeleton.avatarSize / 2),
+    height: responsive.moderateScale(skeleton.avatarSize),
+    width: responsive.moderateScale(skeleton.avatarSize),
+  },
+  skeletonContainer: {
+    flex: 1,
+  },
+  skeletonCrater: {
+    borderRadius: responsive.moderateScale(skeleton.craterWidth / 2),
+    height: responsive.verticalScale(skeleton.craterHeight),
+    width: responsive.moderateScale(skeleton.craterWidth),
+  },
+  skeletonGuardian: {
+    ...sharedStyles.columnCenter,
+    paddingVertical: spacing.xxl,
+  },
+  skeletonHeader: {
+    ...sharedStyles.rowBetween,
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  skeletonHeaderLeft: {
+    gap: spacing.xs,
+  },
+  skeletonLine: {
+    borderRadius: borderRadius.sm,
+    height: skeleton.lineHeight,
+  },
+  skeletonMoon: {
+    borderRadius: responsive.moderateScale(skeleton.moonSize / 2),
+    height: responsive.moderateScale(skeleton.moonSize),
+    width: responsive.moderateScale(skeleton.moonSize),
+    ...sharedStyles.columnCenter,
+    marginBottom: spacing.lg,
+  },
+  skeletonMoonInner: {
+    borderRadius: responsive.moderateScale(skeleton.moonInnerSize / 2),
+    height: responsive.moderateScale(skeleton.moonInnerSize),
+    width: responsive.moderateScale(skeleton.moonInnerSize),
+    ...sharedStyles.columnCenter,
+  },
+  skeletonStories: {
+    paddingHorizontal: spacing.xl,
+  },
+  skeletonStoryCard: {
+    borderRadius: borderRadius.lg,
+    height: responsive.verticalScale(200),
+    marginRight: spacing.md,
+    width: responsive.moderateScale(150),
+  },
+  skeletonTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.md,
+  },
+  storySection: {
+    paddingHorizontal: spacing.xl,
+  },
+  storySectionHeader: {
+    ...sharedStyles.rowBetween,
   },
 });

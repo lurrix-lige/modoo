@@ -29,9 +29,7 @@ class AudioFocusManager {
     }
 
     if (role === 'background') {
-      const hasActiveMain = [...this.entries.values()].some(
-        (e) => e.role === 'main'
-      );
+      const hasActiveMain = [...this.entries.values()].some((e) => e.role === 'main');
       if (hasActiveMain) {
         listener('duck');
       }
@@ -45,9 +43,7 @@ class AudioFocusManager {
     this.entries.delete(id);
 
     if (entry?.role === 'main') {
-      const hasActiveMain = [...this.entries.values()].some(
-        (e) => e.role === 'main'
-      );
+      const hasActiveMain = [...this.entries.values()].some((e) => e.role === 'main');
       if (!hasActiveMain) {
         for (const [, bgEntry] of this.entries) {
           if (bgEntry.role === 'background') {

@@ -21,7 +21,12 @@ class ApiService {
   private lastActivityRecorded: number = 0; // 记录最后一次活动的时间
   private readonly ACTIVITY_THROTTLE: number = 10000; // 活动记录节流 10秒
 
-  constructor(baseUrl: string = BASE_URL, timeout: number = TIMEOUT, maxRetries: number = RETRIES, retryDelay: number = RETRY_DELAY) {
+  constructor(
+    baseUrl: string = BASE_URL,
+    timeout: number = TIMEOUT,
+    maxRetries: number = RETRIES,
+    retryDelay: number = RETRY_DELAY,
+  ) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
     this.maxRetries = maxRetries;
@@ -47,7 +52,11 @@ class ApiService {
       }
 
       // 只有网络错误、服务器错误等可重试
-      const retryableCodes: string[] = [ErrorCodes.SYS_TIMEOUT, ErrorCodes.SYS_SERVICE_UNAVAILABLE, ErrorCodes.SYS_INTERNAL_ERROR];
+      const retryableCodes: string[] = [
+        ErrorCodes.SYS_TIMEOUT,
+        ErrorCodes.SYS_SERVICE_UNAVAILABLE,
+        ErrorCodes.SYS_INTERNAL_ERROR,
+      ];
       const retryableStatuses = [408, 429, 500, 502, 503, 504];
       return retryableCodes.includes(error.code) || retryableStatuses.includes(error.statusCode);
     }
@@ -56,7 +65,7 @@ class ApiService {
   }
 
   private async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private createApiError(code: string, message: string, statusCode: number): ApiError {
@@ -66,7 +75,10 @@ class ApiService {
   /**
    * 请求拦截器：在发送请求前进行处理
    */
-  private async requestInterceptor(endpoint: string, options: RequestInit): Promise<{ headers: Record<string, string>; shouldProceed: boolean }> {
+  private async requestInterceptor(
+    endpoint: string,
+    options: RequestInit,
+  ): Promise<{ headers: Record<string, string>; shouldProceed: boolean }> {
     const headers: Record<string, string> = {
       'Accept-Language': i18n.language,
       ...(options.headers as Record<string, string>),
@@ -121,7 +133,7 @@ class ApiService {
     options: RequestInit,
     retryCount: number,
     suppressError: boolean,
-    refreshAttempts: number = 0
+    refreshAttempts: number = 0,
   ): Promise<T> {
     let data: any;
     try {
@@ -131,8 +143,14 @@ class ApiService {
     }
 
     // 处理 401 错误 - 可能需要刷新 Token
-    if (response.status === 401 && authService.isAuthenticated() && refreshAttempts < MAX_REFRESH_RETRIES) {
-      logger.debug(`[ApiService] 401 response, attempting to refresh token (attempt ${refreshAttempts + 1})`);
+    if (
+      response.status === 401 &&
+      authService.isAuthenticated() &&
+      refreshAttempts < MAX_REFRESH_RETRIES
+    ) {
+      logger.debug(
+        `[ApiService] 401 response, attempting to refresh token (attempt ${refreshAttempts + 1})`,
+      );
 
       const newToken = await this.tryRefreshToken();
       if (newToken) {
@@ -211,7 +229,7 @@ class ApiService {
       const newToken = await authService.refreshAccessToken();
       logger.debug(`[ApiService] Token refresh successful`);
 
-      this.refreshSubscribers.forEach(callback => callback(newToken));
+      this.refreshSubscribers.forEach((callback) => callback(newToken));
       this.refreshSubscribers = [];
 
       return newToken;
@@ -222,7 +240,7 @@ class ApiService {
       await authService.clearAuth();
 
       // 通知所有订阅者刷新失败
-      this.refreshSubscribers.forEach(callback => callback(null));
+      this.refreshSubscribers.forEach((callback) => callback(null));
       this.refreshSubscribers = [];
 
       // 检查是否是认证错误，如果是，通知错误处理器
@@ -230,7 +248,10 @@ class ApiService {
       const isAuthError = errorHandler.isUnauthorizedError(errorCode, error?.statusCode);
 
       if (isAuthError) {
-        const displayMessage = errorHandler.getErrorMessage(errorCode, error?.message || i18n.t('auth.tokenRefreshFailed'));
+        const displayMessage = errorHandler.getErrorMessage(
+          errorCode,
+          error?.message || i18n.t('auth.tokenRefreshFailed'),
+        );
         errorHandler.handleError(errorCode, displayMessage, 'error', { isAuthError });
       }
 
@@ -248,7 +269,7 @@ class ApiService {
     options: RequestInit = {},
     retryCount: number = 0,
     suppressError: boolean = false,
-    refreshAttempts: number = 0
+    refreshAttempts: number = 0,
   ): Promise<T> {
     // 只对 GET 请求进行去重
     const isGetRequest = (options.method || 'GET') === 'GET';
@@ -282,7 +303,14 @@ class ApiService {
         clearTimeout(timeoutId);
 
         // 2. 响应拦截
-        const result = await this.responseInterceptor<T>(response, endpoint, options, retryCount, suppressError, refreshAttempts);
+        const result = await this.responseInterceptor<T>(
+          response,
+          endpoint,
+          options,
+          retryCount,
+          suppressError,
+          refreshAttempts,
+        );
 
         // 3. 记录用户活动（节流）
         this.throttledRecordActivity();
@@ -297,7 +325,11 @@ class ApiService {
         } else if (error instanceof Error && error.name === 'AbortError') {
           apiError = this.createApiError(ErrorCodes.SYS_TIMEOUT, i18n.t('api.timeout'), 408);
         } else if (error instanceof Error) {
-          apiError = this.createApiError(ErrorCodes.SYS_SERVICE_UNAVAILABLE, error.message || i18n.t('api.requestFailed'), 503);
+          apiError = this.createApiError(
+            ErrorCodes.SYS_SERVICE_UNAVAILABLE,
+            error.message || i18n.t('api.requestFailed'),
+            503,
+          );
         } else {
           apiError = this.createApiError(ErrorCodes.UNKNOWN_ERROR, i18n.t('api.unknownError'), 500);
         }
@@ -305,7 +337,9 @@ class ApiService {
         // 错误重试
         if (this.isRetryable(apiError) && retryCount < this.maxRetries) {
           const waitTime = this.retryDelay * (retryCount + 1);
-          logger.debug(`[ApiService] Request failed, retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${this.maxRetries})`);
+          logger.debug(
+            `[ApiService] Request failed, retrying in ${waitTime}ms... (Attempt ${retryCount + 1}/${this.maxRetries})`,
+          );
           await this.delay(waitTime);
           return this.request<T>(endpoint, options, retryCount + 1, suppressError, refreshAttempts);
         }
@@ -356,10 +390,15 @@ class ApiService {
 
   async put<T>(endpoint: string, body?: any, suppressError?: boolean): Promise<T> {
     const requestBody = body ?? {};
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(requestBody),
-    }, 0, suppressError);
+    return this.request<T>(
+      endpoint,
+      {
+        method: 'PUT',
+        body: JSON.stringify(requestBody),
+      },
+      0,
+      suppressError,
+    );
   }
 
   async delete<T>(endpoint: string): Promise<T> {
@@ -382,8 +421,14 @@ class ApiService {
     return this.delete<{ success: boolean; isFavorite: boolean }>(`/stories/${storyId}/favorite`);
   }
 
-  async shareStory(storyId: string, platform?: string): Promise<{ success: boolean; shareId: string }> {
-    return this.post<{ success: boolean; shareId: string }>(`/stories/${storyId}/share`, platform ? { platform } : {});
+  async shareStory(
+    storyId: string,
+    platform?: string,
+  ): Promise<{ success: boolean; shareId: string }> {
+    return this.post<{ success: boolean; shareId: string }>(
+      `/stories/${storyId}/share`,
+      platform ? { platform } : {},
+    );
   }
 
   async updateStoryProgress(storyId: string, progress: number, completed: boolean): Promise<void> {
@@ -425,9 +470,15 @@ class ApiService {
     return this.delete<{ success: boolean; isFavorite: boolean }>(`/articles/${id}/favorite`);
   }
 
-  async shareArticle(articleId: string, platform?: string): Promise<{ success: boolean; shareId: string }> {
+  async shareArticle(
+    articleId: string,
+    platform?: string,
+  ): Promise<{ success: boolean; shareId: string }> {
     const id = articleId.replace(/^\/|\/$/g, '');
-    return this.post<{ success: boolean; shareId: string }>(`/articles/${id}/share`, platform ? { platform } : {});
+    return this.post<{ success: boolean; shareId: string }>(
+      `/articles/${id}/share`,
+      platform ? { platform } : {},
+    );
   }
 
   async getFavoriteArticles(): Promise<ArticlesResponse> {
@@ -610,7 +661,10 @@ class ApiService {
     return this.get<SubscriptionsResponse>('/membership/subscriptions');
   }
 
-  async updateSubscription(subscriptionId: string, data: UpdateSubscriptionRequest): Promise<Subscription> {
+  async updateSubscription(
+    subscriptionId: string,
+    data: UpdateSubscriptionRequest,
+  ): Promise<Subscription> {
     return this.put<Subscription>(`/membership/subscriptions/${subscriptionId}`, data);
   }
 
@@ -638,7 +692,9 @@ class ApiService {
     return this.get<UserProfile>('/users/profile');
   }
 
-  async updateUserProfile(data: Partial<Pick<UserProfile, 'nickname' | 'avatar'>>): Promise<UserProfile> {
+  async updateUserProfile(
+    data: Partial<Pick<UserProfile, 'nickname' | 'avatar'>>,
+  ): Promise<UserProfile> {
     return this.put<UserProfile>('/users/profile', data);
   }
 
@@ -666,7 +722,10 @@ class ApiService {
     return this.put<NotificationSettings>('/settings/notifications', data);
   }
 
-  async registerPushToken(data: { token: string; platform: string }): Promise<{ success: boolean }> {
+  async registerPushToken(data: {
+    token: string;
+    platform: string;
+  }): Promise<{ success: boolean }> {
     return this.post<{ success: boolean }>('/users/push-token', data);
   }
 
@@ -735,7 +794,11 @@ class ApiService {
     return this.post<{ eventId: string }>('/analytics/events', data);
   }
 
-  async reportAnalyticsBatchEvents(batchId: string, deviceId: string, events: AnalyticsEventRequest[]): Promise<{
+  async reportAnalyticsBatchEvents(
+    batchId: string,
+    deviceId: string,
+    events: AnalyticsEventRequest[],
+  ): Promise<{
     batchId: string;
     eventsProcessed: number;
   }> {
@@ -754,7 +817,9 @@ class ApiService {
     return this.post<AnalyticsUserProfile>('/analytics/profile', data);
   }
 
-  async reportAnalyticsFeatureUsage(data: AnalyticsFeatureUsageRequest): Promise<AnalyticsFeatureUsage> {
+  async reportAnalyticsFeatureUsage(
+    data: AnalyticsFeatureUsageRequest,
+  ): Promise<AnalyticsFeatureUsage> {
     return this.post<AnalyticsFeatureUsage>('/analytics/feature-usage', data);
   }
 

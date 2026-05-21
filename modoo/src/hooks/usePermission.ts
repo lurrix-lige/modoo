@@ -8,7 +8,10 @@ interface PermissionResult {
   reason: 'anonymous' | 'not_authenticated' | 'no_membership' | 'ok';
 }
 
-const PERMISSION_REQUIREMENTS: Record<PermissionLevel, { authRequired: boolean; paidRequired: boolean }> = {
+const PERMISSION_REQUIREMENTS: Record<
+  PermissionLevel,
+  { authRequired: boolean; paidRequired: boolean }
+> = {
   0: { authRequired: false, paidRequired: false },
   1: { authRequired: true, paidRequired: false },
   2: { authRequired: true, paidRequired: true },

@@ -16,10 +16,7 @@ const wechatSvg = `
 </svg>
 `;
 
-export const WechatIcon: React.FC<WechatIconProps> = ({
-  size = 24,
-  style,
-}) => {
+export const WechatIcon: React.FC<WechatIconProps> = ({ size = 24, style }) => {
   return (
     <View style={[{ width: size, height: size }, style]}>
       <SvgXml xml={wechatSvg} width={size} height={size} />

@@ -15,10 +15,7 @@ const appleSvg = `
 </svg>
 `;
 
-export const AppleIcon: React.FC<AppleIconProps> = ({
-  size = 24,
-  style,
-}) => {
+export const AppleIcon: React.FC<AppleIconProps> = ({ size = 24, style }) => {
   return (
     <View style={[{ width: size, height: size }, style]}>
       <SvgXml xml={appleSvg} width={size} height={size} />

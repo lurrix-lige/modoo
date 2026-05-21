@@ -27,62 +27,67 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const volumeRef = useRef(1.0);
 
-  const play = useCallback(async (url: string, retryCount: number = 0): Promise<boolean> => {
-    logger.info('[AudioProvider] play called with URL', { url });
+  const play = useCallback(
+    async (url: string, retryCount: number = 0): Promise<boolean> => {
+      logger.info('[AudioProvider] play called with URL', { url });
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    const validationResult = validateUrl(url);
-    if (!validationResult.valid) {
-      const errorMsg = validationResult.message || 'Invalid audio URL';
-      setError(errorMsg);
-      setIsLoading(false);
-      return false;
-    }
-
-    try {
-      logger.info('[AudioProvider] Calling UnifiedAudioPlayer.play()', { url });
-      const success = await unifiedAudio.play({
-        tracks: [{
-          id: 'main',
-          url,
-          volume: volumeRef.current,
-          loop: false,
-          role: 'main',
-        }],
-        retryConfig: { maxRetries: 2, delayMs: 1000 },
-      });
-
-      logger.info('[AudioProvider] UnifiedAudioPlayer.play() returned', { success });
-
-      if (success) {
-        audioFocusManager.request('story', 'main', (action: FocusAction) => {
-          if (action === 'stop') {
-            unifiedAudio.stop();
-            audioFocusManager.release('story');
-            setError(null);
-          }
-        });
-        setIsLoading(false);
-        return true;
-      } else {
-        if (retryCount < 2) {
-          logger.info(`[AudioProvider] Retrying audio playback (attempt ${retryCount + 1}/3)`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          return play(url, retryCount + 1);
-        }
-        setError('Failed to play audio after retries');
+      const validationResult = validateUrl(url);
+      if (!validationResult.valid) {
+        const errorMsg = validationResult.message || 'Invalid audio URL';
+        setError(errorMsg);
         setIsLoading(false);
         return false;
       }
-    } catch (err) {
-      logger.error('[AudioProvider] Exception caught during playback', { err });
-      setError('Playback failed');
-      setIsLoading(false);
-      return false;
-    }
-  }, [unifiedAudio]);
+
+      try {
+        logger.info('[AudioProvider] Calling UnifiedAudioPlayer.play()', { url });
+        const success = await unifiedAudio.play({
+          tracks: [
+            {
+              id: 'main',
+              url,
+              volume: volumeRef.current,
+              loop: false,
+              role: 'main',
+            },
+          ],
+          retryConfig: { maxRetries: 2, delayMs: 1000 },
+        });
+
+        logger.info('[AudioProvider] UnifiedAudioPlayer.play() returned', { success });
+
+        if (success) {
+          audioFocusManager.request('story', 'main', (action: FocusAction) => {
+            if (action === 'stop') {
+              unifiedAudio.stop();
+              audioFocusManager.release('story');
+              setError(null);
+            }
+          });
+          setIsLoading(false);
+          return true;
+        } else {
+          if (retryCount < 2) {
+            logger.info(`[AudioProvider] Retrying audio playback (attempt ${retryCount + 1}/3)`);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            return play(url, retryCount + 1);
+          }
+          setError('Failed to play audio after retries');
+          setIsLoading(false);
+          return false;
+        }
+      } catch (err) {
+        logger.error('[AudioProvider] Exception caught during playback', { err });
+        setError('Playback failed');
+        setIsLoading(false);
+        return false;
+      }
+    },
+    [unifiedAudio],
+  );
 
   const pause = useCallback(() => {
     unifiedAudio.pause();
@@ -108,16 +113,22 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, [unifiedAudio]);
 
-  const seekTo = useCallback(async (position: number) => {
-    logger.debug('AudioProvider.seekTo called with position', { position });
-    await unifiedAudio.seekTo(position);
-  }, [unifiedAudio]);
+  const seekTo = useCallback(
+    async (position: number) => {
+      logger.debug('AudioProvider.seekTo called with position', { position });
+      await unifiedAudio.seekTo(position);
+    },
+    [unifiedAudio],
+  );
 
-  const setVolume = useCallback((volume: number) => {
-    const clampedVolume = Math.max(0, Math.min(1, volume));
-    volumeRef.current = clampedVolume;
-    unifiedAudio.setVolume('main', clampedVolume);
-  }, [unifiedAudio]);
+  const setVolume = useCallback(
+    (volume: number) => {
+      const clampedVolume = Math.max(0, Math.min(1, volume));
+      volumeRef.current = clampedVolume;
+      unifiedAudio.setVolume('main', clampedVolume);
+    },
+    [unifiedAudio],
+  );
 
   return (
     <AudioContext.Provider

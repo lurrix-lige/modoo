@@ -1,21 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { 
-  Home, 
-  BookOpen, 
-  Headphones, 
-  User, 
-  Settings, 
-  Heart, 
-  MessageSquare, 
-  BarChart3, 
+import {
+  Home,
+  BookOpen,
+  Headphones,
+  User,
+  Settings,
+  Heart,
+  MessageSquare,
+  BarChart3,
   Moon,
   Star,
   FileText,
-  Shield
+  Shield,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, commonColors, iconSizes, responsive } from '../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  commonColors,
+  iconSizes,
+  responsive,
+} from '../theme';
 import { useAppStore } from '../store';
 
 const navItems = [
@@ -43,7 +51,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
   const { child, isAuthenticated, switchToChildMode } = useAppStore();
 
   return (
-    <View style={[styles.sidebar, { backgroundColor: isDark ? colors.surface : commonColors.white }]}>
+    <View
+      style={[styles.sidebar, { backgroundColor: isDark ? colors.surface : commonColors.white }]}
+    >
       <View style={styles.logoSection}>
         <View style={[styles.logo, { backgroundColor: colors.primary }]}>
           <Star size={responsive.moderateScaleForIcon(iconSizes.xl)} color={commonColors.white} />
@@ -52,7 +62,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
       </View>
 
       <View style={styles.navSection}>
-        {navItems.map(item => {
+        {navItems.map((item) => {
           const IconComp = item.icon;
           const isActive = activeTab === item.id;
           return (
@@ -64,14 +74,13 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
               ]}
               onPress={() => onTabPress(item.id)}
             >
-              <IconComp 
-                size={responsive.moderateScaleForIcon(iconSizes.lg)} 
-                color={isActive ? colors.primary : colors.textSecondary} 
+              <IconComp
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                color={isActive ? colors.primary : colors.textSecondary}
               />
-              <Text style={[
-                styles.navLabel,
-                { color: isActive ? colors.primary : colors.textPrimary },
-              ]}>
+              <Text
+                style={[styles.navLabel, { color: isActive ? colors.primary : colors.textPrimary }]}
+              >
                 {t(item.labelKey)}
               </Text>
             </TouchableOpacity>
@@ -82,7 +91,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
       <View style={styles.divider} />
 
       <View style={styles.secondarySection}>
-        {secondaryItems.map(item => {
+        {secondaryItems.map((item) => {
           const IconComp = item.icon;
           return (
             <TouchableOpacity
@@ -90,9 +99,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
               style={styles.navItem}
               onPress={() => onTabPress(item.id)}
             >
-              <IconComp 
-                size={responsive.moderateScaleForIcon(iconSizes.md)} 
-                color={colors.textSecondary} 
+              <IconComp
+                size={responsive.moderateScaleForIcon(iconSizes.md)}
+                color={colors.textSecondary}
               />
               <Text style={[styles.navLabel, { color: colors.textSecondary }]}>
                 {t(item.labelKey)}
@@ -110,12 +119,13 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
           onPress={switchToChildMode}
         >
           <View style={[styles.childIcon, { backgroundColor: colors.secondary }]}>
-            <Shield size={responsive.moderateScaleForIcon(iconSizes.sm)} color={commonColors.white} />
+            <Shield
+              size={responsive.moderateScaleForIcon(iconSizes.sm)}
+              color={commonColors.white}
+            />
           </View>
           <View style={styles.childInfo}>
-            <Text style={[styles.childName, { color: colors.textPrimary }]}>
-              {child.nickname}
-            </Text>
+            <Text style={[styles.childName, { color: colors.textPrimary }]}>{child.nickname}</Text>
             <Text style={[styles.childModeLabel, { color: colors.textSecondary }]}>
               {t('parentHome.childMode')}
             </Text>
@@ -125,7 +135,10 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
 
       <View style={styles.bottomSection}>
         <TouchableOpacity style={styles.settingsButton} onPress={() => onTabPress('settings')}>
-          <Settings size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
+          <Settings
+            size={responsive.moderateScaleForIcon(iconSizes.md)}
+            color={colors.textSecondary}
+          />
           <Text style={[styles.navLabel, { color: colors.textSecondary }]}>
             {t('common.settings')}
           </Text>
@@ -136,93 +149,93 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ activeTab, onTab
 };
 
 const styles = StyleSheet.create({
-  sidebar: {
-    width: responsive.moderateScale(240),
-    height: '100%',
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.md,
-    borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: '#e5e7eb',
-    flexDirection: 'column',
-  },
-  logoSection: {
-    ...StyleSheet.absoluteFillObject,
-    top: spacing.xl,
-    left: spacing.md,
-    right: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  logo: {
-    width: responsive.moderateScale(40),
-    height: responsive.moderateScale(40),
-    borderRadius: responsive.moderateScale(12),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
-    fontWeight: typography.fontWeight.bold,
-  },
-  navSection: {
-    marginTop: spacing.xxl + spacing.md,
+  bottomSection: {
     gap: spacing.xs,
-  },
-  navItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  navLabel: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    fontWeight: typography.fontWeight.medium,
-  },
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: '#e5e7eb',
-    marginVertical: spacing.md,
-  },
-  secondarySection: {
-    gap: spacing.xs,
-  },
-  childModeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginVertical: spacing.md,
+    marginTop: 'auto',
   },
   childIcon: {
-    width: responsive.moderateScale(36),
-    height: responsive.moderateScale(36),
-    borderRadius: responsive.moderateScale(18),
     alignItems: 'center',
+    borderRadius: responsive.moderateScale(18),
+    height: responsive.moderateScale(36),
     justifyContent: 'center',
+    width: responsive.moderateScale(36),
   },
   childInfo: {
     flex: 1,
+  },
+  childModeButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginVertical: spacing.md,
+    padding: spacing.md,
+  },
+  childModeLabel: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
   },
   childName: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     fontWeight: typography.fontWeight.medium,
   },
-  childModeLabel: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+  divider: {
+    backgroundColor: '#e5e7eb',
+    height: StyleSheet.hairlineWidth,
+    marginVertical: spacing.md,
   },
-  bottomSection: {
-    marginTop: 'auto',
+  logo: {
+    alignItems: 'center',
+    borderRadius: responsive.moderateScale(12),
+    height: responsive.moderateScale(40),
+    justifyContent: 'center',
+    width: responsive.moderateScale(40),
+  },
+  logoSection: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    left: spacing.md,
+    right: spacing.md,
+    top: spacing.xl,
+  },
+  logoText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
+    fontWeight: typography.fontWeight.bold,
+  },
+  navItem: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.md,
+    padding: spacing.sm,
+  },
+  navLabel: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    fontWeight: typography.fontWeight.medium,
+  },
+  navSection: {
+    gap: spacing.xs,
+    marginTop: spacing.xxl + spacing.md,
+  },
+  secondarySection: {
     gap: spacing.xs,
   },
   settingsButton: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
     gap: spacing.md,
     padding: spacing.sm,
-    borderRadius: borderRadius.md,
+  },
+  sidebar: {
+    borderRightColor: '#e5e7eb',
+    borderRightWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'column',
+    height: '100%',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xl,
+    width: responsive.moderateScale(240),
   },
 });
 

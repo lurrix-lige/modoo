@@ -6,31 +6,43 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ShieldCheck, Star, Zap, Headphones, BookOpen, Leaf, User, Calendar } from 'lucide-react-native';
+import {
+  ShieldCheck,
+  Star,
+  Zap,
+  Headphones,
+  BookOpen,
+  Leaf,
+  User,
+  Calendar,
+} from 'lucide-react-native';
 import { MembershipPlanCard } from '../../../components/MembershipPlanCard';
 
 const servicesIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'shield-checkmark': ShieldCheck,
-  'star': Star,
-  'flash': Zap,
-  'headset': Headphones,
-  'book': BookOpen,
-  'leaf': Leaf,
-  'person': User,
-  'calendar': Calendar,
+  star: Star,
+  flash: Zap,
+  headset: Headphones,
+  book: BookOpen,
+  leaf: Leaf,
+  person: User,
+  calendar: Calendar,
 };
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { apiService, Service, MembershipPlan } from '../../../services';
 import { logger } from '../../../utils/logger';
 
@@ -70,7 +82,7 @@ export default function ServicesScreen() {
       </View>
 
       <View style={styles.skeletonServicesGrid}>
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <View key={i} style={[styles.skeletonServiceCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.skeletonServiceIcon, { backgroundColor: colors.border }]} />
             <View style={[styles.skeletonServiceTitle, { backgroundColor: colors.border }]} />
@@ -84,14 +96,14 @@ export default function ServicesScreen() {
         <View style={[styles.skeletonSectionDesc, { backgroundColor: colors.border }]} />
       </View>
 
-      {[1, 2, 3].map(i => (
+      {[1, 2, 3].map((i) => (
         <View key={i} style={[styles.skeletonPlanCard, { backgroundColor: colors.surface }]}>
           <View style={styles.skeletonPlanHeader}>
             <View style={[styles.skeletonPlanName, { backgroundColor: colors.border }]} />
             <View style={[styles.skeletonPlanPrice, { backgroundColor: colors.border }]} />
           </View>
           <View style={styles.skeletonPlanFeatures}>
-            {[1, 2, 3, 4].map(j => (
+            {[1, 2, 3, 4].map((j) => (
               <View key={j} style={[styles.skeletonFeature, { backgroundColor: colors.border }]} />
             ))}
           </View>
@@ -104,10 +116,7 @@ export default function ServicesScreen() {
 
   return (
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.textPrimary }]}>{t('services.title')}</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
@@ -120,7 +129,7 @@ export default function ServicesScreen() {
         ) : (
           <>
             <View style={styles.servicesGrid}>
-              {services.map(service => (
+              {services.map((service) => (
                 <TouchableOpacity
                   key={service.id}
                   style={[styles.serviceCard, { backgroundColor: colors.surface }]}
@@ -135,7 +144,15 @@ export default function ServicesScreen() {
                   }}
                 >
                   <View style={[styles.serviceIcon, { backgroundColor: colors[service.colorKey] }]}>
-                    {(() => { const IconComp = servicesIconMap[service.icon] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />; })()}
+                    {(() => {
+                      const IconComp = servicesIconMap[service.icon] || Star;
+                      return (
+                        <IconComp
+                          size={responsive.moderateScaleForIcon(iconSizes.xl)}
+                          color={colors.textPrimary}
+                        />
+                      );
+                    })()}
                   </View>
                   <Text style={[styles.serviceTitle, { color: colors.textPrimary }]}>
                     {t(service.titleKey)}
@@ -150,7 +167,10 @@ export default function ServicesScreen() {
                 onPress={() => navigation.getParent()?.navigate('ExpertBookings')}
               >
                 <View style={[styles.serviceIcon, { backgroundColor: colors.primary + '20' }]}>
-                  <Calendar size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />
+                  <Calendar
+                    size={responsive.moderateScaleForIcon(iconSizes.xl)}
+                    color={colors.primary}
+                  />
                 </View>
                 <Text style={[styles.serviceTitle, { color: colors.textPrimary }]}>
                   {t('services.manageBookings')}
@@ -169,17 +189,22 @@ export default function ServicesScreen() {
                 {t('services.membershipSubtitle')}
               </Text>
 
-              {plans.map(plan => (
+              {plans.map((plan) => (
                 <MembershipPlanCard
                   key={plan.id}
                   plan={plan}
                   isSelected={false}
-                  onPress={() => navigation.getParent()?.navigate('Membership', { selectedPlanId: plan.id })}
+                  onPress={() =>
+                    navigation.getParent()?.navigate('Membership', { selectedPlanId: plan.id })
+                  }
                 />
               ))}
 
               <View style={[styles.trustBadge, { backgroundColor: colors.surface }]}>
-                <ShieldCheck size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.success} />
+                <ShieldCheck
+                  size={responsive.moderateScaleForIcon(iconSizes.md)}
+                  color={colors.success}
+                />
                 <Text style={[styles.trustText, { color: colors.textSecondary }]}>
                   {t('services.trustBadge')}
                 </Text>
@@ -197,9 +222,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    paddingBottom: spacing.lg,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
   },
   title: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
@@ -212,24 +237,24 @@ const styles = StyleSheet.create({
   servicesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: spacing.xl,
     gap: spacing.md,
     marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   serviceCard: {
-    width: '47%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
     alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    width: '47%',
     ...shadows.small,
   },
   serviceIcon: {
-    width: responsive.moderateScale(56),
-    height: responsive.moderateScale(56),
-    borderRadius: responsive.moderateScale(28),
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: responsive.moderateScale(28),
+    height: responsive.moderateScale(56),
+    justifyContent: 'center',
     marginBottom: spacing.md,
+    width: responsive.moderateScale(56),
   },
   serviceTitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
@@ -254,17 +279,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   planCard: {
-    padding: spacing.lg,
     borderRadius: borderRadius.xl,
     borderWidth: 1,
     marginBottom: spacing.md,
+    padding: spacing.lg,
     position: 'relative',
     ...shadows.small,
   },
   planHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.md,
   },
   planName: {
@@ -272,8 +297,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   planPrice: {
-    flexDirection: 'row',
     alignItems: 'baseline',
+    flexDirection: 'row',
   },
   priceValue: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
@@ -287,21 +312,21 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   featureItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   featureText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
   },
   trustBadge: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.md,
     borderRadius: borderRadius.md,
+    flexDirection: 'row',
     gap: spacing.sm,
+    justifyContent: 'center',
     marginTop: spacing.md,
+    padding: spacing.md,
   },
   trustText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
@@ -312,99 +337,99 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   skeletonHeader: {
+    paddingBottom: spacing.lg,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
   },
   skeletonTitle: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(32),
     borderRadius: borderRadius.sm,
+    height: responsive.verticalScale(32),
+    width: responsive.moderateScale(80),
   },
   skeletonSubtitle: {
-    width: responsive.moderateScale(160),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
     marginTop: spacing.sm,
+    width: responsive.moderateScale(160),
   },
   skeletonServicesGrid: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
     gap: spacing.md,
     marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   skeletonServiceCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
     flex: 1,
     padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
   },
   skeletonServiceIcon: {
-    width: responsive.moderateScale(56),
-    height: responsive.moderateScale(56),
     borderRadius: responsive.moderateScale(28),
+    height: responsive.moderateScale(56),
     marginBottom: spacing.md,
+    width: responsive.moderateScale(56),
   },
   skeletonServiceTitle: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
     marginBottom: spacing.xs,
+    width: responsive.moderateScale(60),
   },
   skeletonServiceDesc: {
-    width: responsive.moderateScale(50),
-    height: responsive.verticalScale(12),
     borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(12),
+    width: responsive.moderateScale(50),
   },
   skeletonSection: {
-    paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
   skeletonSectionTitle: {
-    width: responsive.moderateScale(100),
-    height: responsive.verticalScale(20),
     borderRadius: responsive.moderateScale(10),
+    height: responsive.verticalScale(20),
     marginBottom: spacing.xs,
+    width: responsive.moderateScale(100),
   },
   skeletonSectionDesc: {
-    width: responsive.moderateScale(180),
-    height: responsive.verticalScale(14),
     borderRadius: responsive.moderateScale(7),
+    height: responsive.verticalScale(14),
+    width: responsive.moderateScale(180),
   },
   skeletonPlanCard: {
-    marginHorizontal: spacing.xl,
-    padding: spacing.lg,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.md,
+    marginHorizontal: spacing.xl,
+    padding: spacing.lg,
   },
   skeletonPlanHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.md,
   },
   skeletonPlanName: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(20),
     borderRadius: responsive.moderateScale(10),
+    height: responsive.verticalScale(20),
+    width: responsive.moderateScale(80),
   },
   skeletonPlanPrice: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(24),
     borderRadius: responsive.moderateScale(12),
+    height: responsive.verticalScale(24),
+    width: responsive.moderateScale(60),
   },
   skeletonPlanFeatures: {
     gap: spacing.xs,
   },
   skeletonFeature: {
-    width: '70%',
-    height: responsive.verticalScale(14),
     borderRadius: responsive.moderateScale(7),
+    height: responsive.verticalScale(14),
+    width: '70%',
   },
   skeletonTrustBadge: {
-    marginHorizontal: spacing.xl,
-    height: responsive.verticalScale(48),
     borderRadius: borderRadius.md,
+    height: responsive.verticalScale(48),
+    marginHorizontal: spacing.xl,
     marginTop: spacing.md,
   },
 });

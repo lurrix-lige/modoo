@@ -73,14 +73,15 @@ class AuthService {
         }
       };
 
-      const [accessToken, refreshToken, expiresAtStr, lastActivityStr, isPaidStr, user] = await Promise.all([
-        safeSecureGet(STORAGE_KEYS.ACCESS_TOKEN),
-        safeSecureGet(STORAGE_KEYS.REFRESH_TOKEN),
-        safeSecureGet(STORAGE_KEYS.TOKEN_EXPIRES_AT),
-        safeAsyncGet(STORAGE_KEYS.LAST_ACTIVITY_AT),
-        safeAsyncGet(STORAGE_KEYS.IS_PAID),
-        storageService.getUser().catch(() => null),
-      ]);
+      const [accessToken, refreshToken, expiresAtStr, lastActivityStr, isPaidStr, user] =
+        await Promise.all([
+          safeSecureGet(STORAGE_KEYS.ACCESS_TOKEN),
+          safeSecureGet(STORAGE_KEYS.REFRESH_TOKEN),
+          safeSecureGet(STORAGE_KEYS.TOKEN_EXPIRES_AT),
+          safeAsyncGet(STORAGE_KEYS.LAST_ACTIVITY_AT),
+          safeAsyncGet(STORAGE_KEYS.IS_PAID),
+          storageService.getUser().catch(() => null),
+        ]);
 
       if (accessToken && expiresAtStr) {
         this.accessToken = accessToken;
@@ -135,7 +136,7 @@ class AuthService {
       this.lastActivityAt = now;
       this.lastRecordedActivityAt = now;
       AsyncStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY_AT, now.toString());
-      
+
       this.tryRefreshTokenOnActivity();
     }
   }
@@ -257,10 +258,7 @@ class AuthService {
       SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
       SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
       SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN_EXPIRES_AT),
-      AsyncStorage.multiRemove([
-        STORAGE_KEYS.LAST_ACTIVITY_AT,
-        STORAGE_KEYS.IS_PAID,
-      ]),
+      AsyncStorage.multiRemove([STORAGE_KEYS.LAST_ACTIVITY_AT, STORAGE_KEYS.IS_PAID]),
     ]);
 
     await storageService.clearAll();
@@ -391,6 +389,7 @@ class AuthService {
       const apiService = await getApiService();
       await apiService.post('/auth/logout');
     } catch {
+      // Logout API failure is non-critical; clear local auth state regardless
     }
     await this.clearAuth();
   }

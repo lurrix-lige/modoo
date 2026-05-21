@@ -1,5 +1,3 @@
-
-
 import React, {
   createContext,
   useContext,
@@ -58,10 +56,7 @@ function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
   }
 }
 
-function getEffectiveTheme(
-  themeMode: ThemeMode,
-  systemTheme: 'light' | 'dark'
-): 'light' | 'dark' {
+function getEffectiveTheme(themeMode: ThemeMode, systemTheme: 'light' | 'dark'): 'light' | 'dark' {
   if (themeMode === 'system') {
     return systemTheme;
   }
@@ -77,20 +72,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const initialState: ThemeState = {
     themeMode: 'system',
-    systemTheme: (systemColorScheme === 'dark' ? 'dark' : 'light'),
+    systemTheme: systemColorScheme === 'dark' ? 'dark' : 'light',
   };
 
   const [state, dispatch] = useReducer(themeReducer, initialState);
 
   const isDark = useMemo(
     () => getEffectiveTheme(state.themeMode, state.systemTheme) === 'dark',
-    [state.themeMode, state.systemTheme]
+    [state.themeMode, state.systemTheme],
   );
 
-  const themeColors: ThemeColors = useMemo(
-    () => (isDark ? colors.dark : colors.light),
-    [isDark]
-  );
+  const themeColors: ThemeColors = useMemo(() => (isDark ? colors.dark : colors.light), [isDark]);
 
   const currentSemanticColors = useMemo(
     () => ({
@@ -103,7 +95,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       info: themeColors.info,
       infoLight: themeColors.infoLight,
     }),
-    [themeColors]
+    [themeColors],
   );
 
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
@@ -133,7 +125,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     dispatch({
       type: 'SET_SYSTEM_THEME',
-      payload: systemColorScheme === 'dark' ? 'dark' : 'light'
+      payload: systemColorScheme === 'dark' ? 'dark' : 'light',
     });
   }, [systemColorScheme]);
 
@@ -142,7 +134,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       const newSystemTheme = colorScheme || 'light';
       dispatch({
         type: 'SET_SYSTEM_THEME',
-        payload: newSystemTheme as 'light' | 'dark'
+        payload: newSystemTheme as 'light' | 'dark',
       });
     });
 
@@ -160,21 +152,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       setThemeMode,
       systemTheme: state.systemTheme,
     }),
-    [
-      isDark,
-      themeColors,
-      currentSemanticColors,
-      state.themeMode,
-      setThemeMode,
-      state.systemTheme,
-    ]
+    [isDark, themeColors, currentSemanticColors, state.themeMode, setThemeMode, state.systemTheme],
   );
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme(): ThemeContextType {
@@ -236,11 +217,7 @@ export function getContrastRatio(foreground: string, background: string): number
 function hexToRgb(hex: string): number[] | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
-    ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16),
-    ]
+    ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
     : null;
 }
 
@@ -250,7 +227,7 @@ export function meetsContrastRequirements(
   foreground: string,
   background: string,
   level: 'AA' | 'AAA' = 'AA',
-  isLargeText: boolean = false
+  isLargeText: boolean = false,
 ): boolean {
   const ratio = getContrastRatio(foreground, background);
 

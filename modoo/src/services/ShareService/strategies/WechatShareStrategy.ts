@@ -18,7 +18,7 @@ export class WechatShareStrategy extends BaseShareStrategy {
     if (!WeChat || typeof WeChat.isWXAppInstalled !== 'function') {
       return false;
     }
-    
+
     try {
       return WeChat.isWXAppInstalled();
     } catch {
@@ -31,7 +31,7 @@ export class WechatShareStrategy extends BaseShareStrategy {
       this.validateOptions(options);
 
       const WeChat = this.getWeChat();
-      
+
       if (!WeChat) {
         return this.createErrorResult('微信分享SDK未安装');
       }
@@ -48,7 +48,7 @@ export class WechatShareStrategy extends BaseShareStrategy {
       const optimized = ShareContentOptimizer.optimize(options, 'wechat');
 
       let result;
-      
+
       if (optimized.url) {
         result = await WeChat.shareToSession({
           title: optimized.title,
@@ -66,11 +66,10 @@ export class WechatShareStrategy extends BaseShareStrategy {
       }
 
       return this.createSuccessResult(result);
-      
     } catch (error: any) {
       const errorCode = error.code || error.errCode;
       let errorMessage = '微信分享失败';
-      
+
       if (errorCode === -6) {
         errorMessage = '用户取消分享';
       } else if (errorCode === -5) {
@@ -80,7 +79,7 @@ export class WechatShareStrategy extends BaseShareStrategy {
       } else if (error instanceof Error && error.message) {
         errorMessage = error.message;
       }
-      
+
       return this.createErrorResult(errorMessage);
     }
   }

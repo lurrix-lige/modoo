@@ -29,7 +29,16 @@ import {
   RotateCw,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, responsive, iconSizes } from '../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  responsive,
+  iconSizes,
+} from '../../theme';
 import { apiService, WhiteNoise } from '../../services';
 import { errorHandler } from '../../services/ErrorHandler';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
@@ -39,14 +48,14 @@ import { WhiteNoisePlayerProps } from './types';
 
 const defaultIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'cloud-rain': CloudRain,
-  'waves': Waves,
-  'flame': Flame,
+  waves: Waves,
+  flame: Flame,
   'tree-deciduous': TreeDeciduous,
-  'bird': Bird,
-  'birds': Bird,
-  'coffee': Coffee,
-  'wind': Wind,
-  'music': Music,
+  bird: Bird,
+  birds: Bird,
+  coffee: Coffee,
+  wind: Wind,
+  music: Music,
 };
 
 export default function WhiteNoisePlayer({
@@ -236,7 +245,17 @@ export default function WhiteNoisePlayer({
         }
       }
     },
-    [activeTrackIds, allowMultiple, addTrack, removeTrack, pauseTrack, resumeTrack, pausedTrackIds, t, onError],
+    [
+      activeTrackIds,
+      allowMultiple,
+      addTrack,
+      removeTrack,
+      pauseTrack,
+      resumeTrack,
+      pausedTrackIds,
+      t,
+      onError,
+    ],
   );
 
   // --- Noise toggle (card body press) ---
@@ -445,21 +464,23 @@ export default function WhiteNoisePlayer({
   };
 
   // --- Animated interpolations for volume slider ---
-  const fillWidth = volumeBarWidth > 0
-    ? volumeAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, volumeBarWidth],
-        extrapolate: 'clamp',
-      })
-    : 0;
+  const fillWidth =
+    volumeBarWidth > 0
+      ? volumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, volumeBarWidth],
+          extrapolate: 'clamp',
+        })
+      : 0;
 
-  const thumbTranslate = volumeBarWidth > 0
-    ? volumeAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, Math.max(0, volumeBarWidth - 16)],
-        extrapolate: 'clamp',
-      })
-    : 0;
+  const thumbTranslate =
+    volumeBarWidth > 0
+      ? volumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, Math.max(0, volumeBarWidth - 16)],
+          extrapolate: 'clamp',
+        })
+      : 0;
 
   // --- Loading skeleton ---
   if (isLoading) {
@@ -468,7 +489,10 @@ export default function WhiteNoisePlayer({
         {renderHeader?.()}
         <View style={styles.noiseGrid}>
           {[1, 2, 3, 4].map((i) => (
-            <View key={i} style={[styles.noiseCard, styles.skeletonCard, { backgroundColor: colors.surface }]}>
+            <View
+              key={i}
+              style={[styles.noiseCard, styles.skeletonCard, { backgroundColor: colors.surface }]}
+            >
               <View style={[styles.skeletonIcon, { backgroundColor: colors.border }]} />
               <View style={[styles.skeletonName, { backgroundColor: colors.border }]} />
             </View>
@@ -485,7 +509,12 @@ export default function WhiteNoisePlayer({
         {renderHeader?.()}
         <View style={[styles.errorCard, { backgroundColor: colors.surface }]}>
           <AlertCircle size={iconSize(48)} color={colors.error} />
-          <Text style={[styles.errorText, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.md) }]}>
+          <Text
+            style={[
+              styles.errorText,
+              { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.md) },
+            ]}
+          >
             {loadError}
           </Text>
           <TouchableOpacity
@@ -508,7 +537,12 @@ export default function WhiteNoisePlayer({
         {renderHeader?.()}
         <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
           <Music size={iconSize(48)} color={colors.textSecondary} />
-          <Text style={[styles.emptyText, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.md) }]}>
+          <Text
+            style={[
+              styles.emptyText,
+              { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.md) },
+            ]}
+          >
             {t('whiteNoise.empty')}
           </Text>
         </View>
@@ -523,12 +557,22 @@ export default function WhiteNoisePlayer({
       {/* Section title */}
       {sectionTitle !== undefined ? (
         sectionTitle ? (
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.lg) }]}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.lg) },
+            ]}
+          >
             {sectionTitle}
           </Text>
         ) : null
       ) : (
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.lg) }]}>
+        <Text
+          style={[
+            styles.sectionTitle,
+            { color: colors.textPrimary, fontSize: fontSize(typography.fontSize.lg) },
+          ]}
+        >
           {t('whiteNoise.title')}
         </Text>
       )}
@@ -549,7 +593,9 @@ export default function WhiteNoisePlayer({
               style={[
                 styles.noiseCard,
                 {
-                  backgroundColor: isActuallyPlaying ? noise.color || colors.surface : colors.surface,
+                  backgroundColor: isActuallyPlaying
+                    ? noise.color || colors.surface
+                    : colors.surface,
                 },
               ]}
               onPress={() => handleNoiseToggle(noise)}
@@ -594,9 +640,7 @@ export default function WhiteNoisePlayer({
                   activeOpacity={0.8}
                 >
                   {/* Focused active card: Pause button */}
-                  {isFocused && (
-                    <Pause size={iconSize(14)} color={commonColors.white} />
-                  )}
+                  {isFocused && <Pause size={iconSize(14)} color={commonColors.white} />}
                   {/* Background playing card: rotating indicator */}
                   {isBackground && (
                     <Animated.View style={{ transform: [{ rotate: spin }] }}>
@@ -604,9 +648,7 @@ export default function WhiteNoisePlayer({
                     </Animated.View>
                   )}
                   {/* Paused card: Play button */}
-                  {isPaused && (
-                    <Play size={iconSize(14)} color={commonColors.white} />
-                  )}
+                  {isPaused && <Play size={iconSize(14)} color={commonColors.white} />}
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
@@ -628,10 +670,20 @@ export default function WhiteNoisePlayer({
                 ) : (
                   <VolumeX size={iconSize(iconSizes.md)} color={colors.textSecondary} />
                 )}
-                <Text style={[styles.controlSectionLabel, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                <Text
+                  style={[
+                    styles.controlSectionLabel,
+                    { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) },
+                  ]}
+                >
                   {t('whiteNoise.volume')}
                 </Text>
-                <Text style={[styles.volumePercent, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                <Text
+                  style={[
+                    styles.volumePercent,
+                    { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) },
+                  ]}
+                >
                   {Math.round(volume * 100)}%
                 </Text>
               </View>
@@ -641,8 +693,18 @@ export default function WhiteNoisePlayer({
                 onLayout={handleVolumeBarLayout}
                 {...volumePanResponder.panHandlers}
               >
-                <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: fillWidth }]} />
-                <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: thumbTranslate }] }]} />
+                <Animated.View
+                  style={[styles.sliderFill, { backgroundColor: colors.primary, width: fillWidth }]}
+                />
+                <Animated.View
+                  style={[
+                    styles.sliderThumb,
+                    {
+                      backgroundColor: colors.primary,
+                      transform: [{ translateX: thumbTranslate }],
+                    },
+                  ]}
+                />
               </View>
             </View>
           )}
@@ -661,7 +723,12 @@ export default function WhiteNoisePlayer({
                 activeOpacity={0.7}
               >
                 <AlarmClock size={iconSize(iconSizes.md)} color={colors.textSecondary} />
-                <Text style={[styles.controlSectionLabel, { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                <Text
+                  style={[
+                    styles.controlSectionLabel,
+                    { color: colors.textSecondary, fontSize: fontSize(typography.fontSize.sm) },
+                  ]}
+                >
                   {t('whiteNoise.sleepTimer')}
                 </Text>
               </TouchableOpacity>
@@ -669,7 +736,12 @@ export default function WhiteNoisePlayer({
               {timerRemainingSeconds !== null ? (
                 <View style={[styles.timerActivePill, { backgroundColor: colors.primaryLight }]}>
                   <AlarmClock size={iconSize(16)} color={colors.primaryDark} />
-                  <Text style={[styles.timerActiveText, { color: colors.primaryDark, fontSize: fontSize(typography.fontSize.md) }]}>
+                  <Text
+                    style={[
+                      styles.timerActiveText,
+                      { color: colors.primaryDark, fontSize: fontSize(typography.fontSize.md) },
+                    ]}
+                  >
                     {timerDisplay}
                   </Text>
                   <TouchableOpacity
@@ -687,7 +759,12 @@ export default function WhiteNoisePlayer({
                   activeOpacity={0.7}
                 >
                   <AlarmClock size={iconSize(16)} color={colors.primary} />
-                  <Text style={[styles.timerSetText, { color: colors.primary, fontSize: fontSize(typography.fontSize.sm) }]}>
+                  <Text
+                    style={[
+                      styles.timerSetText,
+                      { color: colors.primary, fontSize: fontSize(typography.fontSize.sm) },
+                    ]}
+                  >
                     {t('whiteNoise.setTimer')}
                   </Text>
                 </TouchableOpacity>
@@ -726,10 +803,10 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   noiseCard: {
-    width: '47%',
     alignItems: 'center',
-    padding: spacing.xl,
     borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    width: '47%',
     ...shadows.small,
     position: 'relative',
   },
@@ -739,25 +816,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   playPauseButton: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: spacing.sm,
+    top: spacing.sm,
+    width: 24,
   },
   premiumCrown: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderRadius: 11,
+    height: 22,
+    justifyContent: 'center',
+    left: spacing.sm,
     position: 'absolute',
     top: spacing.sm,
-    left: spacing.sm,
     width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
     ...shadows.small,
   },
 
@@ -772,14 +849,14 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   controlSectionHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.sm,
     marginBottom: spacing.md,
   },
   controlSectionLabel: {
-    fontWeight: typography.fontWeight.medium,
     flex: 1,
+    fontWeight: typography.fontWeight.medium,
   },
   controlDivider: {
     height: StyleSheet.hairlineWidth,
@@ -788,59 +865,59 @@ const styles = StyleSheet.create({
 
   // Volume slider
   sliderTrack: {
-    height: 6,
     borderRadius: 3,
-    position: 'relative',
+    height: 6,
     justifyContent: 'center',
+    position: 'relative',
   },
   sliderFill: {
-    position: 'absolute',
-    height: 6,
     borderRadius: 3,
+    height: 6,
     left: 0,
+    position: 'absolute',
     top: 0,
   },
   sliderThumb: {
-    position: 'absolute',
-    width: 16,
-    height: 16,
     borderRadius: 8,
-    top: -5,
+    height: 16,
     left: 0,
+    position: 'absolute',
+    top: -5,
+    width: 16,
   },
   volumePercent: {
-    fontWeight: typography.fontWeight.semibold,
     fontVariant: ['tabular-nums'],
+    fontWeight: typography.fontWeight.semibold,
     minWidth: 40,
     textAlign: 'right',
   },
 
   // Timer
   timerActivePill: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   timerActiveText: {
-    fontWeight: typography.fontWeight.bold,
-    fontVariant: ['tabular-nums'],
     flex: 1,
+    fontVariant: ['tabular-nums'],
+    fontWeight: typography.fontWeight.bold,
     textAlign: 'center',
   },
   timerActiveCancel: {
     padding: spacing.xs,
   },
   timerSetButton: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
   },
   timerSetText: {
     fontWeight: typography.fontWeight.semibold,
@@ -849,22 +926,22 @@ const styles = StyleSheet.create({
   // Skeleton
   skeletonCard: {},
   skeletonIcon: {
-    width: 36,
-    height: 36,
     borderRadius: 18,
+    height: 36,
+    width: 36,
   },
   skeletonName: {
-    width: 70,
-    height: 14,
     borderRadius: 7,
+    height: 14,
     marginTop: spacing.sm,
+    width: 70,
   },
 
   // Error
   errorCard: {
     alignItems: 'center',
-    padding: spacing.xxl,
     borderRadius: borderRadius.xl,
+    padding: spacing.xxl,
     ...shadows.medium,
   },
   errorText: {
@@ -872,10 +949,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
     marginTop: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
   },
   retryButtonText: {
     fontWeight: typography.fontWeight.semibold,
@@ -884,8 +961,8 @@ const styles = StyleSheet.create({
   // Empty
   emptyCard: {
     alignItems: 'center',
-    padding: spacing.xxl,
     borderRadius: borderRadius.xl,
+    padding: spacing.xxl,
     ...shadows.medium,
   },
   emptyText: {

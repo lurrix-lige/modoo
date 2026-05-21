@@ -21,30 +21,32 @@ export function useLanguage() {
 
   const currentLanguage = i18n.language || 'zh-CN';
 
-  const changeLanguage = useCallback(async (language: string) => {
-    try {
-      // 先尝试改变 i18n 语言
-      await i18n.changeLanguage(language);
-      
-      // 然后持久化用户偏好
-      await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE_PREFERENCE, language);
-    } catch (error) {
-      logger.warn('Failed to change language', { error });
-    }
-  }, [i18n]);
+  const changeLanguage = useCallback(
+    async (language: string) => {
+      try {
+        // 先尝试改变 i18n 语言
+        await i18n.changeLanguage(language);
+
+        // 然后持久化用户偏好
+        await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE_PREFERENCE, language);
+      } catch (error) {
+        logger.warn('Failed to change language', { error });
+      }
+    },
+    [i18n],
+  );
 
   // 检查是否支持该语言
   const isSupportedLanguage = useCallback(
-    (code: string): boolean => availableLanguages.some(lang => lang.code === code),
-    []
+    (code: string): boolean => availableLanguages.some((lang) => lang.code === code),
+    [],
   );
 
   // 获取当前语言的详细信息
   const getCurrentLanguageInfo = useCallback(
-    (): LanguageOption => 
-      availableLanguages.find(lang => lang.code === currentLanguage) 
-      || availableLanguages[0],
-    [currentLanguage]
+    (): LanguageOption =>
+      availableLanguages.find((lang) => lang.code === currentLanguage) || availableLanguages[0],
+    [currentLanguage],
   );
 
   return {

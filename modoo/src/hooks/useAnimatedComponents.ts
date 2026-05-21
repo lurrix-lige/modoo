@@ -24,9 +24,9 @@ export function useFadeIn(delay: number = 0) {
     ]).start();
   }, [fadeAnim, slideAnim, delay]);
 
-  return { 
-    opacity: fadeAnim, 
-    transform: [{ translateY: slideAnim }] 
+  return {
+    opacity: fadeAnim,
+    transform: [{ translateY: slideAnim }],
   };
 }
 

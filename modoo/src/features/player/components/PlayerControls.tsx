@@ -40,7 +40,11 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.playButton, isLandscape && styles.landscapePlayButton, { backgroundColor: colors.primary }]}
+        style={[
+          styles.playButton,
+          isLandscape && styles.landscapePlayButton,
+          { backgroundColor: colors.primary },
+        ]}
         onPress={onPlayToggle}
         disabled={disabled}
       >
@@ -64,7 +68,9 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
       >
         <SkipForward
           size={responsive.moderateScale(isLandscape ? iconSizes.lg : iconSizes.xl)}
-          color={disabled || currentProgress >= maxDuration ? colors.textDisabled : colors.textSecondary}
+          color={
+            disabled || currentProgress >= maxDuration ? colors.textDisabled : colors.textSecondary
+          }
         />
       </TouchableOpacity>
     </View>
@@ -72,35 +78,35 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
 };
 
 const styles = StyleSheet.create({
-  controlsSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.xl,
-    gap: spacing.lg,
-  },
-  landscapeControlsSection: {
-    marginTop: spacing.lg,
-    gap: spacing.md,
-  },
   controlButton: {
     padding: spacing.md,
+  },
+  controlsSection: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.lg,
+    justifyContent: 'center',
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   landscapeControlButton: {
     padding: spacing.sm,
   },
-  playButton: {
-    width: responsive.moderateScale(80),
-    height: responsive.moderateScale(80),
-    borderRadius: responsive.moderateScale(40),
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shadows.large,
+  landscapeControlsSection: {
+    gap: spacing.md,
+    marginTop: spacing.lg,
   },
   landscapePlayButton: {
-    width: responsive.moderateScale(64),
-    height: responsive.moderateScale(64),
     borderRadius: responsive.moderateScale(32),
+    height: responsive.moderateScale(64),
+    width: responsive.moderateScale(64),
+  },
+  playButton: {
+    alignItems: 'center',
+    borderRadius: responsive.moderateScale(40),
+    height: responsive.moderateScale(80),
+    justifyContent: 'center',
+    width: responsive.moderateScale(80),
+    ...shadows.large,
   },
 });

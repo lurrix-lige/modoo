@@ -42,41 +42,37 @@ export default function ChildLockScreen() {
         </Text>
       </View>
 
-      <ChildLockModal
-        visible={showChildLock}
-        onSuccess={handleSuccess}
-        onCancel={handleCancel}
-      />
+      <ChildLockModal visible={showChildLock} onSuccess={handleSuccess} onCancel={handleCancel} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
   content: {
     alignItems: 'center',
     padding: spacing.xl,
   },
+  description: {
+    alignContent: 'center',
+    fontSize: typography.fontSize.md,
+    textAlign: 'center',
+  },
   iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 50,
+    height: 100,
+    justifyContent: 'center',
     marginBottom: spacing.xl,
+    width: 100,
   },
   title: {
     fontSize: typography.fontSize.xxl,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.sm,
-  },
-  description: {
-    fontSize: typography.fontSize.md,
-    alignContent: 'center',
-    textAlign: 'center',
   },
 });

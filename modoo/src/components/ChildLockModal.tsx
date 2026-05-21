@@ -48,13 +48,13 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
 
   const handleNumberPress = (num: string) => {
     if (answer.length < 2) {
-      setAnswer(prev => prev + num);
+      setAnswer((prev) => prev + num);
       setError(false);
     }
   };
 
   const handleDelete = () => {
-    setAnswer(prev => prev.slice(0, -1));
+    setAnswer((prev) => prev.slice(0, -1));
     setError(false);
   };
 
@@ -66,8 +66,12 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
         <View style={[styles.container, { backgroundColor: colors.surface }]}>
           <View style={[styles.header, { backgroundColor: colors.primary }]}>
             <Lock size={40} color={commonColors.white} />
-            <Text style={[styles.headerTitle, { color: headerTitleColor }]}>{t('childLock.parentVerification')}</Text>
-            <Text style={[styles.headerSubtitle, { color: headerSubtitleColor }]}>{t('childLock.verificationDesc')}</Text>
+            <Text style={[styles.headerTitle, { color: headerTitleColor }]}>
+              {t('childLock.parentVerification')}
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: headerSubtitleColor }]}>
+              {t('childLock.verificationDesc')}
+            </Text>
           </View>
 
           <View style={styles.content}>
@@ -98,7 +102,7 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
             )}
 
             <View style={styles.keypad}>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <TouchableOpacity
                   key={num}
                   style={[styles.key, { backgroundColor: colors.background }]}
@@ -128,8 +132,13 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
             </View>
           </View>
 
-          <TouchableOpacity style={[styles.cancelButton, { borderTopColor: cancelBorderColor }]} onPress={onCancel}>
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t('childLock.cancel')}</Text>
+          <TouchableOpacity
+            style={[styles.cancelButton, { borderTopColor: cancelBorderColor }]}
+            onPress={onCancel}
+          >
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+              {t('childLock.cancel')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -138,37 +147,74 @@ export function ChildLockModal({ visible, onSuccess, onCancel }: ChildLockModalP
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
+  answerBox: {
     alignItems: 'center',
-    padding: spacing.xl,
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    height: 60,
+    justifyContent: 'center',
+    marginLeft: spacing.md,
+    width: 80,
+  },
+  answerText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
+  },
+  cancelButton: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    paddingVertical: spacing.lg,
+  },
+  cancelText: {
+    fontSize: typography.fontSize.md,
   },
   container: {
-    width: '100%',
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
+    width: '100%',
+  },
+  content: {
+    padding: spacing.xl,
+  },
+  errorText: {
+    fontSize: typography.fontSize.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
   },
   header: {
-    paddingVertical: spacing.xxl,
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
-    marginTop: spacing.md,
+    paddingVertical: spacing.xxl,
   },
   headerSubtitle: {
     fontSize: typography.fontSize.sm,
     marginTop: spacing.xs,
     textAlign: 'center',
   },
-  content: {
-    padding: spacing.xl,
+  headerTitle: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+    marginTop: spacing.md,
+  },
+  key: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: 56,
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+    width: '30%',
+  },
+  keyText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.semibold,
+  },
+  keypad: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   mathContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: spacing.xl,
   },
@@ -180,47 +226,10 @@ const styles = StyleSheet.create({
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     marginHorizontal: spacing.md,
   },
-  answerBox: {
-    width: 80,
-    height: 60,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
+  overlay: {
+    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.md,
-  },
-  answerText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.bold,
-  },
-  errorText: {
-    textAlign: 'center',
-    marginBottom: spacing.md,
-    fontSize: typography.fontSize.sm,
-  },
-  keypad: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  key: {
-    width: '30%',
-    height: 56,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  keyText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.semibold,
-  },
-  cancelButton: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    borderTopWidth: 1,
-  },
-  cancelText: {
-    fontSize: typography.fontSize.md,
+    padding: spacing.xl,
   },
 });

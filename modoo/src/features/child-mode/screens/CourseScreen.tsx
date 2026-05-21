@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { BookOpen, Play, Lock, ArrowLeft, ChevronRight, GraduationCap, Trophy } from 'lucide-react-native';
+import {
+  BookOpen,
+  Play,
+  Lock,
+  ArrowLeft,
+  ChevronRight,
+  GraduationCap,
+  Trophy,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { AuthModal } from '../../../features/auth';
 import { useAppStore } from '../../../store';
@@ -84,10 +95,11 @@ export default function CourseScreen() {
     return '☆☆☆☆';
   };
 
-  const completedCourses = courses.filter(c => c.completedLessons && c.completedLessons >= c.totalLessons);
-  const currentLevel = completedCourses.length > 0
-    ? Math.max(...completedCourses.map(c => c.level))
-    : 1;
+  const completedCourses = courses.filter(
+    (c) => c.completedLessons && c.completedLessons >= c.totalLessons,
+  );
+  const currentLevel =
+    completedCourses.length > 0 ? Math.max(...completedCourses.map((c) => c.level)) : 1;
   const earnedBadges = completedCourses.length;
 
   const renderLoadingSkeleton = () => (
@@ -110,7 +122,7 @@ export default function CourseScreen() {
       </View>
 
       <View style={styles.skeletonCourses}>
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <View key={i} style={[styles.skeletonCourseCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.skeletonCourseImage, { backgroundColor: colors.border }]} />
             <View style={styles.skeletonCourseInfo}>
@@ -134,7 +146,7 @@ export default function CourseScreen() {
       setShowAuthModal(true);
       return;
     }
-    
+
     navigation.navigate('CourseDetail', { courseId });
   };
 
@@ -173,7 +185,9 @@ export default function CourseScreen() {
               style={[styles.retryButton, { backgroundColor: colors.primary }]}
               onPress={loadData}
             >
-              <Text style={[styles.retryButtonText, { color: commonColors.white }]}>{t('common.retry')}</Text>
+              <Text style={[styles.retryButtonText, { color: commonColors.white }]}>
+                {t('common.retry')}
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -181,7 +195,10 @@ export default function CourseScreen() {
             <View style={styles.levelOverview}>
               <View style={[styles.levelCard, { backgroundColor: colors.surface }]}>
                 <View style={[styles.levelIcon, { backgroundColor: colors.primary }]}>
-                  <GraduationCap size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
+                  <GraduationCap
+                    size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                    color={commonColors.white}
+                  />
                 </View>
                 <Text style={[styles.levelLabel, { color: colors.textSecondary }]}>
                   {t('course.currentProgress')}
@@ -193,7 +210,10 @@ export default function CourseScreen() {
 
               <View style={[styles.levelCard, { backgroundColor: colors.surface }]}>
                 <View style={[styles.levelIcon, { backgroundColor: colors.warning }]}>
-                  <Trophy size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
+                  <Trophy
+                    size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                    color={commonColors.white}
+                  />
                 </View>
                 <Text style={[styles.levelLabel, { color: colors.textSecondary }]}>
                   {t('course.earnedBadges')}
@@ -208,7 +228,7 @@ export default function CourseScreen() {
               {t('course.desensitizationLevels')}
             </Text>
 
-            {courses.map(course => {
+            {courses.map((course) => {
               const isLocked = !course.isUnlocked;
               return (
                 <TouchableOpacity
@@ -216,11 +236,21 @@ export default function CourseScreen() {
                   style={[styles.courseCard, { backgroundColor: colors.surface }]}
                   onPress={() => handleCoursePress(course.id, isLocked)}
                 >
-                  <View style={[styles.courseImage, { backgroundColor: isLocked ? colors.secondary : colors.primary }]}>
+                  <View
+                    style={[
+                      styles.courseImage,
+                      { backgroundColor: isLocked ? colors.secondary : colors.primary },
+                    ]}
+                  >
                     {isLocked ? (
-                      <Lock size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
+                      <Lock
+                        size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                        color={commonColors.white}
+                      />
                     ) : (
-                      <Text style={[styles.courseLevel, { color: commonColors.white }]}>{course.level}</Text>
+                      <Text style={[styles.courseLevel, { color: commonColors.white }]}>
+                        {course.level}
+                      </Text>
                     )}
                   </View>
 
@@ -256,7 +286,10 @@ export default function CourseScreen() {
                     </Text>
                   </View>
 
-                  <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
+                  <ChevronRight
+                    size={responsive.moderateScaleForIcon(iconSizes.md)}
+                    color={colors.textSecondary}
+                  />
                 </TouchableOpacity>
               );
             })}
@@ -281,9 +314,9 @@ export default function CourseScreen() {
 
 const styles = StyleSheet.create({
   header: {
+    paddingBottom: spacing.lg,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
   },
   title: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
@@ -303,19 +336,19 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   levelCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
     flex: 1,
     padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
     ...shadows.small,
   },
   levelIcon: {
-    width: responsive.moderateScale(48),
-    height: responsive.moderateScale(48),
-    borderRadius: responsive.moderateScale(24),
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: responsive.moderateScale(24),
+    height: responsive.moderateScale(48),
+    justifyContent: 'center',
     marginBottom: spacing.sm,
+    width: responsive.moderateScale(48),
   },
   levelLabel: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
@@ -331,20 +364,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   courseCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.md,
     ...shadows.small,
   },
   courseImage: {
-    width: responsive.moderateScale(60),
-    height: responsive.moderateScale(60),
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.moderateScale(60),
+    justifyContent: 'center',
     marginRight: spacing.md,
+    width: responsive.moderateScale(60),
   },
   courseLevel: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
@@ -363,18 +396,18 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   courseProgress: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   progressBar: {
+    borderRadius: responsive.moderateScale(3),
     flex: 1,
     height: responsive.verticalScale(6),
-    borderRadius: responsive.moderateScale(3),
   },
   progressFill: {
-    height: '100%',
     borderRadius: responsive.moderateScale(3),
+    height: '100%',
   },
   progressText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
@@ -397,39 +430,39 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   skeletonLevelCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
     flex: 1,
     padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
   },
   skeletonIcon: {
-    width: responsive.moderateScale(48),
-    height: responsive.moderateScale(48),
     borderRadius: responsive.moderateScale(24),
+    height: responsive.moderateScale(48),
     marginBottom: spacing.sm,
+    width: responsive.moderateScale(48),
   },
   skeletonTextShort: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(14),
     borderRadius: responsive.moderateScale(7),
+    height: responsive.verticalScale(14),
     marginTop: spacing.sm,
+    width: responsive.moderateScale(60),
   },
   skeletonTextMedium: {
-    width: responsive.moderateScale(100),
-    height: responsive.verticalScale(18),
     borderRadius: responsive.moderateScale(9),
+    height: responsive.verticalScale(18),
     marginTop: spacing.xs,
+    width: responsive.moderateScale(100),
   },
   skeletonTextLong: {
-    width: '80%',
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
     marginBottom: spacing.xs,
+    width: '80%',
   },
   skeletonTextTiny: {
-    width: responsive.moderateScale(40),
-    height: responsive.verticalScale(12),
     borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(12),
+    width: responsive.moderateScale(40),
   },
   skeletonSectionTitle: {
     marginBottom: spacing.md,
@@ -438,38 +471,38 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   skeletonCourseCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
+    padding: spacing.md,
   },
   skeletonCourseImage: {
-    width: responsive.moderateScale(60),
-    height: responsive.moderateScale(60),
     borderRadius: borderRadius.md,
+    height: responsive.moderateScale(60),
     marginRight: spacing.md,
+    width: responsive.moderateScale(60),
   },
   skeletonCourseInfo: {
     flex: 1,
     gap: spacing.sm,
   },
   skeletonProgressRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   skeletonProgressBar: {
+    borderRadius: responsive.moderateScale(3),
     flex: 1,
     height: responsive.verticalScale(6),
-    borderRadius: responsive.moderateScale(3),
   },
 
   // Error state
   errorCard: {
     alignItems: 'center',
-    padding: spacing.xxl,
     borderRadius: borderRadius.xl,
     marginTop: spacing.xl,
+    padding: spacing.xxl,
     ...shadows.medium,
   },
   errorText: {
@@ -478,9 +511,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryButton: {
+    borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
   },
   retryButtonText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),

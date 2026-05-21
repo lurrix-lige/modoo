@@ -61,7 +61,7 @@ const secureStorage = {
     // TODO: 安装expo-secure-store后替换下面的代码
     // import * as SecureStore from 'expo-secure-store';
     // await SecureStore.setItemAsync(key, value);
-    
+
     // 🚨 临时降级方案（不安全！）
     logger.warn('Using AsyncStorage for sensitive data - install expo-secure-store');
     await AsyncStorage.setItem(key, value);
@@ -70,14 +70,14 @@ const secureStorage = {
   async getItem(key: string): Promise<string | null> {
     // TODO: 安装expo-secure-store后替换
     // return await SecureStore.getItemAsync(key);
-    
+
     return await AsyncStorage.getItem(key);
   },
 
   async deleteItem(key: string): Promise<void> {
     // TODO: 安装expo-secure-store后替换
     // return await SecureStore.deleteItemAsync(key);
-    
+
     return await AsyncStorage.removeItem(key);
   },
 };
@@ -153,7 +153,7 @@ class StorageService {
   // ==============================================
   // 🕵️ 匿名用户ID管理
   // ==============================================
-  
+
   /**
    * 生成本地匿名用户ID（降级方案）
    */
@@ -169,7 +169,7 @@ class StorageService {
   async getOrCreateAnonymousId(): Promise<string> {
     try {
       let anonymousId = await AsyncStorage.getItem(STORAGE_KEYS.ANONYMOUS_ID);
-      
+
       if (!anonymousId) {
         // 优先使用后端API生成匿名ID
         try {
@@ -180,7 +180,9 @@ class StorageService {
           logger.info('Anonymous ID generated from backend', { anonymousId });
         } catch (apiError) {
           // 后端API调用失败，降级使用本地生成
-          logger.warn('Failed to get anonymous ID from backend, falling back to local generation', { apiError });
+          logger.warn('Failed to get anonymous ID from backend, falling back to local generation', {
+            apiError,
+          });
           anonymousId = this.generateLocalAnonymousId();
           await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
         }
@@ -201,7 +203,7 @@ class StorageService {
           logger.warn('Failed to validate anonymous ID', { validationError });
         }
       }
-      
+
       return anonymousId;
     } catch (error) {
       logger.error('Failed to get or create anonymous ID', { error });
@@ -245,7 +247,11 @@ class StorageService {
     }
   }
 
-  private async setCacheEntry<T>(key: string, data: T, ttl: number = CACHE_TTL.MEDIUM): Promise<void> {
+  private async setCacheEntry<T>(
+    key: string,
+    data: T,
+    ttl: number = CACHE_TTL.MEDIUM,
+  ): Promise<void> {
     try {
       const entry: CacheEntry<T> = {
         data,
@@ -295,7 +301,7 @@ class StorageService {
   async savePlayHistory(storyId: string, progress: number, completed: boolean): Promise<void> {
     try {
       const history = await this.getPlayHistory();
-      const existingIndex = history.findIndex(item => item.storyId === storyId);
+      const existingIndex = history.findIndex((item) => item.storyId === storyId);
 
       const newItem: PlayHistoryItem = {
         storyId,
@@ -328,13 +334,13 @@ class StorageService {
 
   async getStoryProgress(storyId: string): Promise<PlayHistoryItem | null> {
     const history = await this.getPlayHistory();
-    return history.find(item => item.storyId === storyId) || null;
+    return history.find((item) => item.storyId === storyId) || null;
   }
 
   async saveCheckIn(record: CheckInRecord): Promise<void> {
     try {
       const records = await this.getCheckInRecords();
-      const existingIndex = records.findIndex(item => item.date === record.date);
+      const existingIndex = records.findIndex((item) => item.date === record.date);
 
       if (existingIndex >= 0) {
         records[existingIndex] = record;
@@ -362,7 +368,10 @@ class StorageService {
     const records = await this.getCheckInRecords();
     if (records.length === 0) return 0;
 
-    const sortedDates = records.map(r => r.date).sort().reverse();
+    const sortedDates = records
+      .map((r) => r.date)
+      .sort()
+      .reverse();
     const today = new Date().toISOString().split('T')[0];
 
     let streak = 0;
@@ -370,7 +379,9 @@ class StorageService {
 
     for (const dateStr of sortedDates) {
       const checkDate = new Date(dateStr);
-      const diffDays = Math.floor((currentDate.getTime() - checkDate.getTime()) / (1000 * 60 * 60 * 24));
+      const diffDays = Math.floor(
+        (currentDate.getTime() - checkDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
 
       if (diffDays <= 1) {
         streak++;
@@ -455,25 +466,38 @@ class StorageService {
 
   async saveCoursePlaybackProgress(lessonId: string, progress: number): Promise<void> {
     try {
-      const allProgress = (await this.getCoursePlaybackProgress()) as Record<string, { progress: number; lastPlayedAt: string }> | null;
-      const progressData: Record<string, { progress: number; lastPlayedAt: string }> = allProgress && typeof allProgress === 'object' && !Array.isArray(allProgress)
-        ? (allProgress as Record<string, { progress: number; lastPlayedAt: string }>)
-        : {};
+      const allProgress = (await this.getCoursePlaybackProgress()) as Record<
+        string,
+        { progress: number; lastPlayedAt: string }
+      > | null;
+      const progressData: Record<string, { progress: number; lastPlayedAt: string }> =
+        allProgress && typeof allProgress === 'object' && !Array.isArray(allProgress)
+          ? (allProgress as Record<string, { progress: number; lastPlayedAt: string }>)
+          : {};
       progressData[lessonId] = {
         progress,
         lastPlayedAt: new Date().toISOString(),
       };
-      await AsyncStorage.setItem(STORAGE_KEYS.COURSE_PLAYBACK_PROGRESS, JSON.stringify(progressData));
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.COURSE_PLAYBACK_PROGRESS,
+        JSON.stringify(progressData),
+      );
     } catch (error) {
       logger.error('Failed to save course playback progress', { error });
     }
   }
 
-  async getCoursePlaybackProgress(lessonId?: string): Promise<Record<string, { progress: number; lastPlayedAt: string }> | { progress: number; lastPlayedAt: string } | null> {
+  async getCoursePlaybackProgress(
+    lessonId?: string,
+  ): Promise<
+    | Record<string, { progress: number; lastPlayedAt: string }>
+    | { progress: number; lastPlayedAt: string }
+    | null
+  > {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEYS.COURSE_PLAYBACK_PROGRESS);
       if (!data) return null;
-      
+
       const allProgress = JSON.parse(data);
       if (lessonId) {
         return allProgress[lessonId] || null;
@@ -505,7 +529,7 @@ class StorageService {
 
       // 清除普通数据，但保留匿名ID以支持重新登录后数据迁移
       const keysToRemove = Object.values(STORAGE_KEYS).filter(
-        key => key !== STORAGE_KEYS.ANONYMOUS_ID
+        (key) => key !== STORAGE_KEYS.ANONYMOUS_ID,
       );
       await AsyncStorage.multiRemove(keysToRemove);
     } catch (error) {

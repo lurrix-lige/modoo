@@ -21,29 +21,28 @@ import { useVisitTracker, useFadeIn, useParallax, useResponsive } from '../../..
 import { apiService, ContentItem } from '../../../services';
 import { useAppStore } from '../../../store';
 
-
 type WelcomeHomeNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const FEATURES = [
   {
     icon: BookOpen,
     titleKey: 'welcome.storyTitle',
-    descriptionKey: 'welcome.storyDesc'
+    descriptionKey: 'welcome.storyDesc',
   },
   {
     icon: GraduationCap,
     titleKey: 'welcome.courseTitle',
-    descriptionKey: 'welcome.courseDesc'
+    descriptionKey: 'welcome.courseDesc',
   },
   {
     icon: Leaf,
     titleKey: 'welcome.breathingTitle',
-    descriptionKey: 'welcome.breathingDesc'
+    descriptionKey: 'welcome.breathingDesc',
   },
   {
     icon: Star,
     titleKey: 'welcome.guardianTitle',
-    descriptionKey: 'welcome.guardianDesc'
+    descriptionKey: 'welcome.guardianDesc',
   },
 ];
 
@@ -73,8 +72,11 @@ export default function WelcomeHomeScreen() {
   const loadFreeContent = async () => {
     try {
       const recommendations = await apiService.getContentRecommendations();
-      const freeItems = [...recommendations.featuredContent, ...Object.values(recommendations.categoryContent).flat()]
-        .filter(item => !item.isPremium)
+      const freeItems = [
+        ...recommendations.featuredContent,
+        ...Object.values(recommendations.categoryContent).flat(),
+      ]
+        .filter((item) => !item.isPremium)
         .slice(0, getContentLimit());
       setFreeContent(freeItems);
     } catch {
@@ -101,10 +103,9 @@ export default function WelcomeHomeScreen() {
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
         scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: false,
+        })}
       >
         <Animated.View style={heroParallax}>
           <Animated.View style={heroAnimation}>
@@ -121,19 +122,10 @@ export default function WelcomeHomeScreen() {
                 <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
                   {t('welcome.discoverContent')}
                 </Text>
-                <View style={[
-                  styles.contentGrid,
-                  { gap: isTablet ? spacing.lg : spacing.md }
-                ]}>
+                <View style={[styles.contentGrid, { gap: isTablet ? spacing.lg : spacing.md }]}>
                   {freeContent.map((item, index) => (
-                    <View
-                      key={`${item.id}-${index}`}
-                      style={{ width: getContentCardWidth() }}
-                    >
-                      <ContentCard
-                        item={item}
-                        onPress={handleContentPress}
-                      />
+                    <View key={`${item.id}-${index}`} style={{ width: getContentCardWidth() }}>
+                      <ContentCard item={item} onPress={handleContentPress} />
                     </View>
                   ))}
                 </View>
@@ -147,15 +139,9 @@ export default function WelcomeHomeScreen() {
             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
               {t('welcome.featureSection')}
             </Text>
-            <View style={[
-              styles.featuresGrid,
-              { gap: isTablet ? spacing.xs : spacing.md }
-            ]}>
+            <View style={[styles.featuresGrid, { gap: isTablet ? spacing.xs : spacing.md }]}>
               {FEATURES.map((feature, index) => (
-                <View
-                  key={index}
-                  style={{ width: getContentCardWidth() }}
-                >
+                <View key={index} style={{ width: getContentCardWidth() }}>
                   <FeatureCard
                     icon={feature.icon}
                     titleKey={feature.titleKey}
@@ -186,45 +172,45 @@ export default function WelcomeHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  headerRight: {
-    position: 'absolute',
-    top: responsive.moderateScale(layout.headerRightTop),
-    right: responsive.moderateScale(layout.headerRightRight),
-    zIndex: layout.zIndex.modal,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentSection: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.lg,
-  },
   contentGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
   },
-  featuresSection: {
-    paddingHorizontal: spacing.xl,
+  contentSection: {
     marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
   featuresGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
   },
-  footer: {
+  featuresSection: {
+    marginBottom: spacing.xl,
     paddingHorizontal: spacing.xl,
+  },
+  footer: {
     paddingBottom: spacing.xxxl,
+    paddingHorizontal: spacing.xl,
     ...sharedStyles.columnCenter,
   },
   footerText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     textAlign: 'center',
+  },
+  headerRight: {
+    position: 'absolute',
+    right: responsive.moderateScale(layout.headerRightRight),
+    top: responsive.moderateScale(layout.headerRightTop),
+    zIndex: layout.zIndex.modal,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.lg,
   },
 });

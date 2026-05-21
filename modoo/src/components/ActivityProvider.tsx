@@ -11,7 +11,6 @@ interface ActivityProviderProps {
   children: ReactNode;
 }
 
-
 export function ActivityProvider({ children }: ActivityProviderProps) {
   const recordUserActivity = useCallback(() => {
     if (authService.isAuthenticated()) {
@@ -20,12 +19,9 @@ export function ActivityProvider({ children }: ActivityProviderProps) {
   }, []);
 
   return (
-    <ActivityContext.Provider value={{ recordUserActivity }}>
-      {children}
-    </ActivityContext.Provider>
+    <ActivityContext.Provider value={{ recordUserActivity }}>{children}</ActivityContext.Provider>
   );
 }
-
 
 export function useActivity() {
   const context = useContext(ActivityContext);
@@ -35,13 +31,12 @@ export function useActivity() {
   return context;
 }
 
-
 export function withActivityTracking<P extends { onPress?: () => void }>(
-  WrappedComponent: React.ComponentType<P>
+  WrappedComponent: React.ComponentType<P>,
 ) {
   return function WithActivityTracking(props: P) {
     const { recordUserActivity } = useActivity();
-    
+
     const handlePress = () => {
       recordUserActivity();
       props.onPress?.();

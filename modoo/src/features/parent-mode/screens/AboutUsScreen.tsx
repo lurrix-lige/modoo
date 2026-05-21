@@ -1,18 +1,19 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaContainer, Logo } from '../../../components';
 import { ArrowLeft, Globe, Mail, Star, ExternalLink, ChevronRight } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { APP_CONFIG } from '../../../config/env';
 
@@ -46,7 +47,7 @@ export default function AboutUsScreen() {
     title: string,
     subtitle: string,
     iconName: string,
-    onPress: () => void
+    onPress: () => void,
   ) => (
     <TouchableOpacity
       style={[styles.navItem, { borderBottomColor: colors.border }]}
@@ -54,8 +55,10 @@ export default function AboutUsScreen() {
     >
       <View style={styles.navLeft}>
         <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight }]}>
-          {(() => { const IconComp = aboutIconMap[iconName] || Mail;
-             return <IconComp size={20} color={colors.primary} />; })()}
+          {(() => {
+            const IconComp = aboutIconMap[iconName] || Mail;
+            return <IconComp size={20} color={colors.primary} />;
+          })()}
         </View>
         <View style={styles.navContent}>
           <Text style={[styles.navTitle, { color: colors.textPrimary }]}>{title}</Text>
@@ -84,9 +87,7 @@ export default function AboutUsScreen() {
           <Text style={[styles.version, { color: colors.textSecondary }]}>
             {t('common.version')} {APP_CONFIG.VERSION} ({APP_CONFIG.BUILD_NUMBER})
           </Text>
-          <Text style={[styles.slogan, { color: colors.textSecondary }]}>
-            {t('auth.subtitle')}
-          </Text>
+          <Text style={[styles.slogan, { color: colors.textSecondary }]}>{t('auth.subtitle')}</Text>
         </View>
 
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
@@ -94,20 +95,15 @@ export default function AboutUsScreen() {
             t('about.contactSupport'),
             t('about.contactSupportDesc'),
             'headset-outline',
-            handleContactSupport
+            handleContactSupport,
           )}
           {renderNavItem(
             t('about.visitWebsite'),
             t('about.visitWebsiteUrl'),
             'globe-outline',
-            handleVisitWebsite
+            handleVisitWebsite,
           )}
-          {renderNavItem(
-            t('about.rateApp'),
-            t('about.rateAppDesc'),
-            'star-outline',
-            handleRateApp
-          )}
+          {renderNavItem(t('about.rateApp'), t('about.rateAppDesc'), 'star-outline', handleRateApp)}
         </View>
 
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
@@ -146,101 +142,40 @@ export default function AboutUsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  backButton: {
-    marginRight: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-  },
-  logoCard: {
-    alignItems: 'center',
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xl,
-    ...shadows.medium,
-  },
-  logoContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
   appName: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.xs,
   },
-  version: {
-    fontSize: typography.fontSize.sm,
-    marginBottom: spacing.sm,
-  },
-  slogan: {
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-  },
-  section: {
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xl,
-    overflow: 'hidden',
-    ...shadows.small,
-  },
-  sectionHeader: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
-  },
-  navItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-  },
-  navLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  backButton: {
     marginRight: spacing.md,
   },
-  navContent: {
+  content: {
     flex: 1,
+    paddingHorizontal: spacing.xl,
   },
-  navTitle: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    marginBottom: 2,
-  },
-  navSubtitle: {
+  copyright: {
     fontSize: typography.fontSize.sm,
+    marginTop: spacing.lg,
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: spacing.xl,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 40,
   },
   infoItem: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
@@ -255,15 +190,76 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.medium,
   },
-  copyright: {
+  logoCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    padding: spacing.xl,
+    ...shadows.medium,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    borderRadius: 24,
+    height: 96,
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+    width: 96,
+  },
+  navContent: {
+    flex: 1,
+  },
+  navItem: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  navLeft: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+  },
+  navSubtitle: {
     fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    marginTop: spacing.lg,
+  },
+  navTitle: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
+    marginBottom: 2,
   },
   rights: {
     fontSize: typography.fontSize.xs,
-    textAlign: 'center',
-    marginTop: spacing.xs,
     marginBottom: spacing.xxl,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  section: {
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    overflow: 'hidden',
+    ...shadows.small,
+  },
+  sectionHeader: {
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.medium,
+  },
+  slogan: {
+    fontSize: typography.fontSize.sm,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+  },
+  version: {
+    fontSize: typography.fontSize.sm,
+    marginBottom: spacing.sm,
   },
 });

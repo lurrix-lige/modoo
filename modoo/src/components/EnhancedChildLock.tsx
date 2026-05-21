@@ -1,13 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  Animated,
-  Easing,
-} from "react-native";
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Animated, Easing } from 'react-native';
 import {
   X,
   ArrowLeft,
@@ -20,16 +12,9 @@ import {
   Plus,
   Minus,
   Moon,
-} from "lucide-react-native";
-import { useTranslation } from "react-i18next";
-import {
-  useTheme,
-  spacing,
-  borderRadius,
-  typography,
-  commonColors,
-  responsive,
-} from "../theme";
+} from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { useTheme, spacing, borderRadius, typography, commonColors, responsive } from '../theme';
 
 interface EnhancedChildLockProps {
   visible: boolean;
@@ -37,7 +22,7 @@ interface EnhancedChildLockProps {
   onCancel: () => void;
 }
 
-type VerificationType = "addition" | "rotation";
+type VerificationType = 'addition' | 'rotation';
 
 interface RotationState {
   currentAngle: number;
@@ -45,15 +30,10 @@ interface RotationState {
   tolerance: number;
 }
 
-export function EnhancedChildLock({
-  visible,
-  onSuccess,
-  onCancel,
-}: EnhancedChildLockProps) {
+export function EnhancedChildLock({ visible, onSuccess, onCancel }: EnhancedChildLockProps) {
   const { t } = useTranslation();
   const { colors, isDark } = useTheme();
-  const [verificationType, setVerificationType] =
-    useState<VerificationType>("addition");
+  const [verificationType, setVerificationType] = useState<VerificationType>('addition');
 
   const overlayColor = useMemo(() => {
     return colors.overlay;
@@ -73,7 +53,7 @@ export function EnhancedChildLock({
 
   const [num1, setNum1] = useState(0);
   const [num2, setNum2] = useState(0);
-  const [answer, setAnswer] = useState("");
+  const [answer, setAnswer] = useState('');
   const [error, setError] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
@@ -96,10 +76,7 @@ export function EnhancedChildLock({
     let interval: NodeJS.Timeout;
     if (lockoutUntil) {
       interval = setInterval(() => {
-        const remaining = Math.max(
-          0,
-          Math.ceil((lockoutUntil - Date.now()) / 1000),
-        );
+        const remaining = Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
         setLockoutRemaining(remaining);
         if (remaining === 0) {
           setLockoutUntil(null);
@@ -111,7 +88,7 @@ export function EnhancedChildLock({
   }, [lockoutUntil]);
 
   const generateNewProblem = () => {
-    if (verificationType === "addition") {
+    if (verificationType === 'addition') {
       const n1 = Math.floor(Math.random() * 16) + 5;
       const n2 = Math.floor(Math.random() * 16) + 5;
       setNum1(n1);
@@ -126,12 +103,12 @@ export function EnhancedChildLock({
         easing: Easing.out(Easing.ease),
       }).start();
     }
-    setAnswer("");
+    setAnswer('');
     setError(false);
   };
 
   const handleSubmit = () => {
-    if (verificationType === "addition") {
+    if (verificationType === 'addition') {
       if (parseInt(answer, 10) === num1 + num2) {
         handleSuccess();
       } else {
@@ -153,7 +130,7 @@ export function EnhancedChildLock({
   };
 
   const handleSuccess = () => {
-    setAnswer("");
+    setAnswer('');
     setError(false);
     setErrorCount(0);
     onSuccess();
@@ -163,7 +140,7 @@ export function EnhancedChildLock({
     const newErrorCount = errorCount + 1;
     setErrorCount(newErrorCount);
     setError(true);
-    setAnswer("");
+    setAnswer('');
 
     if (newErrorCount >= 3) {
       setLockoutUntil(Date.now() + 30000);
@@ -185,8 +162,8 @@ export function EnhancedChildLock({
     setError(false);
   };
 
-  const handleRotation = (direction: "cw" | "ccw") => {
-    const delta = direction === "cw" ? 45 : -45;
+  const handleRotation = (direction: 'cw' | 'ccw') => {
+    const delta = direction === 'cw' ? 45 : -45;
     const newAngle = rotation.currentAngle + delta;
     setRotation((prev) => ({ ...prev, currentAngle: newAngle }));
 
@@ -199,9 +176,7 @@ export function EnhancedChildLock({
   };
 
   const toggleVerificationType = () => {
-    setVerificationType((prev) =>
-      prev === "addition" ? "rotation" : "addition",
-    );
+    setVerificationType((prev) => (prev === 'addition' ? 'rotation' : 'addition'));
     generateNewProblem();
   };
 
@@ -212,46 +187,24 @@ export function EnhancedChildLock({
       <Modal visible={visible} transparent animationType="fade">
         <View style={[styles.overlay, { backgroundColor: overlayColor }]}>
           <View style={[styles.container, { backgroundColor: colors.surface }]}>
-            <View
-              style={[styles.lockoutHeader, { backgroundColor: colors.error }]}
-            >
+            <View style={[styles.lockoutHeader, { backgroundColor: colors.error }]}>
               <Lock size={48} color={commonColors.white} />
-              <Text
-                style={[styles.lockoutTitle, { color: commonColors.white }]}
-              >
-                已锁定
-              </Text>
-              <Text
-                style={[
-                  styles.lockoutSubtitle,
-                  { color: whiteSemiTransparent },
-                ]}
-              >
+              <Text style={[styles.lockoutTitle, { color: commonColors.white }]}>已锁定</Text>
+              <Text style={[styles.lockoutSubtitle, { color: whiteSemiTransparent }]}>
                 验证失败次数过多，请等待
               </Text>
             </View>
             <View style={styles.lockoutContent}>
-              <Text style={[styles.lockoutTimer, { color: colors.error }]}>
-                {lockoutRemaining}
-              </Text>
-              <Text
-                style={[styles.lockoutText, { color: colors.textSecondary }]}
-              >
+              <Text style={[styles.lockoutTimer, { color: colors.error }]}>{lockoutRemaining}</Text>
+              <Text style={[styles.lockoutText, { color: colors.textSecondary }]}>
                 秒后可再次尝试
               </Text>
             </View>
             <TouchableOpacity
-              style={[
-                styles.cancelButton,
-                { borderTopColor: cancelButtonBorder },
-              ]}
+              style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
               onPress={onCancel}
             >
-              <Text
-                style={[styles.cancelText, { color: colors.textSecondary }]}
-              >
-                取消
-              </Text>
+              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>取消</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -267,59 +220,36 @@ export function EnhancedChildLock({
             <View style={styles.headerTop}>
               <CheckCircle size={32} color={commonColors.white} />
               <TouchableOpacity
-                style={[
-                  styles.toggleButton,
-                  { backgroundColor: semiTransparent },
-                ]}
+                style={[styles.toggleButton, { backgroundColor: semiTransparent }]}
                 onPress={toggleVerificationType}
               >
-                <Text
-                  style={[styles.toggleText, { color: commonColors.white }]}
-                >
-                  {verificationType === "addition"
-                    ? t("childLock.switchGraphical")
-                    : t("childLock.switchCalculation")}
+                <Text style={[styles.toggleText, { color: commonColors.white }]}>
+                  {verificationType === 'addition'
+                    ? t('childLock.switchGraphical')
+                    : t('childLock.switchCalculation')}
                 </Text>
               </TouchableOpacity>
             </View>
             <Text style={[styles.headerTitle, { color: commonColors.white }]}>
-              {t("childLock.parentVerification")}
+              {t('childLock.parentVerification')}
             </Text>
-            <Text
-              style={[styles.headerSubtitle, { color: whiteSemiTransparent }]}
-            >
-              {t("childLock.verificationDesc", {
+            <Text style={[styles.headerSubtitle, { color: whiteSemiTransparent }]}>
+              {t('childLock.verificationDesc', {
                 type:
-                  verificationType === "addition"
-                    ? t("childLock.calculation")
-                    : t("childLock.graphical"),
+                  verificationType === 'addition'
+                    ? t('childLock.calculation')
+                    : t('childLock.graphical'),
               })}
             </Text>
           </View>
 
           <View style={styles.content}>
-            {verificationType === "addition" ? (
+            {verificationType === 'addition' ? (
               <View style={styles.mathContainer}>
-                <Text
-                  style={[styles.mathNumber, { color: colors.textPrimary }]}
-                >
-                  {num1}
-                </Text>
-                <Text
-                  style={[styles.mathOperator, { color: colors.textSecondary }]}
-                >
-                  +
-                </Text>
-                <Text
-                  style={[styles.mathNumber, { color: colors.textPrimary }]}
-                >
-                  {num2}
-                </Text>
-                <Text
-                  style={[styles.mathOperator, { color: colors.textSecondary }]}
-                >
-                  =
-                </Text>
+                <Text style={[styles.mathNumber, { color: colors.textPrimary }]}>{num1}</Text>
+                <Text style={[styles.mathOperator, { color: colors.textSecondary }]}>+</Text>
+                <Text style={[styles.mathNumber, { color: colors.textPrimary }]}>{num2}</Text>
+                <Text style={[styles.mathOperator, { color: colors.textSecondary }]}>=</Text>
                 <View
                   style={[
                     styles.answerBox,
@@ -329,26 +259,17 @@ export function EnhancedChildLock({
                     },
                   ]}
                 >
-                  <Text
-                    style={[styles.answerText, { color: colors.textPrimary }]}
-                  >
-                    {answer || "?"}
+                  <Text style={[styles.answerText, { color: colors.textPrimary }]}>
+                    {answer || '?'}
                   </Text>
                 </View>
               </View>
             ) : (
               <View style={styles.rotationContainer}>
-                <Text
-                  style={[styles.rotationHint, { color: colors.textSecondary }]}
-                >
-                  {t("childLock.rotationHint")}
+                <Text style={[styles.rotationHint, { color: colors.textSecondary }]}>
+                  {t('childLock.rotationHint')}
                 </Text>
-                <View
-                  style={[
-                    styles.rotationCircle,
-                    { borderColor: colors.primary },
-                  ]}
-                >
+                <View style={[styles.rotationCircle, { borderColor: colors.primary }]}>
                   <Animated.View
                     style={[
                       styles.rotationIndicator,
@@ -358,7 +279,7 @@ export function EnhancedChildLock({
                           {
                             rotate: rotationAnim.interpolate({
                               inputRange: [0, 1],
-                              outputRange: ["0deg", "360deg"],
+                              outputRange: ['0deg', '360deg'],
                             }),
                           },
                         ],
@@ -373,20 +294,14 @@ export function EnhancedChildLock({
                 </View>
                 <View style={styles.rotationControls}>
                   <TouchableOpacity
-                    style={[
-                      styles.rotationButton,
-                      { backgroundColor: colors.background },
-                    ]}
-                    onPress={() => handleRotation("ccw")}
+                    style={[styles.rotationButton, { backgroundColor: colors.background }]}
+                    onPress={() => handleRotation('ccw')}
                   >
                     <RotateCcw size={24} color={colors.textPrimary} />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[
-                      styles.rotationButton,
-                      { backgroundColor: colors.background },
-                    ]}
-                    onPress={() => handleRotation("cw")}
+                    style={[styles.rotationButton, { backgroundColor: colors.background }]}
+                    onPress={() => handleRotation('cw')}
                   >
                     <RotateCw size={24} color={colors.textPrimary} />
                   </TouchableOpacity>
@@ -396,22 +311,20 @@ export function EnhancedChildLock({
 
             {error && (
               <Text style={[styles.errorText, { color: colors.error }]}>
-                {t("childLock.wrongAnswer")}
-                {verificationType === "addition"
-                  ? t("childLock.retryCalculation")
-                  : t("childLock.retryAdjustment")}
+                {t('childLock.wrongAnswer')}
+                {verificationType === 'addition'
+                  ? t('childLock.retryCalculation')
+                  : t('childLock.retryAdjustment')}
               </Text>
             )}
 
             {errorCount > 0 && errorCount < 3 && (
-              <Text
-                style={[styles.attemptsText, { color: colors.textSecondary }]}
-              >
-                {t("childLock.remainingtempts", { attempts: 3 - errorCount })}
+              <Text style={[styles.attemptsText, { color: colors.textSecondary }]}>
+                {t('childLock.remainingtempts', { attempts: 3 - errorCount })}
               </Text>
             )}
 
-            {verificationType === "addition" ? (
+            {verificationType === 'addition' ? (
               <View style={styles.keypad}>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                   <TouchableOpacity
@@ -419,11 +332,7 @@ export function EnhancedChildLock({
                     style={[styles.key, { backgroundColor: colors.background }]}
                     onPress={() => handleNumberPress(num.toString())}
                   >
-                    <Text
-                      style={[styles.keyText, { color: colors.textPrimary }]}
-                    >
-                      {num}
-                    </Text>
+                    <Text style={[styles.keyText, { color: colors.textPrimary }]}>{num}</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity
@@ -434,11 +343,9 @@ export function EnhancedChildLock({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.key, { backgroundColor: colors.background }]}
-                  onPress={() => handleNumberPress("0")}
+                  onPress={() => handleNumberPress('0')}
                 >
-                  <Text style={[styles.keyText, { color: colors.textPrimary }]}>
-                    0
-                  </Text>
+                  <Text style={[styles.keyText, { color: colors.textPrimary }]}>0</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.key, { backgroundColor: colors.primary }]}
@@ -449,34 +356,19 @@ export function EnhancedChildLock({
               </View>
             ) : (
               <TouchableOpacity
-                style={[
-                  styles.submitButton,
-                  { backgroundColor: colors.primary },
-                ]}
+                style={[styles.submitButton, { backgroundColor: colors.primary }]}
                 onPress={handleSubmit}
               >
-                <Text
-                  style={[
-                    styles.submitButtonText,
-                    { color: commonColors.white },
-                  ]}
-                >
-                  确认
-                </Text>
+                <Text style={[styles.submitButtonText, { color: commonColors.white }]}>确认</Text>
               </TouchableOpacity>
             )}
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.cancelButton,
-              { borderTopColor: cancelButtonBorder },
-            ]}
+            style={[styles.cancelButton, { borderTopColor: cancelButtonBorder }]}
             onPress={onCancel}
           >
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
-              取消
-            </Text>
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>取消</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -485,132 +377,147 @@ export function EnhancedChildLock({
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: spacing.xl,
+  answerBox: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    height: 60,
+    justifyContent: 'center',
+    marginLeft: spacing.md,
+    width: 80,
   },
-  container: {
-    width: "100%",
-    borderRadius: borderRadius.xl,
-    overflow: "hidden",
+  answerText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
   },
-  header: { paddingVertical: spacing.xxl, alignItems: "center" },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingHorizontal: spacing.lg,
+  attemptsText: {
+    fontSize: typography.fontSize.xs,
     marginBottom: spacing.md,
+    textAlign: 'center',
   },
-  toggleButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
+  cancelButton: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    paddingVertical: spacing.lg,
   },
-  toggleText: { fontSize: typography.fontSize.xs },
+  cancelText: { fontSize: typography.fontSize.md },
+  container: {
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  content: { padding: spacing.xl },
+  errorText: {
+    fontSize: typography.fontSize.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  header: { alignItems: 'center', paddingVertical: spacing.xxl },
+  headerSubtitle: { fontSize: typography.fontSize.sm, marginTop: spacing.xs },
   headerTitle: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
     marginTop: spacing.sm,
   },
-  headerSubtitle: { fontSize: typography.fontSize.sm, marginTop: spacing.xs },
-  content: { padding: spacing.xl },
-  mathContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing.xl,
-  },
-  mathNumber: { fontSize: responsive.scaledFontSize(typography.fontSize.xxxl), fontWeight: typography.fontWeight.bold },
-  mathOperator: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), marginHorizontal: spacing.md },
-  answerBox: {
-    width: 80,
-    height: 60,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: spacing.md,
-  },
-  answerText: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), fontWeight: typography.fontWeight.bold },
-  rotationContainer: { alignItems: "center", marginBottom: spacing.xl },
-  rotationHint: { fontSize: typography.fontSize.sm, marginBottom: spacing.lg },
-  rotationCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 4,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.lg,
-  },
-  rotationIndicator: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  rotationArrow: { position: "absolute", top: 10 },
-  rotationControls: { flexDirection: "row", gap: spacing.xl },
-  rotationButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    textAlign: "center",
+  headerTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: spacing.md,
-    fontSize: typography.fontSize.sm,
-  },
-  attemptsText: {
-    textAlign: "center",
-    marginBottom: spacing.md,
-    fontSize: typography.fontSize.xs,
-  },
-  keypad: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    paddingHorizontal: spacing.lg,
+    width: '100%',
   },
   key: {
-    width: "30%",
-    height: 56,
+    alignItems: 'center',
     borderRadius: borderRadius.md,
-    justifyContent: "center",
-    alignItems: "center",
+    height: 56,
+    justifyContent: 'center',
     marginBottom: spacing.sm,
+    width: '30%',
   },
-  keyText: { fontSize: responsive.scaledFontSize(typography.fontSize.xxl), fontWeight: typography.fontWeight.semibold },
-  submitButton: {
-    height: 56,
-    borderRadius: borderRadius.md,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  submitButtonText: {
-    fontSize: typography.fontSize.lg,
+  keyText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     fontWeight: typography.fontWeight.semibold,
   },
-  cancelButton: {
-    paddingVertical: spacing.lg,
-    alignItems: "center",
-    borderTopWidth: 1,
+  keypad: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  cancelText: { fontSize: typography.fontSize.md },
-  lockoutHeader: { paddingVertical: spacing.xxl, alignItems: "center" },
+  lockoutContent: { alignItems: 'center', padding: spacing.xxl },
+  lockoutHeader: { alignItems: 'center', paddingVertical: spacing.xxl },
+  lockoutSubtitle: { fontSize: typography.fontSize.sm, marginTop: spacing.xs },
+  lockoutText: { fontSize: typography.fontSize.md, marginTop: spacing.sm },
+  lockoutTimer: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
+    fontWeight: typography.fontWeight.bold,
+  },
   lockoutTitle: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
     marginTop: spacing.md,
   },
-  lockoutSubtitle: { fontSize: typography.fontSize.sm, marginTop: spacing.xs },
-  lockoutContent: { padding: spacing.xxl, alignItems: "center" },
-  lockoutTimer: { fontSize: responsive.scaledFontSize(typography.fontSize.xxxl), fontWeight: typography.fontWeight.bold },
-  lockoutText: { fontSize: typography.fontSize.md, marginTop: spacing.sm },
+  mathContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: spacing.xl,
+  },
+  mathNumber: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
+    fontWeight: typography.fontWeight.bold,
+  },
+  mathOperator: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    marginHorizontal: spacing.md,
+  },
+  overlay: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  rotationArrow: { position: 'absolute', top: 10 },
+  rotationButton: {
+    alignItems: 'center',
+    borderRadius: 28,
+    height: 56,
+    justifyContent: 'center',
+    width: 56,
+  },
+  rotationCircle: {
+    alignItems: 'center',
+    borderRadius: 80,
+    borderWidth: 4,
+    height: 160,
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+    width: 160,
+  },
+  rotationContainer: { alignItems: 'center', marginBottom: spacing.xl },
+  rotationControls: { flexDirection: 'row', gap: spacing.xl },
+  rotationHint: { fontSize: typography.fontSize.sm, marginBottom: spacing.lg },
+  rotationIndicator: {
+    alignItems: 'center',
+    borderRadius: 40,
+    height: 80,
+    justifyContent: 'center',
+    width: 80,
+  },
+  submitButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: 56,
+    justifyContent: 'center',
+  },
+  submitButtonText: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  toggleButton: {
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  toggleText: { fontSize: typography.fontSize.xs },
 });

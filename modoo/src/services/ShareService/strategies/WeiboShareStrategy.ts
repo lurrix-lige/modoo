@@ -18,7 +18,7 @@ export class WeiboShareStrategy extends BaseShareStrategy {
     if (!WeiboSDK || typeof WeiboSDK.isWeiboInstalled !== 'function') {
       return false;
     }
-    
+
     try {
       return WeiboSDK.isWeiboInstalled();
     } catch {
@@ -31,7 +31,7 @@ export class WeiboShareStrategy extends BaseShareStrategy {
       this.validateOptions(options);
 
       const WeiboSDK = this.getWeiboSDK();
-      
+
       if (!WeiboSDK) {
         return this.createErrorResult('微博分享SDK未安装');
       }
@@ -56,10 +56,9 @@ export class WeiboShareStrategy extends BaseShareStrategy {
       });
 
       return this.createSuccessResult(result);
-      
     } catch (error: any) {
       let errorMessage = '微博分享失败';
-      
+
       if (error.code === 'E_USER_CANCELLED') {
         errorMessage = '用户取消分享';
       } else if (error.code === 'E_NO_WEIBO') {
@@ -67,7 +66,7 @@ export class WeiboShareStrategy extends BaseShareStrategy {
       } else if (error instanceof Error && error.message) {
         errorMessage = error.message;
       }
-      
+
       return this.createErrorResult(errorMessage);
     }
   }

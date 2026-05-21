@@ -50,8 +50,10 @@ export const GUARDIAN_SPIRIT_CONFIG: GuardianSpiritConfig[] = [
   },
 ];
 
-export const getGuardianSpiritById = (id: GuardianSpiritId | string): GuardianSpiritConfig | undefined => {
-  return GUARDIAN_SPIRIT_CONFIG.find(spirit => spirit.id === id);
+export const getGuardianSpiritById = (
+  id: GuardianSpiritId | string,
+): GuardianSpiritConfig | undefined => {
+  return GUARDIAN_SPIRIT_CONFIG.find((spirit) => spirit.id === id);
 };
 
 export const getDefaultGuardianSpirit = (): GuardianSpiritConfig => {

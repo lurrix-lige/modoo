@@ -1,6 +1,14 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme, spacing, borderRadius, typography, responsive, shadows, commonColors } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  responsive,
+  shadows,
+  commonColors,
+} from '../../../theme';
 import { useTranslation } from 'react-i18next';
 
 interface TimerModalProps {
@@ -43,7 +51,8 @@ export const TimerModal: React.FC<TimerModalProps> = ({
               style={[
                 styles.timerOption,
                 {
-                  backgroundColor: timerDuration === minutes ? colors.primary : colors.surfaceVariant,
+                  backgroundColor:
+                    timerDuration === minutes ? colors.primary : colors.surfaceVariant,
                   borderColor: timerDuration === minutes ? colors.primary : colors.border,
                   borderWidth: 1,
                 },
@@ -90,74 +99,74 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-    zIndex: 999,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: responsive.moderateScale(340),
-    padding: spacing.xxl,
-    borderRadius: borderRadius.xl,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
-    fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
-    marginBottom: spacing.xxl,
-  },
-  timerOptions: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    justifyContent: 'center',
-    marginBottom: spacing.xxl,
-  },
-  timerOption: {
-    width: '45%',
-    minWidth: responsive.moderateScale(100),
-    height: responsive.verticalScale(48),
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  timerOptionText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    fontWeight: typography.fontWeight.semibold,
-  },
   cancelButton: {
-    width: '100%',
-    height: responsive.verticalScale(48),
-    borderRadius: borderRadius.md,
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(48),
     justifyContent: 'center',
+    width: '100%',
   },
   cancelButtonText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
     fontWeight: typography.fontWeight.medium,
   },
   cancelTimerButton: {
-    width: '100%',
-    height: responsive.verticalScale(48),
-    borderRadius: borderRadius.md,
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(48),
     justifyContent: 'center',
     marginTop: spacing.md,
+    width: '100%',
   },
   cancelTimerButtonText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
     fontWeight: typography.fontWeight.medium,
+  },
+  modal: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    maxWidth: responsive.moderateScale(340),
+    padding: spacing.xxl,
+    width: '100%',
+  },
+  modalTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.xxl,
+    textAlign: 'center',
+  },
+  overlay: {
+    alignItems: 'center',
+    bottom: 0,
+    flex: 1,
+    justifyContent: 'center',
+    left: 0,
+    padding: spacing.xl,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 999,
+  },
+  timerOption: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(48),
+    justifyContent: 'center',
+    minWidth: responsive.moderateScale(100),
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    width: '45%',
+  },
+  timerOptionText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.semibold,
+  },
+  timerOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    justifyContent: 'center',
+    marginBottom: spacing.xxl,
+    width: '100%',
   },
 });

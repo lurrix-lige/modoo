@@ -1,23 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
-import { SafeAreaContainer } from "../../../components";
+import { SafeAreaContainer } from '../../../components';
 
-import { ArrowLeft, User, Star } from "lucide-react-native";
+import { ArrowLeft, User, Star } from 'lucide-react-native';
 
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 import {
   useTheme,
@@ -28,36 +21,25 @@ import {
   commonColors,
   sharedStyles,
   responsive,
-} from "../../../theme";
+} from '../../../theme';
 
-import { Button, AuthModal } from "../../../components";
+import { Button, AuthModal } from '../../../components';
 
-import { ParentStackParamList } from "../../../navigation/types";
+import { ParentStackParamList } from '../../../navigation/types';
 
-import { useAppStore } from "../../../store";
+import { useAppStore } from '../../../store';
 
-import { apiService, Expert } from "../../../services";
+import { apiService, Expert } from '../../../services';
 
-import { useNotifications } from "../../../hooks/useNotifications";
+import { useNotifications } from '../../../hooks/useNotifications';
 
-import { logger } from "../../../utils/logger";
+import { logger } from '../../../utils/logger';
 
-import { formatCurrency } from "../../../utils/currency";
+import { formatCurrency } from '../../../utils/currency';
 
-type ExpertConsultNavigationProp = NativeStackNavigationProp<
-  ParentStackParamList,
-  "ExpertConsult"
->;
+type ExpertConsultNavigationProp = NativeStackNavigationProp<ParentStackParamList, 'ExpertConsult'>;
 
-const TIME_SLOTS = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-];
+const TIME_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
 
 export default function ExpertConsultScreen() {
   const navigation = useNavigation<ExpertConsultNavigationProp>();
@@ -94,16 +76,16 @@ export default function ExpertConsultScreen() {
 
       setExperts(response.experts);
     } catch (error) {
-      logger.error("Failed to load experts", { error });
+      logger.error('Failed to load experts', { error });
     } finally {
       setIsLoading(false);
     }
   };
 
   const getWeekdayLabel = (day: string) => {
-    const weekdays = t("common.weekdays", { returnObjects: true }) as string[];
+    const weekdays = t('common.weekdays', { returnObjects: true }) as string[];
 
-    const dayIndex = ( weekdays  ).indexOf(day);
+    const dayIndex = weekdays.indexOf(day);
 
     return weekdays[dayIndex >= 0 ? dayIndex : 0];
   };
@@ -113,40 +95,35 @@ export default function ExpertConsultScreen() {
 
     date.setDate(date.getDate() + i);
 
-    const weekdays = (t("common.weekdays", {
+    const weekdays = t('common.weekdays', {
       returnObjects: true,
-    }) as string[]);
+    }) as string[];
 
     return {
       day: date.getDate(),
 
       weekday: weekdays[date.getDay()],
 
-      fullDate: date.toISOString().split("T")[0],
+      fullDate: date.toISOString().split('T')[0],
     };
   });
 
   return (
-    <SafeAreaContainer
-      style={[sharedStyles.container, { backgroundColor: colors.background }]}
-    >
+    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <ArrowLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
 
         <Text style={[styles.title, { color: colors.textPrimary }]}>
-          {t("expertConsult.title")}
+          {t('expertConsult.title')}
         </Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t("expertConsult.selectExpert")}
+            {t('expertConsult.selectExpert')}
           </Text>
 
           {experts.map((expert) => (
@@ -158,56 +135,37 @@ export default function ExpertConsultScreen() {
                 {
                   backgroundColor: colors.surface,
 
-                  borderColor:
-                    selectedExpert === expert.id
-                      ? colors.primary
-                      : "transparent",
+                  borderColor: selectedExpert === expert.id ? colors.primary : 'transparent',
 
                   borderWidth: selectedExpert === expert.id ? 2 : 0,
                 },
               ]}
               onPress={() => setSelectedExpert(expert.id)}
             >
-              <View
-                style={[
-                  styles.expertAvatar,
-                  { backgroundColor: colors.primary + "20" },
-                ]}
-              >
+              <View style={[styles.expertAvatar, { backgroundColor: colors.primary + '20' }]}>
                 <User size={32} color={colors.primary} />
               </View>
 
               <View style={styles.expertInfo}>
                 <View style={styles.expertHeader}>
-                  <Text
-                    style={[styles.expertName, { color: colors.textPrimary }]}
-                  >
+                  <Text style={[styles.expertName, { color: colors.textPrimary }]}>
                     {expert.name || t(expert.nameKey)}
                   </Text>
 
                   <View style={styles.rating}>
                     <Star size={14} color={colors.warning} />
 
-                    <Text
-                      style={[styles.ratingText, { color: colors.textPrimary }]}
-                    >
+                    <Text style={[styles.ratingText, { color: colors.textPrimary }]}>
                       {expert.rating}
                     </Text>
                   </View>
                 </View>
 
-                <Text
-                  style={[styles.expertTitle, { color: colors.textSecondary }]}
-                >
+                <Text style={[styles.expertTitle, { color: colors.textSecondary }]}>
                   {expert.title || t(expert.titleKey)}
                 </Text>
 
-                <Text
-                  style={[
-                    styles.expertHospital,
-                    { color: colors.textSecondary },
-                  ]}
-                >
+                <Text style={[styles.expertHospital, { color: colors.textSecondary }]}>
                   {expert.hospital || t(expert.hospitalKey)}
                 </Text>
 
@@ -216,17 +174,9 @@ export default function ExpertConsultScreen() {
                     (specialty: string, index: number) => (
                       <View
                         key={index}
-                        style={[
-                          styles.specialtyTag,
-                          { backgroundColor: colors.border },
-                        ]}
+                        style={[styles.specialtyTag, { backgroundColor: colors.border }]}
                       >
-                        <Text
-                          style={[
-                            styles.specialtyText,
-                            { color: colors.textSecondary },
-                          ]}
-                        >
+                        <Text style={[styles.specialtyText, { color: colors.textSecondary }]}>
                           {t(specialty)}
                         </Text>
                       </View>
@@ -241,7 +191,7 @@ export default function ExpertConsultScreen() {
         {selectedExpert && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-              {t("expertConsult.selectDate")}
+              {t('expertConsult.selectDate')}
             </Text>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -252,10 +202,7 @@ export default function ExpertConsultScreen() {
                     styles.dateCard,
 
                     {
-                      backgroundColor:
-                        selectedDate === index
-                          ? colors.primary
-                          : colors.surface,
+                      backgroundColor: selectedDate === index ? colors.primary : colors.surface,
                     },
                   ]}
                   onPress={() => setSelectedDate(index)}
@@ -265,10 +212,7 @@ export default function ExpertConsultScreen() {
                       styles.dateWeekday,
 
                       {
-                        color:
-                          selectedDate === index
-                            ? commonColors.white
-                            : colors.textSecondary,
+                        color: selectedDate === index ? commonColors.white : colors.textSecondary,
                       },
                     ]}
                   >
@@ -280,10 +224,7 @@ export default function ExpertConsultScreen() {
                       styles.dateDay,
 
                       {
-                        color:
-                          selectedDate === index
-                            ? commonColors.white
-                            : colors.textPrimary,
+                        color: selectedDate === index ? commonColors.white : colors.textPrimary,
                       },
                     ]}
                   >
@@ -298,7 +239,7 @@ export default function ExpertConsultScreen() {
         {selectedExpert && selectedDate !== null && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-              {t("expertConsult.selectTime")}
+              {t('expertConsult.selectTime')}
             </Text>
 
             <View style={styles.timeGrid}>
@@ -309,8 +250,7 @@ export default function ExpertConsultScreen() {
                     styles.timeCard,
 
                     {
-                      backgroundColor:
-                        selectedTime === time ? colors.primary : colors.surface,
+                      backgroundColor: selectedTime === time ? colors.primary : colors.surface,
                     },
                   ]}
                   onPress={() => setSelectedTime(time)}
@@ -320,10 +260,7 @@ export default function ExpertConsultScreen() {
                       styles.timeText,
 
                       {
-                        color:
-                          selectedTime === time
-                            ? commonColors.white
-                            : colors.textPrimary,
+                        color: selectedTime === time ? commonColors.white : colors.textPrimary,
                       },
                     ]}
                   >
@@ -340,17 +277,17 @@ export default function ExpertConsultScreen() {
         <View style={[styles.footer, { backgroundColor: colors.surface }]}>
           <View style={styles.priceInfo}>
             <Text style={[styles.priceLabel, { color: colors.textSecondary }]}>
-              {t("expertConsult.consultationFee")}
+              {t('expertConsult.consultationFee')}
             </Text>
 
             <Text style={[styles.priceValue, { color: colors.textPrimary }]}>
-              {formatCurrency(99, "CNY", i18n.language)}
-              {t("expertConsult.perSession")}
+              {formatCurrency(99, 'CNY', i18n.language)}
+              {t('expertConsult.perSession')}
             </Text>
           </View>
 
           <Button
-            title={t("expertConsult.bookNow")}
+            title={t('expertConsult.bookNow')}
             onPress={async () => {
               if (!isAuthenticated) {
                 setShowAuthModal(true);
@@ -371,38 +308,29 @@ export default function ExpertConsultScreen() {
                   time: selectedTime!,
                 });
 
-                const notificationSettings =
-                  await apiService.getNotificationSettings();
+                const notificationSettings = await apiService.getNotificationSettings();
 
                 if (notificationSettings.expertReminder) {
-                  const expertName = expert?.name || t(expert?.nameKey || "");
+                  const expertName = expert?.name || t(expert?.nameKey || '');
 
-                  await scheduleBookingReminder(
-                    response.id,
-                    fullDate,
-                    selectedTime!,
-                    expertName,
-                  );
+                  await scheduleBookingReminder(response.id, fullDate, selectedTime!, expertName);
                 }
 
                 Alert.alert(
-                  t("expertConsult.bookingSuccess"),
-                  t("expertConsult.bookingSuccessMessage"),
+                  t('expertConsult.bookingSuccess'),
+                  t('expertConsult.bookingSuccessMessage'),
                   [
                     {
-                      text: t("common.confirm"),
+                      text: t('common.confirm'),
 
-                      onPress: () => navigation.navigate("ExpertBookings"),
+                      onPress: () => navigation.navigate('ExpertBookings'),
                     },
                   ],
                 );
               } catch (error) {
-                logger.error("Failed to create booking", { error });
+                logger.error('Failed to create booking', { error });
 
-                Alert.alert(
-                  t("common.error"),
-                  t("expertConsult.bookingFailed"),
-                );
+                Alert.alert(t('common.error'), t('expertConsult.bookingFailed'));
               }
             }}
           />
@@ -414,21 +342,109 @@ export default function ExpertConsultScreen() {
         onLogin={() => {
           setShowAuthModal(false);
 
-          navigation
-            .getParent()
-            ?.navigate("Auth", { fromScreen: "ExpertConsult" });
+          navigation.getParent()?.navigate('Auth', { fromScreen: 'ExpertConsult' });
         }}
         onDismiss={() => setShowAuthModal(false)}
-        title={t("expertConsult.loginToBook")}
-        message={t("expertConsult.loginMessage")}
+        title={t('expertConsult.loginToBook')}
+        message={t('expertConsult.loginMessage')}
       />
     </SafeAreaContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  avatarText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+  },
+
+  backButton: {
+    marginRight: spacing.md,
+  },
+
   container: {
     flex: 1,
+  },
+
+  dateCard: {
+    borderRadius: borderRadius.md,
+
+    padding: spacing.md,
+
+    width: 60,
+
+    ...sharedStyles.columnCenter,
+
+    marginRight: spacing.sm,
+  },
+
+  dateDay: {
+    fontSize: typography.fontSize.lg,
+
+    fontWeight: typography.fontWeight.bold,
+
+    marginTop: spacing.xs,
+  },
+
+  dateWeekday: {
+    fontSize: typography.fontSize.xs,
+  },
+
+  expertAvatar: {
+    borderRadius: 32,
+
+    height: 64,
+
+    width: 64,
+
+    ...sharedStyles.columnCenter,
+
+    marginRight: spacing.md,
+  },
+
+  expertCard: {
+    ...sharedStyles.rowStart,
+
+    borderRadius: borderRadius.lg,
+
+    marginBottom: spacing.md,
+
+    padding: spacing.md,
+
+    ...shadows.small,
+  },
+
+  expertHeader: {
+    ...sharedStyles.rowBetween,
+  },
+
+  expertHospital: {
+    fontSize: typography.fontSize.xs,
+  },
+
+  expertInfo: {
+    flex: 1,
+  },
+
+  expertName: {
+    fontSize: typography.fontSize.md,
+
+    fontWeight: typography.fontWeight.semibold,
+  },
+
+  expertTitle: {
+    fontSize: typography.fontSize.xs,
+
+    marginTop: spacing.xs,
+  },
+
+  footer: {
+    ...sharedStyles.rowStart,
+
+    gap: spacing.lg,
+
+    padding: spacing.lg,
+
+    ...shadows.medium,
   },
 
   header: {
@@ -439,70 +455,16 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
 
-  backButton: {
-    marginRight: spacing.md,
+  priceInfo: {},
+
+  priceLabel: {
+    fontSize: typography.fontSize.xs,
   },
 
-  title: {
+  priceValue: {
     fontSize: typography.fontSize.lg,
 
-    fontWeight: typography.fontWeight.semibold,
-  },
-
-  section: {
-    paddingHorizontal: spacing.xl,
-
-    marginBottom: spacing.xl,
-  },
-
-  sectionTitle: {
-    fontSize: typography.fontSize.md,
-
-    fontWeight: typography.fontWeight.semibold,
-
-    marginBottom: spacing.md,
-  },
-
-  expertCard: {
-    ...sharedStyles.rowStart,
-
-    padding: spacing.md,
-
-    borderRadius: borderRadius.lg,
-
-    marginBottom: spacing.md,
-
-    ...shadows.small,
-  },
-
-  expertAvatar: {
-    width: 64,
-
-    height: 64,
-
-    borderRadius: 32,
-
-    ...sharedStyles.columnCenter,
-
-    marginRight: spacing.md,
-  },
-
-  avatarText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-  },
-
-  expertInfo: {
-    flex: 1,
-  },
-
-  expertHeader: {
-    ...sharedStyles.rowBetween,
-  },
-
-  expertName: {
-    fontSize: typography.fontSize.md,
-
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: typography.fontWeight.bold,
   },
 
   rating: {
@@ -517,20 +479,24 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
   },
 
-  expertTitle: {
-    fontSize: typography.fontSize.xs,
+  section: {
+    marginBottom: spacing.xl,
 
-    marginTop: spacing.xs,
+    paddingHorizontal: spacing.xl,
   },
 
-  expertHospital: {
-    fontSize: typography.fontSize.xs,
+  sectionTitle: {
+    fontSize: typography.fontSize.md,
+
+    fontWeight: typography.fontWeight.semibold,
+
+    marginBottom: spacing.md,
   },
 
   specialties: {
     ...sharedStyles.rowStart,
 
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
 
     gap: spacing.xs,
 
@@ -538,57 +504,33 @@ const styles = StyleSheet.create({
   },
 
   specialtyTag: {
+    borderRadius: borderRadius.sm,
+
     paddingHorizontal: spacing.sm,
 
     paddingVertical: 2,
-
-    borderRadius: borderRadius.sm,
   },
 
   specialtyText: {
     fontSize: typography.fontSize.xs,
   },
 
-  dateCard: {
-    width: 60,
+  timeCard: {
+    borderRadius: borderRadius.md,
 
     padding: spacing.md,
 
-    borderRadius: borderRadius.md,
+    width: '30%',
 
     ...sharedStyles.columnCenter,
-
-    marginRight: spacing.sm,
-  },
-
-  dateWeekday: {
-    fontSize: typography.fontSize.xs,
-  },
-
-  dateDay: {
-    fontSize: typography.fontSize.lg,
-
-    fontWeight: typography.fontWeight.bold,
-
-    marginTop: spacing.xs,
   },
 
   timeGrid: {
-    flexDirection: "row",
+    flexDirection: 'row',
 
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
 
     gap: spacing.sm,
-  },
-
-  timeCard: {
-    width: "30%",
-
-    padding: spacing.md,
-
-    borderRadius: borderRadius.md,
-
-    ...sharedStyles.columnCenter,
   },
 
   timeText: {
@@ -597,25 +539,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
   },
 
-  footer: {
-    ...sharedStyles.rowStart,
-
-    padding: spacing.lg,
-
-    gap: spacing.lg,
-
-    ...shadows.medium,
-  },
-
-  priceInfo: {},
-
-  priceLabel: {
-    fontSize: typography.fontSize.xs,
-  },
-
-  priceValue: {
+  title: {
     fontSize: typography.fontSize.lg,
 
-    fontWeight: typography.fontWeight.bold,
+    fontWeight: typography.fontWeight.semibold,
   },
 });

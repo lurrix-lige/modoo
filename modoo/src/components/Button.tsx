@@ -109,15 +109,15 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    height: responsive.verticalScale(48),
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(48),
+    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
   content: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   text: {

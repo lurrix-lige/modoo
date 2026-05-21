@@ -1,20 +1,13 @@
 /**
  * 引导页面组件
- * 
- * 应用首次启动时展示的引导页面，通过滑动切换展示应用核心功能介绍�?
- * 使用独立�?GuardianSpirit 组件实现精灵动画效果�?
- * 
+ *
+ * 应用首次启动时展示的引导页面，通过滑动切换展示应用核心功能介绍�?
+ * 使用独立�?GuardianSpirit 组件实现精灵动画效果�?
+ *
  * @component
  */
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Animated } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -39,11 +32,11 @@ export default function GuideScreen() {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   /**
-   * 处理下一步按钮点�?
+   * 处理下一步按钮点�?
    */
   const handleNext = () => {
     if (currentStep < GUIDE_STEPS.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
       navigation.navigate('Home');
     }
@@ -70,14 +63,17 @@ export default function GuideScreen() {
       outputRange: [0.8, 1, 0.8],
     });
 
-    const guideSteps = t('guide.steps', { returnObjects: true }) as Array<{ title: string; description: string }>;
+    const guideSteps = t('guide.steps', { returnObjects: true }) as Array<{
+      title: string;
+      description: string;
+    }>;
 
     return (
       <Animated.View
         key={index}
         style={[styles.stepContainer, { opacity, transform: [{ scale }] }]}
       >
-        {/* 使用独立�?GuardianSpirit 组件 - 双层圆形设计 */}
+        {/* 使用独立�?GuardianSpirit 组件 - 双层圆形设计 */}
         <GuardianSpirit
           icon={step.icon}
           size={200}
@@ -86,7 +82,7 @@ export default function GuideScreen() {
           animationType={step.animationType}
           animationDuration={2000}
         />
-        
+
         <Text style={[styles.stepTitle, { color: colors.textPrimary }]}>
           {guideSteps[index]?.title}
         </Text>
@@ -101,9 +97,7 @@ export default function GuideScreen() {
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
       {/* 跳过按钮 */}
       <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={[styles.skipText, { color: colors.textSecondary }]}>
-          {t('guide.skip')}
-        </Text>
+        <Text style={[styles.skipText, { color: colors.textSecondary }]}>{t('guide.skip')}</Text>
       </TouchableOpacity>
 
       {/* 引导步骤滚动区域 */}
@@ -111,16 +105,15 @@ export default function GuideScreen() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+          useNativeDriver: false,
+        })}
         scrollEventThrottle={16}
       >
         {GUIDE_STEPS.map((step, index) => renderStep(step, index))}
       </Animated.ScrollView>
 
-      {/* 分页指示�?*/}
+      {/* 分页指示�?*/}
       <View style={styles.pagination}>
         {GUIDE_STEPS.map((_, index) => {
           const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
@@ -149,7 +142,7 @@ export default function GuideScreen() {
         })}
       </View>
 
-      {/* 下一�?开始按�?*/}
+      {/* 下一�?开始按�?*/}
       <View style={styles.buttonContainer}>
         <Button
           title={currentStep === GUIDE_STEPS.length - 1 ? t('guide.start') : t('guide.next')}
@@ -161,47 +154,47 @@ export default function GuideScreen() {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    paddingBottom: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  dot: {
+    borderRadius: 4,
+    height: 8,
+  },
+  pagination: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'center',
+    marginVertical: spacing.xxl,
+  },
   skipButton: {
-    position: 'absolute',
-    top: spacing.xxxl,
-    right: spacing.xl,
-    zIndex: 10,
     padding: spacing.sm,
+    position: 'absolute',
+    right: spacing.xl,
+    top: spacing.xxxl,
+    zIndex: 10,
   },
   skipText: {
     fontSize: typography.fontSize.md,
   },
   stepContainer: {
-    width,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xxl,
+    width,
+  },
+  stepDescription: {
+    fontSize: typography.fontSize.lg,
+    lineHeight: 28,
+    textAlign: 'center',
   },
   stepTitle: {
     fontSize: typography.fontSize.xxl,
     fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
     marginBottom: spacing.md,
     marginTop: spacing.xxl,
-  },
-  stepDescription: {
-    fontSize: typography.fontSize.lg,
     textAlign: 'center',
-    lineHeight: 28,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: spacing.xxl,
-    gap: spacing.sm,
-  },
-  dot: {
-    height: 8,
-    borderRadius: 4,
-  },
-  buttonContainer: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
   },
 });

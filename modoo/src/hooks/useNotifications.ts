@@ -16,35 +16,32 @@ export function useNotifications() {
     initializeNotifications();
   }, [initializeNotifications]);
 
-  const scheduleBookingReminder = useCallback(async (
-    bookingId: string,
-    date: string,
-    time: string,
-    expertName: string
-  ) => {
-    try {
-      await NotificationService.getInstance().scheduleBookingReminder(
-        bookingId,
-        date,
-        time,
-        expertName
-      );
-    } catch (error) {
-      logger.error('Failed to schedule booking reminder', { error });
-    }
-  }, []);
+  const scheduleBookingReminder = useCallback(
+    async (bookingId: string, date: string, time: string, expertName: string) => {
+      try {
+        await NotificationService.getInstance().scheduleBookingReminder(
+          bookingId,
+          date,
+          time,
+          expertName,
+        );
+      } catch (error) {
+        logger.error('Failed to schedule booking reminder', { error });
+      }
+    },
+    [],
+  );
 
-  const presentNotification = useCallback(async (
-    title: string,
-    body: string,
-    data?: Record<string, string>
-  ) => {
-    try {
-      await NotificationService.getInstance().presentLocalNotification(title, body, data);
-    } catch (error) {
-      logger.error('Failed to present notification', { error });
-    }
-  }, []);
+  const presentNotification = useCallback(
+    async (title: string, body: string, data?: Record<string, string>) => {
+      try {
+        await NotificationService.getInstance().presentLocalNotification(title, body, data);
+      } catch (error) {
+        logger.error('Failed to present notification', { error });
+      }
+    },
+    [],
+  );
 
   return {
     scheduleBookingReminder,

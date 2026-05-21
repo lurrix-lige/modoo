@@ -18,7 +18,7 @@ export class QQShareStrategy extends BaseShareStrategy {
     if (!QQShare || typeof QQShare.isQQInstalled !== 'function') {
       return false;
     }
-    
+
     try {
       return QQShare.isQQInstalled();
     } catch {
@@ -31,7 +31,7 @@ export class QQShareStrategy extends BaseShareStrategy {
       this.validateOptions(options);
 
       const QQShare = this.getQQShare();
-      
+
       if (!QQShare) {
         return this.createErrorResult('QQ分享SDK未安装');
       }
@@ -55,10 +55,9 @@ export class QQShareStrategy extends BaseShareStrategy {
       });
 
       return this.createSuccessResult(result);
-      
     } catch (error: any) {
       let errorMessage = 'QQ分享失败';
-      
+
       if (error.code === 'E_USER_CANCELLED') {
         errorMessage = '用户取消分享';
       } else if (error.code === 'E_NO_QQ') {
@@ -66,7 +65,7 @@ export class QQShareStrategy extends BaseShareStrategy {
       } else if (error instanceof Error && error.message) {
         errorMessage = error.message;
       }
-      
+
       return this.createErrorResult(errorMessage);
     }
   }

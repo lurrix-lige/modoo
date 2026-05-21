@@ -21,15 +21,15 @@ export interface LoginNavigationParams {
 class ConfigurableNavigationStrategy {
   navigate(
     navigation: NavigationContainerRef<RootStackParamList>,
-    params: LoginNavigationParams
+    params: LoginNavigationParams,
   ): void {
     const { fromScreen, childProfile, selectedPlanId } = params;
-    
+
     if (childProfile) {
       this.navigateWithProfile(navigation, fromScreen, selectedPlanId);
       return;
     }
-    
+
     const rule = findNavigationRule(fromScreen);
     this.navigateWithoutProfile(navigation, rule, selectedPlanId);
   }
@@ -37,7 +37,7 @@ class ConfigurableNavigationStrategy {
   private navigateWithProfile(
     navigation: NavigationContainerRef<RootStackParamList>,
     fromScreen?: string,
-    selectedPlanId?: string
+    selectedPlanId?: string,
   ): void {
     const navigationMap: Record<string, () => void> = {
       Membership: () => navigation.navigate('Membership', { selectedPlanId }),
@@ -52,7 +52,7 @@ class ConfigurableNavigationStrategy {
   private navigateWithoutProfile(
     navigation: NavigationContainerRef<RootStackParamList>,
     rule: NavigationRule,
-    selectedPlanId?: string
+    selectedPlanId?: string,
   ): void {
     const params: Record<string, unknown> = {
       ...rule.params,
@@ -65,7 +65,7 @@ class ConfigurableNavigationStrategy {
 
   private createOnSuccessCallback(
     navigation: NavigationContainerRef<RootStackParamList>,
-    rule: NavigationRule
+    rule: NavigationRule,
   ): () => void {
     const successMap: Record<string, () => void> = {
       Membership: () => navigation.navigate('Membership'),
@@ -86,7 +86,7 @@ export class LoginNavigationStrategyFactory {
 
   navigate(
     navigation: NavigationContainerRef<RootStackParamList>,
-    params: LoginNavigationParams
+    params: LoginNavigationParams,
   ): void {
     this.strategy.navigate(navigation, params);
   }

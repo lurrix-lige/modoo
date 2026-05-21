@@ -48,7 +48,8 @@ export function CheckInHistoryList({ records, colors }: CheckInHistoryListProps)
     return (
       <View style={[styles.historyCard, { backgroundColor: colors.surface }]}>
         <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-          {t('checkIn.noHistory')}</Text>
+          {t('checkIn.noHistory')}
+        </Text>
       </View>
     );
   }
@@ -87,50 +88,50 @@ export function CheckInHistoryList({ records, colors }: CheckInHistoryListProps)
 }
 
 const styles = StyleSheet.create({
+  emptyText: {
+    fontSize: typography.fontSize.sm,
+    paddingVertical: spacing.lg,
+    textAlign: 'center',
+  },
   historyCard: {
     borderRadius: spacing.md,
-    padding: spacing.lg,
     marginBottom: spacing.lg,
+    padding: spacing.lg,
+  },
+  historyDate: {
+    fontSize: typography.fontSize.sm,
+  },
+  historyDetails: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  historyItem: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+  },
+  historyList: {
+    gap: spacing.md,
   },
   historyTitle: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.md,
   },
-  historyList: {
-    gap: spacing.md,
-  },
-  historyItem: {
+  stars: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-  },
-  historyDate: {
-    fontSize: typography.fontSize.sm,
-  },
-  historyDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+    gap: 2,
   },
   timeItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.xs,
   },
   timeText: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
-  },
-  stars: {
-    flexDirection: 'row',
-    gap: 2,
-  },
-  emptyText: {
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    paddingVertical: spacing.lg,
   },
 });

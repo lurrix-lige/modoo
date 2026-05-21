@@ -31,7 +31,15 @@ import {
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../theme';
 
 interface TimePickerModalProps {
   visible: boolean;
@@ -44,11 +52,11 @@ interface TimePickerModalProps {
 /**
  * 时间选择器常量配置 */
 const PICKER_CONFIG = {
-  ITEM_HEIGHT: 56,           // 每个选项的高度
-  VISIBLE_ITEMS: 5,          // 可见选项数量（需为奇数）
-  CENTER_INDEX: 2,           // 中间项的索引（0-based）
-  DECELERATION_RATE: 0.985,  // 滚动减速系数，值越小减速越快
-  SNAP_THRESHOLD: 0.3,       // 吸附阈值，超过此比例自动吸附到下一项
+  ITEM_HEIGHT: 56, // 每个选项的高度
+  VISIBLE_ITEMS: 5, // 可见选项数量（需为奇数）
+  CENTER_INDEX: 2, // 中间项的索引（0-based）
+  DECELERATION_RATE: 0.985, // 滚动减速系数，值越小减速越快
+  SNAP_THRESHOLD: 0.3, // 吸附阈值，超过此比例自动吸附到下一项
 } as const;
 
 export default function TimePickerModal({
@@ -81,7 +89,9 @@ export default function TimePickerModal({
    * - selectedMinutes: 当前选中的分钟值（0-55，5的倍数）
    */
   const [selectedHours, setSelectedHours] = useState(() => parseInitialTime(initialTime).hours);
-  const [selectedMinutes, setSelectedMinutes] = useState(() => parseInitialTime(initialTime).minutes);
+  const [selectedMinutes, setSelectedMinutes] = useState(
+    () => parseInitialTime(initialTime).minutes,
+  );
 
   const hourScrollRef = useRef<ScrollView>(null);
   const minuteScrollRef = useRef<ScrollView>(null);
@@ -102,7 +112,7 @@ export default function TimePickerModal({
   /**
    * 计算滚动偏移量
    * 让指定索引的项显示在中间位置
-   * 
+   *
    * contentContainer有paddingTop = CENTER_INDEX * ITEM_HEIGHT
    * 当scrollOffset=0时，第一项显示在可见区域的顶部
    * 要让第index项显示在中间位置，需要滚动index * ITEM_HEIGHT
@@ -131,13 +141,13 @@ export default function TimePickerModal({
         if (hourScrollRef.current) {
           hourScrollRef.current.scrollTo({
             y: hourOffset,
-            animated: false
+            animated: false,
           });
         }
         if (minuteScrollRef.current) {
           minuteScrollRef.current.scrollTo({
             y: minuteOffset,
-            animated: false
+            animated: false,
           });
         }
       });
@@ -147,7 +157,7 @@ export default function TimePickerModal({
   /**
    * 根据滚动偏移量计算目标索引
    * 使用吸附算法确保滚动停在正确位置
-   * 
+   *
    * @param offset 当前滚动偏移量
    * @param maxIndex 最大索引值（小时：23，分钟：11）
    * @param pickerType 选择器类型，用于日志记录
@@ -165,7 +175,7 @@ export default function TimePickerModal({
     let targetIndex: number;
     if (fractionalPart >= PICKER_CONFIG.SNAP_THRESHOLD && integerPart < maxIndex) {
       targetIndex = integerPart + 1;
-    } else if (fractionalPart < (1 - PICKER_CONFIG.SNAP_THRESHOLD) && integerPart > 0) {
+    } else if (fractionalPart < 1 - PICKER_CONFIG.SNAP_THRESHOLD && integerPart > 0) {
       targetIndex = integerPart;
     } else {
       // 接近边界时，使用四舍五入
@@ -210,7 +220,7 @@ export default function TimePickerModal({
     isProgrammaticScroll.current.hour = true;
     hourScrollRef.current?.scrollTo({
       y: targetOffset,
-      animated: true
+      animated: true,
     });
   };
 
@@ -246,7 +256,7 @@ export default function TimePickerModal({
     isProgrammaticScroll.current.minute = true;
     minuteScrollRef.current?.scrollTo({
       y: targetOffset,
-      animated: true
+      animated: true,
     });
   };
 
@@ -266,7 +276,7 @@ export default function TimePickerModal({
     setSelectedHours(hour);
     hourScrollRef.current?.scrollTo({
       y: getScrollOffset(hour),
-      animated: true
+      animated: true,
     });
   };
 
@@ -274,7 +284,7 @@ export default function TimePickerModal({
     setSelectedMinutes(minute);
     minuteScrollRef.current?.scrollTo({
       y: getScrollOffset(minute / 5),
-      animated: true
+      animated: true,
     });
   };
 
@@ -284,15 +294,10 @@ export default function TimePickerModal({
   const pickerContainerHeight = PICKER_CONFIG.ITEM_HEIGHT * PICKER_CONFIG.VISIBLE_ITEMS;
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback onPress={() => { }}>
+          <TouchableWithoutFeedback onPress={() => {}}>
             <View style={[styles.modalContainer, { backgroundColor: colors.surface }]}>
               {/* 头部：标题和关闭按钮 */}
               <View style={styles.modalHeader}>
@@ -310,7 +315,7 @@ export default function TimePickerModal({
                 <View
                   style={[
                     styles.selectorIndicator,
-                    { backgroundColor: colors.primary, opacity: 0.15 }
+                    { backgroundColor: colors.primary, opacity: 0.15 },
                   ]}
                   pointerEvents="none"
                 />
@@ -339,15 +344,17 @@ export default function TimePickerModal({
                           <Text
                             style={[
                               styles.pickerText,
-                              hour === selectedHours ? {
-                                color: colors.primary,
-                                fontWeight: typography.fontWeight.bold,
-                                fontSize: typography.fontSize.xl
-                              } : {
-                                color: colors.textSecondary,
-                                fontSize: typography.fontSize.lg,
-                                opacity: 0.5
-                              },
+                              hour === selectedHours
+                                ? {
+                                    color: colors.primary,
+                                    fontWeight: typography.fontWeight.bold,
+                                    fontSize: typography.fontSize.xl,
+                                  }
+                                : {
+                                    color: colors.textSecondary,
+                                    fontSize: typography.fontSize.lg,
+                                    opacity: 0.5,
+                                  },
                             ]}
                           >
                             {hour.toString().padStart(2, '0')}
@@ -355,12 +362,21 @@ export default function TimePickerModal({
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>{t('common.hour')}</Text>
+                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>
+                      {t('common.hour')}
+                    </Text>
                   </View>
 
                   {/* 时间分隔符 - 与选中项垂直居中对齐 */}
                   <View style={styles.separatorContainer}>
-                    <Text style={[styles.separatorText, { color: colors.textPrimary, fontWeight: typography.fontWeight.bold }]}>:</Text>
+                    <Text
+                      style={[
+                        styles.separatorText,
+                        { color: colors.textPrimary, fontWeight: typography.fontWeight.bold },
+                      ]}
+                    >
+                      :
+                    </Text>
                   </View>
 
                   {/* 分钟选择器 */}
@@ -386,15 +402,17 @@ export default function TimePickerModal({
                           <Text
                             style={[
                               styles.pickerText,
-                              minute === selectedMinutes ? {
-                                color: colors.primary,
-                                fontWeight: typography.fontWeight.bold,
-                                fontSize: typography.fontSize.xl
-                              } : {
-                                color: colors.textSecondary,
-                                fontSize: typography.fontSize.lg,
-                                opacity: 0.5
-                              },
+                              minute === selectedMinutes
+                                ? {
+                                    color: colors.primary,
+                                    fontWeight: typography.fontWeight.bold,
+                                    fontSize: typography.fontSize.xl,
+                                  }
+                                : {
+                                    color: colors.textSecondary,
+                                    fontSize: typography.fontSize.lg,
+                                    opacity: 0.5,
+                                  },
                             ]}
                           >
                             {minute.toString().padStart(2, '0')}
@@ -402,7 +420,9 @@ export default function TimePickerModal({
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>{t('common.minute')}</Text>
+                    <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>
+                      {t('common.minute')}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -436,25 +456,25 @@ export default function TimePickerModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    width: '100%',
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
     paddingBottom: spacing.xl,
+    width: '100%',
     ...shadows.large,
   },
   modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#E5E5E5',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
   },
   modalTitle: {
     fontSize: typography.fontSize.lg,
@@ -464,39 +484,39 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   pickerWrapper: {
-    position: 'relative',
     alignItems: 'center',
     paddingVertical: spacing.md,
+    position: 'relative',
   },
   selectorIndicator: {
+    borderRadius: borderRadius.md,
+    height: PICKER_CONFIG.ITEM_HEIGHT,
+    marginTop: -PICKER_CONFIG.ITEM_HEIGHT / 2,
     position: 'absolute',
     top: '50%',
-    marginTop: -PICKER_CONFIG.ITEM_HEIGHT / 2,
     width: '70%',
-    height: PICKER_CONFIG.ITEM_HEIGHT,
-    borderRadius: borderRadius.md,
   },
   pickerContainer: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'flex-start',
     paddingHorizontal: spacing.xl,
   },
   pickerColumn: {
-    flexDirection: 'column',
     alignItems: 'center',
+    flexDirection: 'column',
   },
   pickerScroll: {
     width: 80,
   },
   pickerContent: {
-    paddingTop: PICKER_CONFIG.ITEM_HEIGHT * PICKER_CONFIG.CENTER_INDEX,
     paddingBottom: PICKER_CONFIG.ITEM_HEIGHT * PICKER_CONFIG.CENTER_INDEX,
+    paddingTop: PICKER_CONFIG.ITEM_HEIGHT * PICKER_CONFIG.CENTER_INDEX,
   },
   pickerItem: {
+    alignItems: 'center',
     height: PICKER_CONFIG.ITEM_HEIGHT,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   pickerText: {
     textAlign: 'center',
@@ -522,13 +542,13 @@ const styles = StyleSheet.create({
   modalFooter: {
     flexDirection: 'row',
     gap: spacing.md,
-    paddingHorizontal: spacing.xl,
     marginTop: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
   cancelButton: {
+    borderRadius: borderRadius.md,
     flex: 1,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
     ...sharedStyles.columnCenter,
   },
   cancelText: {
@@ -536,9 +556,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
   },
   confirmButton: {
+    borderRadius: borderRadius.md,
     flex: 1,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
     ...sharedStyles.columnCenter,
   },
   confirmText: {

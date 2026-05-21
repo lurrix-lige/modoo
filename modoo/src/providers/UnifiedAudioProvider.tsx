@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import { UnifiedAudioPlayer, AudioTrack, AudioPlayerConfig, setupAudioMode, validateUrl, encodeUrl } from './AudioCore';
+import {
+  UnifiedAudioPlayer,
+  AudioTrack,
+  AudioPlayerConfig,
+  setupAudioMode,
+  validateUrl,
+  encodeUrl,
+} from './AudioCore';
 import { logger } from '../utils/logger';
 
 export interface UnifiedAudioContextType {
@@ -80,7 +87,7 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
       }
     }
 
-    const success = await playerRef.current?.play(config) ?? false;
+    const success = (await playerRef.current?.play(config)) ?? false;
 
     if (success) {
       setIsPlaying(true);
@@ -100,7 +107,7 @@ export function UnifiedAudioProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const resume = useCallback(async (): Promise<boolean> => {
-    const success = await playerRef.current?.resume() ?? false;
+    const success = (await playerRef.current?.resume()) ?? false;
     if (success) {
       setIsPlaying(true);
     }

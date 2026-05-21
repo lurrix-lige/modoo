@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, Calendar, Clock, User, Phone, MapPin, ChevronRight, X, CheckCircle, AlertCircle } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  User,
+  Phone,
+  MapPin,
+  ChevronRight,
+  X,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Booking, Expert } from '../../../services';
 import { LoadingState, ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
-type ExpertBookingsNavigationProp = NativeStackNavigationProp<ParentStackParamList, 'ExpertBookings'>;
+type ExpertBookingsNavigationProp = NativeStackNavigationProp<
+  ParentStackParamList,
+  'ExpertBookings'
+>;
 
 interface BookingWithExpert extends Booking {
   expert?: Expert;
@@ -26,10 +41,28 @@ interface BookingWithExpert extends Booking {
 
 type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
-const statusConfig: Record<BookingStatus, { label: string; color: string; bgColor: string; icon: typeof CheckCircle }> = {
-  pending: { label: 'expertBookings.pending', color: 'warning', bgColor: 'warningLight', icon: AlertCircle },
-  confirmed: { label: 'expertBookings.confirmed', color: 'success', bgColor: 'successLight', icon: CheckCircle },
-  completed: { label: 'expertBookings.completed', color: 'textSecondary', bgColor: 'border', icon: CheckCircle },
+const statusConfig: Record<
+  BookingStatus,
+  { label: string; color: string; bgColor: string; icon: typeof CheckCircle }
+> = {
+  pending: {
+    label: 'expertBookings.pending',
+    color: 'warning',
+    bgColor: 'warningLight',
+    icon: AlertCircle,
+  },
+  confirmed: {
+    label: 'expertBookings.confirmed',
+    color: 'success',
+    bgColor: 'successLight',
+    icon: CheckCircle,
+  },
+  completed: {
+    label: 'expertBookings.completed',
+    color: 'textSecondary',
+    bgColor: 'border',
+    icon: CheckCircle,
+  },
   cancelled: { label: 'expertBookings.cancelled', color: 'error', bgColor: 'errorLight', icon: X },
 };
 
@@ -44,7 +77,10 @@ export default function ExpertBookingsScreen() {
   const { colors } = useTheme();
   const [bookings, setBookings] = useState<BookingWithExpert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<{ visible: boolean; message: string; code?: string }>({ visible: false, message: '' });
+  const [error, setError] = useState<{ visible: boolean; message: string; code?: string }>({
+    visible: false,
+    message: '',
+  });
 
   useEffect(() => {
     loadBookings();
@@ -65,7 +101,7 @@ export default function ExpertBookingsScreen() {
             expert = undefined;
           }
           return { ...booking, expert };
-        })
+        }),
       );
       setBookings(bookingsWithExpert);
     } catch (error: any) {
@@ -81,29 +117,25 @@ export default function ExpertBookingsScreen() {
   };
 
   const handleCancelBooking = async (bookingId: string) => {
-    Alert.alert(
-      t('expertBookings.confirmCancel'),
-      t('expertBookings.cancelWarning'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.confirm'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiService.cancelBooking(bookingId);
-              setBookings(prev => prev.map(b =>
-                b.id === bookingId ? { ...b, status: 'CANCELLED' as const } : b
-              ));
-              Alert.alert(t('common.success'), t('expertBookings.cancelSuccess'));
-            } catch (error) {
-              logger.error('Failed to cancel booking', { error });
-              Alert.alert(t('common.error'), t('expertBookings.cancelFailed'));
-            }
-          },
+    Alert.alert(t('expertBookings.confirmCancel'), t('expertBookings.cancelWarning'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.confirm'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await apiService.cancelBooking(bookingId);
+            setBookings((prev) =>
+              prev.map((b) => (b.id === bookingId ? { ...b, status: 'CANCELLED' as const } : b)),
+            );
+            Alert.alert(t('common.success'), t('expertBookings.cancelSuccess'));
+          } catch (error) {
+            logger.error('Failed to cancel booking', { error });
+            Alert.alert(t('common.error'), t('expertBookings.cancelFailed'));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const formatDate = (dateStr: string) => {
@@ -111,7 +143,15 @@ export default function ExpertBookingsScreen() {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const weekdays = t('common.weekdays', { returnObjects: true }) as string[] || ['日', '一', '二', '三', '四', '五', '六'];
+    const weekdays = (t('common.weekdays', { returnObjects: true }) as string[]) || [
+      '日',
+      '一',
+      '二',
+      '三',
+      '四',
+      '五',
+      '六',
+    ];
     const weekday = weekdays[date.getDay()];
     return {
       date: `${year}-${month}-${day}`,
@@ -130,19 +170,27 @@ export default function ExpertBookingsScreen() {
   const renderStatusBadge = (status: BookingStatus) => {
     const config = statusConfig[status];
     const IconComp = config.icon;
-    const color = config.color === 'warning' ? colors.warning :
-                  config.color === 'success' ? colors.success :
-                  config.color === 'error' ? colors.error : colors.textSecondary;
-    const bgColor = config.bgColor === 'warningLight' ? colors.warning + '20' :
-                    config.bgColor === 'successLight' ? colors.success + '20' :
-                    config.bgColor === 'errorLight' ? colors.error + '20' : colors.border;
+    const color =
+      config.color === 'warning'
+        ? colors.warning
+        : config.color === 'success'
+          ? colors.success
+          : config.color === 'error'
+            ? colors.error
+            : colors.textSecondary;
+    const bgColor =
+      config.bgColor === 'warningLight'
+        ? colors.warning + '20'
+        : config.bgColor === 'successLight'
+          ? colors.success + '20'
+          : config.bgColor === 'errorLight'
+            ? colors.error + '20'
+            : colors.border;
 
     return (
       <View style={[styles.statusBadge, { backgroundColor: bgColor }]}>
         <IconComp size={14} color={color} />
-        <Text style={[styles.statusText, { color }]}>
-          {t(config.label)}
-        </Text>
+        <Text style={[styles.statusText, { color }]}>{t(config.label)}</Text>
       </View>
     );
   };
@@ -198,7 +246,10 @@ export default function ExpertBookingsScreen() {
               const canCancel = status === 'pending' || status === 'confirmed';
 
               return (
-                <View key={booking.id} style={[styles.bookingCard, { backgroundColor: colors.surface }]}>
+                <View
+                  key={booking.id}
+                  style={[styles.bookingCard, { backgroundColor: colors.surface }]}
+                >
                   <View style={styles.bookingHeader}>
                     {renderStatusBadge(status)}
                     {canCancel && (
@@ -215,7 +266,9 @@ export default function ExpertBookingsScreen() {
 
                   {booking.expert && (
                     <View style={styles.expertInfo}>
-                      <View style={[styles.expertAvatar, { backgroundColor: colors.primary + '20' }]}>
+                      <View
+                        style={[styles.expertAvatar, { backgroundColor: colors.primary + '20' }]}
+                      >
                         <User size={24} color={colors.primary} />
                       </View>
                       <View style={styles.expertDetail}>
@@ -244,7 +297,6 @@ export default function ExpertBookingsScreen() {
                         </Text>
                       </View>
                     </View>
-                    
                   </View>
 
                   {booking.notes && (
@@ -277,16 +329,27 @@ export default function ExpertBookingsScreen() {
   );
 }
 
-const Button = ({ title, onPress, style }: { title: string; onPress: () => void; style?: object }) => {
+const Button = ({
+  title,
+  onPress,
+  style,
+}: {
+  title: string;
+  onPress: () => void;
+  style?: object;
+}) => {
   const { colors } = useTheme();
   return (
     <TouchableOpacity
-      style={[{
-        backgroundColor: colors.primary,
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.xl,
-        borderRadius: borderRadius.md,
-      }, style]}
+      style={[
+        {
+          backgroundColor: colors.primary,
+          paddingVertical: spacing.md,
+          paddingHorizontal: spacing.xl,
+          borderRadius: borderRadius.md,
+        },
+        style,
+      ]}
       onPress={onPress}
     >
       <Text style={{ color: commonColors.white, fontWeight: typography.fontWeight.medium }}>
@@ -297,66 +360,25 @@ const Button = ({ title, onPress, style }: { title: string; onPress: () => void;
 };
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-  },
   backButton: {
     marginRight: spacing.md,
   },
-  title: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
+  bookingCard: {
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    ...shadows.small,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
+  bookingDetails: {
+    gap: spacing.sm,
   },
-  emptyState: {
-    flex: 1,
+  bookingHeader: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  emptyTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    marginTop: spacing.lg,
-  },
-  emptyDesc: {
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-    paddingHorizontal: spacing.xl,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
   },
   bookingList: {
     gap: spacing.md,
-  },
-  bookingCard: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    ...shadows.small,
-  },
-  bookingHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  statusText: {
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
   },
   cancelButton: {
     paddingHorizontal: spacing.sm,
@@ -366,22 +388,57 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
   },
-  expertInfo: {
-    flexDirection: 'row',
+  content: {
+    flex: 1,
+    paddingBottom: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  dateTimeRow: {
     alignItems: 'center',
-    marginBottom: spacing.md,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  detailRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  detailText: {
+    fontSize: typography.fontSize.sm,
+  },
+  emptyDesc: {
+    fontSize: typography.fontSize.sm,
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    textAlign: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl,
+  },
+  emptyTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+    marginTop: spacing.lg,
   },
   expertAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
     alignItems: 'center',
+    borderRadius: 24,
+    height: 48,
     justifyContent: 'center',
     marginRight: spacing.md,
+    width: 48,
   },
   expertDetail: {},
+  expertInfo: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+  },
   expertName: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
@@ -390,34 +447,40 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     marginTop: 2,
   },
-  bookingDetails: {
-    gap: spacing.sm,
-  },
-  dateTimeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  header: {
     alignItems: 'center',
-  },
-  detailRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
   },
-  detailText: {
+  noteContent: {
     fontSize: typography.fontSize.sm,
+    lineHeight: 20,
   },
   noteSection: {
+    borderRadius: borderRadius.md,
     marginTop: spacing.md,
     padding: spacing.md,
-    borderRadius: borderRadius.md,
   },
   noteTitle: {
     fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.medium,
     marginBottom: spacing.xs,
   },
-  noteContent: {
-    fontSize: typography.fontSize.sm,
-    lineHeight: 20,
+  statusBadge: {
+    alignItems: 'center',
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  statusText: {
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
+  },
+  title: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
   },
 });

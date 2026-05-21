@@ -18,25 +18,30 @@ const NavigationCallbackContext = createContext<NavigationCallbackContextType | 
 
 const DEFAULT_TIMEOUT = 5 * 60 * 1000;
 
-export const NavigationCallbackProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const NavigationCallbackProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const callbacks = React.useRef<Map<string, NavigationCallback>>(new Map());
 
-  const registerCallback = useCallback((id: string, callback: () => void, timeout = DEFAULT_TIMEOUT) => {
-    const existing = callbacks.current.get(id);
-    if (existing && existing.timeout) {
-      clearTimeout(existing.timeout);
-    }
+  const registerCallback = useCallback(
+    (id: string, callback: () => void, timeout = DEFAULT_TIMEOUT) => {
+      const existing = callbacks.current.get(id);
+      if (existing && existing.timeout) {
+        clearTimeout(existing.timeout);
+      }
 
-    const timeoutId = window.setTimeout(() => {
-      callbacks.current.delete(id);
-    }, timeout);
+      const timeoutId = window.setTimeout(() => {
+        callbacks.current.delete(id);
+      }, timeout);
 
-    callbacks.current.set(id, {
-      id,
-      callback,
-      timeout: timeoutId,
-    });
-  }, []);
+      callbacks.current.set(id, {
+        id,
+        callback,
+        timeout: timeoutId,
+      });
+    },
+    [],
+  );
 
   const triggerCallback = useCallback((id: string) => {
     const callbackEntry = callbacks.current.get(id);
@@ -101,7 +106,9 @@ const noopCallback: NavigationCallbackContextType = {
 export const useNavigationCallback = () => {
   const context = useContext(NavigationCallbackContext);
   if (!context) {
-    logger.warn('useNavigationCallback used outside NavigationCallbackProvider, using no-op fallback');
+    logger.warn(
+      'useNavigationCallback used outside NavigationCallbackProvider, using no-op fallback',
+    );
     return noopCallback;
   }
   return context;

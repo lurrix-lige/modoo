@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaContainer, WhiteNoisePlayer, BreathingBalloon } from '../../../components';
 import { Leaf, Wind, AlertCircle, Cloud, PlayCircle } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { apiService, BreathingExercise } from '../../../services';
 import { errorHandler } from '../../../services/ErrorHandler';
@@ -44,7 +47,7 @@ export default function BreathingScreen() {
     } catch (error) {
       const errorMessage = errorHandler.getErrorMessage(
         error instanceof Error ? error.message : 'UNKNOWN_ERROR',
-        t('breathing.loadError')
+        t('breathing.loadError'),
       );
       setLoadError(errorMessage);
       addError({
@@ -87,7 +90,7 @@ export default function BreathingScreen() {
       <View style={[styles.skeletonSectionTitle, { backgroundColor: colors.border }]} />
 
       <View style={styles.exerciseList}>
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <View key={i} style={[styles.skeletonCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.skeletonIcon, { backgroundColor: colors.border }]} />
             <View style={styles.skeletonInfo}>
@@ -98,7 +101,6 @@ export default function BreathingScreen() {
           </View>
         ))}
       </View>
-
     </ScrollView>
   );
 
@@ -124,7 +126,10 @@ export default function BreathingScreen() {
   const renderEmptyState = () => (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
       <View style={[styles.emptyCard, { backgroundColor: colors.surface }]}>
-        <Cloud size={responsive.moderateScaleForIcon(iconSizes.hero)} color={colors.textSecondary} />
+        <Cloud
+          size={responsive.moderateScaleForIcon(iconSizes.hero)}
+          color={colors.textSecondary}
+        />
         <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
           {t('breathing.emptyState')}
         </Text>
@@ -148,7 +153,7 @@ export default function BreathingScreen() {
       ) : exercises.length === 0 ? (
         renderEmptyState()
       ) : (
-        <ScrollView 
+        <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1 }}
@@ -167,7 +172,7 @@ export default function BreathingScreen() {
               </Text>
 
               <View style={styles.exerciseList}>
-                {exercises.map(exercise => {
+                {exercises.map((exercise) => {
                   const exerciseInfo = getExerciseInfo(exercise);
                   return (
                     <TouchableOpacity
@@ -184,30 +189,35 @@ export default function BreathingScreen() {
                       <View
                         style={[
                           styles.exerciseIcon,
-                          { backgroundColor: selectedExercise === exercise.id ? colors.textPrimary : colors.primary },
+                          {
+                            backgroundColor:
+                              selectedExercise === exercise.id
+                                ? colors.textPrimary
+                                : colors.primary,
+                          },
                         ]}
                       >
-                        <Leaf size={responsive.moderateScaleForIcon(iconSizes.lg)} color={selectedExercise === exercise.id ? colors.primary : colors.textPrimary} />
+                        <Leaf
+                          size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                          color={
+                            selectedExercise === exercise.id ? colors.primary : colors.textPrimary
+                          }
+                        />
                       </View>
                       <View style={styles.exerciseInfo}>
-                        <Text
-                          style={[
-                            styles.exerciseName,
-                            { color: colors.textPrimary },
-                          ]}
-                        >
+                        <Text style={[styles.exerciseName, { color: colors.textPrimary }]}>
                           {exerciseInfo.name}
                         </Text>
-                        <Text
-                          style={[
-                            styles.exerciseDesc,
-                            { color: colors.textSecondary },
-                          ]}
-                        >
+                        <Text style={[styles.exerciseDesc, { color: colors.textSecondary }]}>
                           {exerciseInfo.desc}
                         </Text>
                       </View>
-                      <PlayCircle size={responsive.moderateScaleForIcon(iconSizes.xl)} color={selectedExercise === exercise.id ? colors.textPrimary : colors.primary} />
+                      <PlayCircle
+                        size={responsive.moderateScaleForIcon(iconSizes.xl)}
+                        color={
+                          selectedExercise === exercise.id ? colors.textPrimary : colors.primary
+                        }
+                      />
                     </TouchableOpacity>
                   );
                 })}
@@ -229,96 +239,15 @@ export default function BreathingScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.bold,
-  },
-  subtitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    marginTop: spacing.xs,
-  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
   },
-  previewCard: {
-    alignItems: 'center',
-    padding: spacing.xxl,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xl,
-    ...shadows.medium,
-  },
-  previewText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    marginTop: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.md,
-  },
-  exerciseList: {
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  exerciseCard: {
-    ...sharedStyles.rowStart,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    ...shadows.small,
-  },
-  exerciseIcon: {
-    width: responsive.moderateScale(48),
-    height: responsive.moderateScale(48),
-    borderRadius: responsive.moderateScale(24),
-    ...sharedStyles.columnCenter,
-    marginRight: spacing.md,
-  },
-  exerciseInfo: {
-    flex:1,
-  },
-  exerciseName: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.xs,
-  },
-  exerciseDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-  },
-
-  errorCard: {
-    alignItems: 'center',
-    padding: spacing.xxl,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xl,
-    ...shadows.medium,
-  },
-  errorText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    marginTop: spacing.lg,
-    textAlign: 'center',
-  },
-  retryButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    marginTop: spacing.lg,
-  },
-  retryButtonText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    fontWeight: typography.fontWeight.semibold,
-  },
-
   emptyCard: {
     alignItems: 'center',
-    padding: spacing.xxl,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.xl,
+    padding: spacing.xxl,
     ...shadows.medium,
   },
   emptyText: {
@@ -326,54 +255,135 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     textAlign: 'center',
   },
-
-  skeletonBalloon: {
-    width: responsive.moderateScale(120),
-    height: responsive.moderateScale(120),
-    borderRadius: responsive.moderateScale(60),
+  errorCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    padding: spacing.xxl,
+    ...shadows.medium,
   },
-  skeletonText: {
-    width: responsive.moderateScale(150),
-    height: responsive.verticalScale(16),
-    borderRadius: responsive.moderateScale(8),
+  errorText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    marginTop: spacing.lg,
+    textAlign: 'center',
+  },
+  exerciseCard: {
+    ...sharedStyles.rowStart,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    ...shadows.small,
+  },
+  exerciseDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+  },
+  exerciseIcon: {
+    borderRadius: responsive.moderateScale(24),
+    height: responsive.moderateScale(48),
+    width: responsive.moderateScale(48),
+    ...sharedStyles.columnCenter,
+    marginRight: spacing.md,
+  },
+  exerciseInfo: {
+    flex: 1,
+  },
+  exerciseList: {
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+  },
+  exerciseName: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.xs,
+  },
+  header: {
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  previewCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    padding: spacing.xxl,
+    ...shadows.medium,
+  },
+
+  previewText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
     marginTop: spacing.lg,
   },
-  skeletonSectionTitle: {
-    width: responsive.moderateScale(100),
-    height: responsive.verticalScale(20),
-    borderRadius: responsive.moderateScale(10),
+  retryButton: {
+    borderRadius: borderRadius.lg,
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+  },
+  retryButtonText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.semibold,
+  },
+  sectionTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.md,
+  },
+
+  skeletonBalloon: {
+    borderRadius: responsive.moderateScale(60),
+    height: responsive.moderateScale(120),
+    width: responsive.moderateScale(120),
   },
   skeletonCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.lg,
+  },
+
+  skeletonDesc: {
+    borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(12),
+    width: responsive.moderateScale(180),
   },
   skeletonIcon: {
-    width: responsive.moderateScale(48),
-    height: responsive.moderateScale(48),
     borderRadius: responsive.moderateScale(24),
+    height: responsive.moderateScale(48),
     marginRight: spacing.md,
+    width: responsive.moderateScale(48),
   },
   skeletonInfo: {
     flex: 1,
     gap: spacing.sm,
   },
   skeletonName: {
-    width: responsive.moderateScale(120),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
-  },
-  skeletonDesc: {
-    width: responsive.moderateScale(180),
-    height: responsive.verticalScale(12),
-    borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(16),
+    width: responsive.moderateScale(120),
   },
   skeletonPlay: {
-    width: responsive.moderateScale(32),
-    height: responsive.moderateScale(32),
     borderRadius: responsive.moderateScale(16),
+    height: responsive.moderateScale(32),
+    width: responsive.moderateScale(32),
+  },
+  skeletonSectionTitle: {
+    borderRadius: responsive.moderateScale(10),
+    height: responsive.verticalScale(20),
+    marginBottom: spacing.md,
+    width: responsive.moderateScale(100),
+  },
+  skeletonText: {
+    borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
+    marginTop: spacing.lg,
+    width: responsive.moderateScale(150),
+  },
+  subtitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    marginTop: spacing.xs,
+  },
+  title: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
   },
 });

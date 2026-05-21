@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, FileText, Heart, BookOpen, MessageSquare, Eye, Clock } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  FileText,
+  Heart,
+  BookOpen,
+  MessageSquare,
+  Eye,
+  Clock,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Article, Story, Dialogue } from '../../../services';
 import { logger } from '../../../utils/logger';
@@ -73,13 +82,15 @@ export default function FavoritesScreen() {
         coverUrl: story.coverUrl,
       }));
 
-      const dialogueFavorites: FavoriteItem[] = dialoguesResult.dialogues.map((dialogue: Dialogue) => ({
-        id: `dialogue_${dialogue.id}`,
-        type: 'dialogue',
-        title: dialogue.titleKey ? t(dialogue.titleKey) : dialogue.title,
-        scenario: dialogue.scenarioKey ? t(dialogue.scenarioKey) : dialogue.scenario,
-        response: dialogue.responseKey ? t(dialogue.responseKey) : dialogue.response,
-      }));
+      const dialogueFavorites: FavoriteItem[] = dialoguesResult.dialogues.map(
+        (dialogue: Dialogue) => ({
+          id: `dialogue_${dialogue.id}`,
+          type: 'dialogue',
+          title: dialogue.titleKey ? t(dialogue.titleKey) : dialogue.title,
+          scenario: dialogue.scenarioKey ? t(dialogue.scenarioKey) : dialogue.scenario,
+          response: dialogue.responseKey ? t(dialogue.responseKey) : dialogue.response,
+        }),
+      );
 
       setFavorites([...articleFavorites, ...storyFavorites, ...dialogueFavorites]);
     } catch (error) {
@@ -137,14 +148,13 @@ export default function FavoritesScreen() {
           <View style={styles.articleMeta}>
             <View style={styles.metaItem}>
               <Eye size={14} color={colors.textSecondary} />
-              <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                {item.views}
-              </Text>
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>{item.views}</Text>
             </View>
             <View style={styles.metaItem}>
               <Clock size={14} color={colors.textSecondary} />
               <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                {item.readTime}{t('knowledge.minutes')}
+                {item.readTime}
+                {t('knowledge.minutes')}
               </Text>
             </View>
           </View>
@@ -195,15 +205,11 @@ export default function FavoritesScreen() {
     >
       <View style={styles.dialogueHeader}>
         <View style={[styles.scenarioTag, { backgroundColor: colors.warning + '30' }]}>
-          <Text style={[styles.scenarioTagText, { color: colors.warning }]}>
-            {item.scenario}
-          </Text>
+          <Text style={[styles.scenarioTagText, { color: colors.warning }]}>{item.scenario}</Text>
         </View>
         <Heart size={16} color={colors.error} fill={colors.error} />
       </View>
-      <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>
-        {item.title}
-      </Text>
+      <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>{item.title}</Text>
       <Text style={[styles.itemSummary, { color: colors.textSecondary }]} numberOfLines={2}>
         {item.response}
       </Text>
@@ -229,7 +235,9 @@ export default function FavoritesScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <ArrowLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('knowledge.favorites')}</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>
+          {t('knowledge.favorites')}
+        </Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -270,17 +278,17 @@ export default function FavoritesScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
   },
   backButton: {
-    width: 40,
+    alignItems: 'center',
     height: 40,
     justifyContent: 'center',
-    alignItems: 'center',
+    width: 40,
   },
   title: {
     fontSize: typography.fontSize.xl,
@@ -294,18 +302,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   loadingContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: spacing.xxl,
   },
   loadingText: {
     fontSize: typography.fontSize.md,
   },
   emptyContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: spacing.xxl,
   },
   emptyText: {
@@ -316,16 +324,16 @@ const styles = StyleSheet.create({
   emptyHint: {
     fontSize: typography.fontSize.sm,
     marginTop: spacing.sm,
-    textAlign: 'center',
     paddingHorizontal: spacing.xl,
+    textAlign: 'center',
   },
   favoritesList: {
     paddingBottom: spacing.xxl,
   },
   sectionHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.lg,
   },
   sectionTitle: {
@@ -338,41 +346,41 @@ const styles = StyleSheet.create({
 
   // Article card styles
   articleCard: {
-    flexDirection: 'row',
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.md,
     ...shadows.small,
   },
   articleCover: {
-    width: 80,
-    height: 100,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: 100,
+    justifyContent: 'center',
     marginRight: spacing.md,
     overflow: 'hidden',
+    width: 80,
   },
   articleCoverImage: {
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   articleInfo: {
     flex: 1,
   },
   tagsRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.xs,
   },
   articleTags: {
     flexDirection: 'row',
   },
   tag: {
+    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: borderRadius.sm,
   },
   tagText: {
     fontSize: typography.fontSize.xs,
@@ -382,8 +390,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   metaItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: 4,
   },
   metaText: {
@@ -401,58 +409,58 @@ const styles = StyleSheet.create({
 
   // Story card styles
   storyCard: {
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.md,
+    padding: spacing.md,
     ...shadows.small,
   },
   storyCoverContainer: {
+    borderRadius: borderRadius.md,
+    height: 120,
+    marginBottom: spacing.sm,
+    overflow: 'hidden',
     position: 'relative',
     width: '100%',
-    height: 120,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    marginBottom: spacing.sm,
   },
   storyCoverImage: {
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   storyCoverPlaceholder: {
-    width: '100%',
+    alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
   },
   storyIcon: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    width: 28,
-    height: 28,
+    alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: borderRadius.round,
+    height: 28,
     justifyContent: 'center',
-    alignItems: 'center',
+    position: 'absolute',
+    right: spacing.sm,
+    top: spacing.sm,
+    width: 28,
   },
 
   // Dialogue card styles
   dialogueCard: {
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.md,
+    padding: spacing.md,
     ...shadows.small,
   },
   dialogueHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: spacing.sm,
   },
   scenarioTag: {
+    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    borderRadius: borderRadius.sm,
   },
   scenarioTagText: {
     fontSize: typography.fontSize.xs,

@@ -1,7 +1,7 @@
 /**
  * 欢迎页面英雄区域组件
- * 
- * 展示应用 Logo 和欢迎信息，使用 GuardianSpirit 组件实现动画效果�? * 
+ *
+ * 展示应用 Logo 和欢迎信息，使用 GuardianSpirit 组件实现动画效果�? *
  * @component
  */
 import React from 'react';
@@ -30,10 +30,8 @@ export function WelcomeHero() {
         animationDuration={3000}
         style={styles.logo}
       />
-      
-      <Text style={[styles.appTitle, { color: colors.textPrimary }]}>
-        {t('welcome.appTitle')}
-      </Text>
+
+      <Text style={[styles.appTitle, { color: colors.textPrimary }]}>{t('welcome.appTitle')}</Text>
       <Text style={[styles.appSubtitle, { color: colors.textSecondary }]}>
         {isFirstVisit ? t('welcome.firstVisit') : t('welcome.returnVisit')}
       </Text>
@@ -42,14 +40,10 @@ export function WelcomeHero() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingVertical: spacing.xxxl,
-    paddingHorizontal: spacing.xl,
-  },
-  logo: {
-    marginBottom: spacing.lg,
-    ...shadows.medium,
+  appSubtitle: {
+    fontSize: typography.fontSize.md,
+    lineHeight: 24,
+    textAlign: 'center',
   },
   appTitle: {
     fontSize: typography.fontSize.xxxl,
@@ -57,9 +51,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     textAlign: 'center',
   },
-  appSubtitle: {
-    fontSize: typography.fontSize.md,
-    textAlign: 'center',
-    lineHeight: 24,
+  container: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xxxl,
+  },
+  logo: {
+    marginBottom: spacing.lg,
+    ...shadows.medium,
   },
 });

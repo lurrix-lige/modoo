@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { AlertCircle, Wind, Music } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -66,7 +60,7 @@ export default function RelaxSpaceScreen() {
     },
   ];
 
-  const getExerciseInfo = (exercise: typeof breathingExercises[0]) => {
+  const getExerciseInfo = (exercise: (typeof breathingExercises)[0]) => {
     return {
       name: t(exercise.nameKey),
       desc: t(exercise.descriptionKey),
@@ -116,7 +110,7 @@ export default function RelaxSpaceScreen() {
         </Text>
 
         <View style={styles.exerciseList}>
-          {breathingExercises.map(exercise => {
+          {breathingExercises.map((exercise) => {
             const exerciseInfo = getExerciseInfo(exercise);
             return (
               <TouchableOpacity
@@ -188,28 +182,67 @@ export default function RelaxSpaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
-  },
-  subtitle: {
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.xs,
-  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
   },
-  heroCard: {
+  errorCard: {
     alignItems: 'center',
-    padding: spacing.xxl,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.xl,
+    padding: spacing.xxl,
+    ...shadows.medium,
+  },
+  errorText: {
+    fontSize: typography.fontSize.md,
+    marginTop: spacing.lg,
+    textAlign: 'center',
+  },
+  exerciseCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    flexDirection: 'row',
+    padding: spacing.lg,
+    ...shadows.small,
+  },
+  exerciseDesc: {
+    fontSize: typography.fontSize.sm,
+  },
+  exerciseIcon: {
+    alignItems: 'center',
+    borderRadius: 26,
+    height: 52,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 52,
+  },
+  exerciseInfo: {
+    flex: 1,
+  },
+  exerciseList: {
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+  },
+  exerciseName: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.xs,
+  },
+  exerciseTiming: {
+    borderRadius: borderRadius.round,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  header: {
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  heroCard: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    padding: spacing.xxl,
     ...shadows.medium,
   },
   heroText: {
@@ -217,104 +250,65 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     textAlign: 'center',
   },
-  sectionTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.md,
-  },
-  exerciseList: {
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  exerciseCard: {
-    flexDirection: 'row',
+  musicButton: {
     alignItems: 'center',
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
-    ...shadows.small,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
   },
-  exerciseIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  exerciseInfo: {
-    flex: 1,
-  },
-  exerciseName: {
+  musicButtonText: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.xs,
   },
-  exerciseDesc: {
+  musicDesc: {
     fontSize: typography.fontSize.sm,
-  },
-  exerciseTiming: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.round,
-  },
-  timingText: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  musicSection: {
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xxl,
-    ...shadows.medium,
+    marginLeft: spacing.md,
   },
   musicHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: spacing.lg,
+  },
+  musicPreview: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    height: 60,
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  musicSection: {
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xxl,
+    padding: spacing.xl,
+    ...shadows.medium,
   },
   musicTitle: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     marginLeft: spacing.md,
   },
-  musicDesc: {
-    fontSize: typography.fontSize.sm,
-    marginLeft: spacing.md,
-  },
-  musicPreview: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    height: 60,
-    marginBottom: spacing.lg,
-  },
   musicWave: {
-    width: 6,
-    height: 40,
     borderRadius: 3,
+    height: 40,
+    width: 6,
   },
-  musicButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-  },
-  musicButtonText: {
-    fontSize: typography.fontSize.md,
+  sectionTitle: {
+    fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.md,
+  },
+  subtitle: {
+    fontSize: typography.fontSize.sm,
+    marginTop: spacing.xs,
   },
 
-  errorCard: {
-    alignItems: 'center',
-    padding: spacing.xxl,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.xl,
-    ...shadows.medium,
+  timingText: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
   },
-  errorText: {
-    fontSize: typography.fontSize.md,
-    marginTop: spacing.lg,
-    textAlign: 'center',
+  title: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: typography.fontWeight.bold,
   },
 });

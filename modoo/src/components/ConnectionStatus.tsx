@@ -53,9 +53,19 @@ export const ConnectionStatus = ({ visible = true }: ConnectionStatusProps) => {
   const currentConfig = config[connectionStatus] || config.offline;
 
   return (
-    <Animated.View style={[styles.container, { backgroundColor: currentConfig.backgroundColor }, { opacity: fadeAnim }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { backgroundColor: currentConfig.backgroundColor },
+        { opacity: fadeAnim },
+      ]}
+    >
       <View style={styles.icon}>
-        {currentConfig.icon === 'refresh-circle' ? <RefreshCw size={18} color={colors.primary} /> : <CloudOff size={18} color={colors.primary} />}
+        {currentConfig.icon === 'refresh-circle' ? (
+          <RefreshCw size={18} color={colors.primary} />
+        ) : (
+          <CloudOff size={18} color={colors.primary} />
+        )}
       </View>
       <View style={styles.textContainer}>
         <Text style={[styles.text, { color: textColor }]}>{currentConfig.text}</Text>
@@ -67,23 +77,23 @@ export const ConnectionStatus = ({ visible = true }: ConnectionStatusProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    flexDirection: 'row',
     paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   icon: {
     marginRight: spacing.sm,
   },
-  textContainer: {
-    flex: 1,
+  subtext: {
+    fontSize: typography.fontSize.xs,
   },
   text: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
   },
-  subtext: {
-    fontSize: typography.fontSize.xs,
+  textContainer: {
+    flex: 1,
   },
 });
 

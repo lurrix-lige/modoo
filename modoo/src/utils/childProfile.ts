@@ -4,11 +4,11 @@ export function normalizeSleepProblems(sleepProblems: string | string[] | undefi
 }
 
 export function parseGender(gender: string | undefined): 'male' | 'female' {
-  return (gender === 'male' || gender === 'female') ? gender : 'male';
+  return gender === 'male' || gender === 'female' ? gender : 'male';
 }
 
 export function parseGuardianSpiritId(id: string | undefined): 'moon' | 'firefly' | 'star' {
-  return (id === 'moon' || id === 'firefly' || id === 'star') ? id : 'moon';
+  return id === 'moon' || id === 'firefly' || id === 'star' ? id : 'moon';
 }
 
 export function parseGuardianIP(ip: string | undefined): 'moon' | 'firefly' | 'star' {

@@ -27,7 +27,9 @@ export const LOGIN_NAVIGATION_RULES: NavigationRule[] = [
 ];
 
 export const findNavigationRule = (fromScreen?: string): NavigationRule => {
-  return LOGIN_NAVIGATION_RULES.find(rule => 
-    rule.fromScreen === fromScreen || rule.fromScreen === '*'
-  ) || LOGIN_NAVIGATION_RULES[LOGIN_NAVIGATION_RULES.length - 1];
+  return (
+    LOGIN_NAVIGATION_RULES.find(
+      (rule) => rule.fromScreen === fromScreen || rule.fromScreen === '*',
+    ) || LOGIN_NAVIGATION_RULES[LOGIN_NAVIGATION_RULES.length - 1]
+  );
 };

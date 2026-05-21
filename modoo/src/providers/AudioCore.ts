@@ -1,4 +1,10 @@
-import { createAudioPlayer, setAudioModeAsync, setIsAudioActiveAsync, AudioStatus, AudioPlayer } from 'expo-audio';
+import {
+  createAudioPlayer,
+  setAudioModeAsync,
+  setIsAudioActiveAsync,
+  AudioStatus,
+  AudioPlayer,
+} from 'expo-audio';
 import { Platform } from 'react-native';
 import i18n from '../i18n';
 import { logger } from '../utils/logger';
@@ -53,7 +59,8 @@ const getFileExtension = (url: string): string => {
 
 const isFormatSupported = (url: string): boolean => {
   const ext = getFileExtension(url);
-  const supportedExtensions = Platform.OS === 'ios' ? SUPPORTED_EXTENSIONS_IOS : SUPPORTED_EXTENSIONS_ANDROID;
+  const supportedExtensions =
+    Platform.OS === 'ios' ? SUPPORTED_EXTENSIONS_IOS : SUPPORTED_EXTENSIONS_ANDROID;
   return supportedExtensions.includes(ext);
 };
 
@@ -70,7 +77,8 @@ export const validateUrl = (url: string): { valid: boolean; message?: string } =
   }
 
   const ext = getFileExtension(url);
-  const supportedExtensions = Platform.OS === 'ios' ? SUPPORTED_EXTENSIONS_IOS : SUPPORTED_EXTENSIONS_ANDROID;
+  const supportedExtensions =
+    Platform.OS === 'ios' ? SUPPORTED_EXTENSIONS_IOS : SUPPORTED_EXTENSIONS_ANDROID;
 
   if (ext && !supportedExtensions.includes(ext)) {
     logger.warn(`Unsupported audio format: ${ext} on ${Platform.OS}, attempting to play anyway`);
@@ -84,9 +92,10 @@ export const encodeUrl = (url: string): string => {
   try {
     const parsedUrl = new URL(url);
     logger.debug('Encoding URL', { url: parsedUrl.toString() });
-    parsedUrl.pathname = parsedUrl.pathname.split('/').map(segment =>
-      encodeURIComponent(decodeURIComponent(segment))
-    ).join('/');
+    parsedUrl.pathname = parsedUrl.pathname
+      .split('/')
+      .map((segment) => encodeURIComponent(decodeURIComponent(segment)))
+      .join('/');
     logger.debug('Encoded URL', { url: parsedUrl.toString() });
     return parsedUrl.toString();
   } catch {
@@ -172,7 +181,9 @@ export class UnifiedAudioPlayer {
   private emitMetrics(errorMessage?: string): void {
     if (!this.metricsCallback) return;
     const latency = this.firstPlayingRecorded
-      ? this.playStartTime > 0 ? Date.now() - this.playStartTime : 0
+      ? this.playStartTime > 0
+        ? Date.now() - this.playStartTime
+        : 0
       : -1;
     this.metricsCallback({
       playLatencyMs: latency,
@@ -181,7 +192,11 @@ export class UnifiedAudioPlayer {
     });
   }
 
-  private handlePlaybackStatusUpdate(status: AudioStatus, currentGen: number, trackLoop: boolean): void {
+  private handlePlaybackStatusUpdate(
+    status: AudioStatus,
+    currentGen: number,
+    trackLoop: boolean,
+  ): void {
     if (this.generation !== currentGen) {
       return;
     }
@@ -314,7 +329,11 @@ export class UnifiedAudioPlayer {
     try {
       // 先清理所有旧播放器
       for (const player of this.players.values()) {
-        try { player.remove(); } catch (err) { /* ignore */ }
+        try {
+          player.remove();
+        } catch (err) {
+          /* ignore */
+        }
       }
       this.players.clear();
       this.isCompleted = false;
@@ -333,7 +352,10 @@ export class UnifiedAudioPlayer {
         }
 
         const encodedUrl = encodeUrl(track.url);
-        const player = createAudioPlayer(encodedUrl, { updateInterval, keepAudioSessionActive: true });
+        const player = createAudioPlayer(encodedUrl, {
+          updateInterval,
+          keepAudioSessionActive: true,
+        });
         player.loop = track.loop ?? false;
         const volume = track.volume ?? 1.0;
         player.volume = volume;
@@ -380,7 +402,11 @@ export class UnifiedAudioPlayer {
       logger.error('Failed to play audio', { err });
       this.emitMetrics(String(err));
       for (const player of this.players.values()) {
-        try { player.remove(); } catch (e) { /* ignore */ }
+        try {
+          player.remove();
+        } catch (e) {
+          /* ignore */
+        }
       }
       this.players.clear();
       this.isPlayingInternal = false;
@@ -398,7 +424,10 @@ export class UnifiedAudioPlayer {
 
     const validation = validateUrl(track.url);
     if (!validation.valid) {
-      logger.error('Invalid track URL for addTrack', { url: track.url, message: validation.message });
+      logger.error('Invalid track URL for addTrack', {
+        url: track.url,
+        message: validation.message,
+      });
       return false;
     }
 
@@ -414,7 +443,10 @@ export class UnifiedAudioPlayer {
       }
 
       if ((status as any).error) {
-        logger.error('Audio track playback error', { trackId: track.id, error: (status as any).error });
+        logger.error('Audio track playback error', {
+          trackId: track.id,
+          error: (status as any).error,
+        });
       }
 
       const isActuallyPlaying = status.isLoaded && status.playing === true;

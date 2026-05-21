@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   StatusBar,
   Platform,
   useWindowDimensions,
-} from "react-native";
+} from 'react-native';
 import {
   X,
   CheckCircle,
@@ -17,27 +17,18 @@ import {
   AlertCircle,
   RefreshCw,
   ChevronRight,
-} from "lucide-react-native";
+} from 'lucide-react-native';
 
-const iconMap: Record<
-  string,
-  React.ComponentType<{ size: number; color: string }>
-> = {
-  "checkmark-circle": CheckCircle,
-  "information-circle": Info,
+const iconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
+  'checkmark-circle': CheckCircle,
+  'information-circle': Info,
   warning: AlertTriangle,
-  "alert-circle": AlertCircle,
+  'alert-circle': AlertCircle,
 };
-import { useTranslation } from "react-i18next";
-import {
-  useTheme,
-  spacing,
-  borderRadius,
-  typography,
-  commonColors,
-} from "../theme";
+import { useTranslation } from 'react-i18next';
+import { useTheme, spacing, borderRadius, typography, commonColors } from '../theme';
 
-export type ErrorSeverity = "info" | "warning" | "error" | "success";
+export type ErrorSeverity = 'info' | 'warning' | 'error' | 'success';
 
 export interface ToastConfig {
   visible: boolean;
@@ -50,7 +41,7 @@ export interface ToastConfig {
   onDismiss?: () => void;
   retryButtonText?: string;
   showRetry?: boolean;
-  position?: "top" | "bottom";
+  position?: 'top' | 'bottom';
   showDetails?: boolean;
 }
 
@@ -82,11 +73,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
     return isDark ? colors.surfaceVariant : colors.primaryLight;
   }, [isDark, colors.surfaceVariant, colors.primaryLight]);
 
-  type IconName =
-    | "checkmark-circle"
-    | "information-circle"
-    | "warning"
-    | "alert-circle";
+  type IconName = 'checkmark-circle' | 'information-circle' | 'warning' | 'alert-circle';
 
   const getConfig = (): {
     icon: IconName;
@@ -94,43 +81,43 @@ const ToastItem: React.FC<ToastItemProps> = ({
     textColor: string;
     borderColor: string;
   } => {
-    switch (toast.severity || "error") {
-      case "success":
+    switch (toast.severity || 'error') {
+      case 'success':
         return {
-          icon: "checkmark-circle",
-          background: isDark ? "rgba(46, 125, 50, 0.95)" : "rgba(76, 175, 80, 0.95)",
+          icon: 'checkmark-circle',
+          background: isDark ? 'rgba(46, 125, 50, 0.95)' : 'rgba(76, 175, 80, 0.95)',
           textColor: commonColors.white,
-          borderColor: isDark ? "#2E7D32" : "#81C784",
+          borderColor: isDark ? '#2E7D32' : '#81C784',
         };
-      case "info":
+      case 'info':
         return {
-          icon: "information-circle",
-          background: isDark ? "rgba(2, 136, 209, 0.95)" : "rgba(33, 150, 243, 0.95)",
+          icon: 'information-circle',
+          background: isDark ? 'rgba(2, 136, 209, 0.95)' : 'rgba(33, 150, 243, 0.95)',
           textColor: commonColors.white,
-          borderColor: isDark ? "#0277BD" : "#64B5F6",
+          borderColor: isDark ? '#0277BD' : '#64B5F6',
         };
-      case "warning":
+      case 'warning':
         return {
-          icon: "warning",
-          background: isDark ? "rgba(230, 81, 0, 0.95)" : "rgba(255, 152, 0, 0.95)",
+          icon: 'warning',
+          background: isDark ? 'rgba(230, 81, 0, 0.95)' : 'rgba(255, 152, 0, 0.95)',
           textColor: commonColors.white,
-          borderColor: isDark ? "#E65100" : "#FFB74D",
+          borderColor: isDark ? '#E65100' : '#FFB74D',
         };
       default:
         return {
-          icon: "alert-circle",
-          background: isDark ? "rgba(198, 40, 40, 0.95)" : "rgba(244, 67, 54, 0.95)",
+          icon: 'alert-circle',
+          background: isDark ? 'rgba(198, 40, 40, 0.95)' : 'rgba(244, 67, 54, 0.95)',
           textColor: commonColors.white,
-          borderColor: isDark ? "#C62828" : "#EF5350",
+          borderColor: isDark ? '#C62828' : '#EF5350',
         };
     }
   };
 
   const config = getConfig();
-  const isTopPosition = toast.position !== "bottom";
+  const isTopPosition = toast.position !== 'bottom';
 
   const offsetValue = useMemo(() => {
-    const topOffset = Platform.OS === "ios" ? 60 : 40;
+    const topOffset = Platform.OS === 'ios' ? 60 : 40;
     const bottomOffset = 100;
     const itemHeight = 100;
     const gap = 10;
@@ -219,19 +206,18 @@ const ToastItem: React.FC<ToastItemProps> = ({
           <View style={styles.iconContainer}>
             {(() => {
               const IconComp = iconMap[config.icon];
-              return IconComp ? (
-                <IconComp size={24} color={config.textColor} />
-              ) : null;
+              return IconComp ? <IconComp size={24} color={config.textColor} /> : null;
             })()}
           </View>
           <View style={styles.textContainer}>
-            <Text style={[styles.message, { color: config.textColor }]} numberOfLines={showDetails ? undefined : 2}>
+            <Text
+              style={[styles.message, { color: config.textColor }]}
+              numberOfLines={showDetails ? undefined : 2}
+            >
               {toast.message}
             </Text>
             {toast.code && (
-              <Text style={[styles.code, { color: config.textColor }]}>
-                {toast.code}
-              </Text>
+              <Text style={[styles.code, { color: config.textColor }]}>{toast.code}</Text>
             )}
           </View>
           <TouchableOpacity style={styles.closeButton} onPress={handleDismiss}>
@@ -242,7 +228,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
         {showDetails && toast.code && (
           <View style={[styles.detailsContainer, { borderTopColor: config.borderColor }]}>
             <Text style={[styles.detailsText, { color: config.textColor }]}>
-              {t("common.errorCode")}: {toast.code}
+              {t('common.errorCode')}: {toast.code}
             </Text>
           </View>
         )}
@@ -251,7 +237,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
           {toast.code && (
             <TouchableOpacity style={styles.detailsButton} onPress={toggleDetails}>
               <Text style={[styles.buttonText, { color: config.textColor }]}>
-                {showDetails ? t("common.hideDetails") : t("common.viewDetails")}
+                {showDetails ? t('common.hideDetails') : t('common.viewDetails')}
               </Text>
               <ChevronRight size={14} color={config.textColor} />
             </TouchableOpacity>
@@ -264,7 +250,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
             >
               <RefreshCw size={16} color={config.textColor} />
               <Text style={[styles.buttonText, { color: config.textColor }]}>
-                {toast.retryButtonText || t("common.retry")}
+                {toast.retryButtonText || t('common.retry')}
               </Text>
             </TouchableOpacity>
           )}
@@ -323,7 +309,7 @@ class ToastManagerImpl implements ToastManager {
 
   private notifyListeners(): void {
     const toastList = this.getToasts();
-    this.listeners.forEach(listener => listener(toastList));
+    this.listeners.forEach((listener) => listener(toastList));
   }
 }
 
@@ -355,12 +341,14 @@ export const ErrorToastProvider: React.FC<ErrorToastProviderProps> = ({
 
   return (
     <View style={styles.providerContainer} pointerEvents="box-none">
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor="transparent"
-        translucent
-      />
-      <View style={[styles.safeArea, { paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 0 }]} pointerEvents="box-none">
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <View
+        style={[
+          styles.safeArea,
+          { paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 0 },
+        ]}
+        pointerEvents="box-none"
+      >
         {toasts.map((toast, index) => (
           <ToastItem
             key={toast.id}
@@ -388,21 +376,21 @@ interface ErrorToastProps {
   onDismiss?: () => void;
   retryButtonText?: string;
   showRetry?: boolean;
-  position?: "top" | "bottom";
+  position?: 'top' | 'bottom';
 }
 
 export const ErrorToast: React.FC<ErrorToastProps> = ({
   visible,
   message,
   code,
-  severity = "error",
+  severity = 'error',
   duration = 5000,
   onClose,
   onRetry,
   onDismiss,
   retryButtonText: retryButtonTextProp,
   showRetry = true,
-  position = "top",
+  position = 'top',
 }) => {
   const { t } = useTranslation();
   const toastIdRef = useRef<string | null>(null);
@@ -447,7 +435,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
   visible,
   message,
   code,
-  severity = "error",
+  severity = 'error',
   onClose,
   onRetry,
   showRetry = false,
@@ -458,22 +446,18 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  type AlertIconName =
-    | "checkmark-circle"
-    | "information-circle"
-    | "warning"
-    | "alert-circle";
+  type AlertIconName = 'checkmark-circle' | 'information-circle' | 'warning' | 'alert-circle';
 
   const getConfig = (): { icon: AlertIconName; iconColor: string } => {
     switch (severity) {
-      case "success":
-        return { icon: "checkmark-circle", iconColor: colors.success };
-      case "info":
-        return { icon: "information-circle", iconColor: colors.info };
-      case "warning":
-        return { icon: "warning", iconColor: colors.warning };
+      case 'success':
+        return { icon: 'checkmark-circle', iconColor: colors.success };
+      case 'info':
+        return { icon: 'information-circle', iconColor: colors.info };
+      case 'warning':
+        return { icon: 'warning', iconColor: colors.warning };
       default:
-        return { icon: "alert-circle", iconColor: colors.error };
+        return { icon: 'alert-circle', iconColor: colors.error };
     }
   };
 
@@ -536,26 +520,22 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
         <View style={styles.alertIconContainer}>
           {(() => {
             const IconComp = iconMap[config.icon];
-            return IconComp ? (
-              <IconComp size={64} color={config.iconColor} />
-            ) : null;
+            return IconComp ? <IconComp size={64} color={config.iconColor} /> : null;
           })()}
         </View>
         <Text style={[styles.alertTitle, { color: colors.textPrimary }]}>
-          {severity === "error"
-            ? t("common.error")
-            : severity === "success"
-              ? t("common.success")
-              : severity === "warning"
-                ? t("common.warning") || "Warning"
-                : t("common.hint")}
+          {severity === 'error'
+            ? t('common.error')
+            : severity === 'success'
+              ? t('common.success')
+              : severity === 'warning'
+                ? t('common.warning') || 'Warning'
+                : t('common.hint')}
         </Text>
-        <Text style={[styles.alertMessage, { color: colors.textSecondary }]}>
-          {message}
-        </Text>
+        <Text style={[styles.alertMessage, { color: colors.textSecondary }]}>{message}</Text>
         {code && (
           <Text style={[styles.alertCode, { color: colors.textSecondary }]}>
-            {t("common.code") || "Code"}: {code}
+            {t('common.code') || 'Code'}: {code}
           </Text>
         )}
         <View style={styles.alertActions}>
@@ -568,7 +548,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
               }}
             >
               <Text style={[styles.alertButtonText, { color: commonColors.white }]}>
-                {t("common.retry")}
+                {t('common.retry')}
               </Text>
             </TouchableOpacity>
           )}
@@ -584,12 +564,10 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
             <Text
               style={[
                 styles.alertButtonText,
-                showRetry
-                  ? { color: colors.textPrimary }
-                  : { color: commonColors.white },
+                showRetry ? { color: colors.textPrimary } : { color: commonColors.white },
               ]}
             >
-              {t("common.confirm")}
+              {t('common.confirm')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -599,151 +577,151 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
 };
 
 const styles = StyleSheet.create({
-  providerContainer: {
+  actions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+  },
+  alertActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    width: '100%',
+  },
+  alertButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
     flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
-  safeArea: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999,
-  },
-  childrenContainer: {
-    flex: 1,
-  },
-  toastContainer: {
-    position: "absolute",
-    left: spacing.md,
-    right: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 10,
-    zIndex: 10000,
-  },
-  toastContent: {
-    padding: spacing.md,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  iconContainer: {
-    marginRight: spacing.sm,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  message: {
+  alertButtonText: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
-    lineHeight: 22,
   },
-  code: {
+  alertCode: {
+    fontFamily: 'monospace',
     fontSize: typography.fontSize.xs,
-    marginTop: spacing.xs,
-    opacity: 0.9,
-  },
-  closeButton: {
-    padding: spacing.xs,
-    margin: -spacing.xs,
-  },
-  detailsContainer: {
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.3)",
-  },
-  detailsText: {
-    fontSize: typography.fontSize.xs,
-    opacity: 0.9,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: spacing.sm,
-  },
-  detailsButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-  },
-  retryButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    gap: spacing.xs,
-  },
-  buttonText: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  alertOverlayContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 99999,
-  },
-  alertOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    marginBottom: spacing.lg,
   },
   alertContainer: {
-    width: "90%",
-    maxWidth: 340,
+    alignItems: 'center',
     borderRadius: borderRadius.xl,
+    elevation: 20,
+    maxWidth: 340,
     padding: spacing.xl,
-    alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
-    elevation: 20,
+    width: '90%',
   },
   alertIconContainer: {
     marginBottom: spacing.md,
+  },
+  alertMessage: {
+    fontSize: typography.fontSize.md,
+    lineHeight: 24,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  alertOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alertOverlayContainer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 99999,
   },
   alertTitle: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.sm,
   },
-  alertMessage: {
-    fontSize: typography.fontSize.md,
-    lineHeight: 24,
-    textAlign: "center",
-    marginBottom: spacing.sm,
+  buttonText: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
   },
-  alertCode: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: "monospace",
-    marginBottom: spacing.lg,
-  },
-  alertActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    width: "100%",
-  },
-  alertButton: {
+  childrenContainer: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
-    alignItems: "center",
-    justifyContent: "center",
   },
-  alertButtonText: {
+  closeButton: {
+    margin: -spacing.xs,
+    padding: spacing.xs,
+  },
+  code: {
+    fontSize: typography.fontSize.xs,
+    marginTop: spacing.xs,
+    opacity: 0.9,
+  },
+  detailsButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  detailsContainer: {
+    borderTopColor: 'rgba(255, 255, 255, 0.3)',
+    borderTopWidth: 1,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+  },
+  detailsText: {
+    fontSize: typography.fontSize.xs,
+    opacity: 0.9,
+  },
+  header: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+  },
+  iconContainer: {
+    marginRight: spacing.sm,
+  },
+  message: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
+    lineHeight: 22,
+  },
+  providerContainer: {
+    flex: 1,
+  },
+  retryButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  safeArea: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 9999,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  toastContainer: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    elevation: 10,
+    left: spacing.md,
+    position: 'absolute',
+    right: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    zIndex: 10000,
+  },
+  toastContent: {
+    padding: spacing.md,
   },
 });
 

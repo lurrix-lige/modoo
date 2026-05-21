@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Switch,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { ArrowLeft, Shield, ChevronRight, Database, Eye, Bell } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService } from '../../../services';
 import { logger } from '../../../utils/logger';
@@ -27,9 +27,9 @@ interface PrivacySettings {
 }
 
 const privacyIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
-  'database': Database,
+  database: Database,
   'bar-chart': Eye,
-  'gift': Bell,
+  gift: Bell,
 };
 
 export default function PrivacySettingsScreen() {
@@ -77,58 +77,53 @@ export default function PrivacySettingsScreen() {
   };
 
   const handleExportData = () => {
-    Alert.alert(
-      t('settings.exportData'),
-      t('settings.exportDataDesc'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.confirm'),
-          onPress: async () => {
-            try {
-              await apiService.exportUserData();
-              Alert.alert(t('common.success'), t('settings.exportSuccess'));
-            } catch (error) {
-              Alert.alert(t('common.error'), t('settings.exportFailed'));
-            }
-          },
+    Alert.alert(t('settings.exportData'), t('settings.exportDataDesc'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.confirm'),
+        onPress: async () => {
+          try {
+            await apiService.exportUserData();
+            Alert.alert(t('common.success'), t('settings.exportSuccess'));
+          } catch (error) {
+            Alert.alert(t('common.error'), t('settings.exportFailed'));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      t('settings.deleteAccount'),
-      t('settings.deleteAccountConfirm'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('settings.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiService.deleteAccount();
-              Alert.alert(t('common.success'), t('settings.deleteSuccess'));
-            } catch (error) {
-              Alert.alert(t('common.error'), t('settings.deleteFailed'));
-            }
-          },
+    Alert.alert(t('settings.deleteAccount'), t('settings.deleteAccountConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('settings.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await apiService.deleteAccount();
+            Alert.alert(t('common.success'), t('settings.deleteSuccess'));
+          } catch (error) {
+            Alert.alert(t('common.error'), t('settings.deleteFailed'));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const renderToggleItem = (
     key: keyof PrivacySettings,
     title: string,
     description: string,
-    iconName: string
+    iconName: string,
   ) => (
     <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
       <View style={styles.settingLeft}>
         <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight }]}>
-          {(() => { const IconComp = privacyIconMap[iconName] || Shield; return <IconComp size={20} color={colors.primary} />; })()}
+          {(() => {
+            const IconComp = privacyIconMap[iconName] || Shield;
+            return <IconComp size={20} color={colors.primary} />;
+          })()}
         </View>
         <View style={styles.settingContent}>
           <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
@@ -149,7 +144,7 @@ export default function PrivacySettingsScreen() {
     title: string,
     description: string,
     iconName: string,
-    onPress: () => void
+    onPress: () => void,
   ) => (
     <TouchableOpacity
       style={[styles.settingItem, { borderBottomColor: colors.border }]}
@@ -157,7 +152,10 @@ export default function PrivacySettingsScreen() {
     >
       <View style={styles.settingLeft}>
         <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight }]}>
-          {(() => { const IconComp = privacyIconMap[iconName] || Shield; return <IconComp size={20} color={colors.primary} />; })()}
+          {(() => {
+            const IconComp = privacyIconMap[iconName] || Shield;
+            return <IconComp size={20} color={colors.primary} />;
+          })()}
         </View>
         <View style={styles.settingContent}>
           <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
@@ -186,19 +184,19 @@ export default function PrivacySettingsScreen() {
             'dataCollection',
             t('settings.dataCollection'),
             t('settings.dataCollectionDesc'),
-            'cloud-upload-outline'
+            'cloud-upload-outline',
           )}
           {renderToggleItem(
             'analytics',
             t('settings.analytics'),
             t('settings.analyticsDesc'),
-            'bar-chart-outline'
+            'bar-chart-outline',
           )}
           {renderToggleItem(
             'personalizedRecommendations',
             t('settings.personalizedRecommendations'),
             t('settings.personalizedRecommendationsDesc'),
-            'sparkles-outline'
+            'sparkles-outline',
           )}
         </View>
 
@@ -210,13 +208,13 @@ export default function PrivacySettingsScreen() {
             t('settings.exportData'),
             t('settings.exportDataDesc'),
             'download-outline',
-            handleExportData
+            handleExportData,
           )}
           {renderNavigationItem(
             t('settings.deleteAccount'),
             t('settings.deleteAccountDesc'),
             'trash-outline',
-            handleDeleteAccount
+            handleDeleteAccount,
           )}
         </View>
       </ScrollView>
@@ -225,21 +223,25 @@ export default function PrivacySettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
   backButton: {
     marginRight: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
   },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: spacing.xl,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 40,
   },
   section: {
     borderRadius: borderRadius.xl,
@@ -249,32 +251,27 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: typography.fontSize.sm,
+    paddingBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+  },
+  settingContent: {
+    flex: 1,
+  },
+  settingDesc: {
+    fontSize: typography.fontSize.sm,
   },
   settingItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderBottomWidth: 1,
   },
   settingLeft: {
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  settingContent: {
     flex: 1,
   },
   settingTitle: {
@@ -282,7 +279,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
     marginBottom: 2,
   },
-  settingDesc: {
-    fontSize: typography.fontSize.sm,
+  title: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
   },
 });

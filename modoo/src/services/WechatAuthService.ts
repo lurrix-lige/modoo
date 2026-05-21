@@ -11,7 +11,7 @@ export interface WechatAuthResult {
 export class WechatAuthError extends Error {
   constructor(
     message: string,
-    public code: string
+    public code: string,
   ) {
     super(message);
     this.name = 'WechatAuthError';
@@ -71,10 +71,7 @@ class WechatAuthService {
 
   async login(): Promise<WechatAuthResult> {
     if (!this.isInstalled()) {
-      throw new WechatAuthError(
-        '未安装微信',
-        'NOT_INSTALLED'
-      );
+      throw new WechatAuthError('未安装微信', 'NOT_INSTALLED');
     }
 
     const scope = 'snsapi_userinfo';
@@ -84,10 +81,7 @@ class WechatAuthService {
       const result = await this.wechatModule.sendAuthRequest(scope, state);
 
       if (!result || !result.code) {
-        throw new WechatAuthError(
-          '获取授权码失败',
-          'NO_CODE'
-        );
+        throw new WechatAuthError('获取授权码失败', 'NO_CODE');
       }
 
       return {
@@ -96,31 +90,22 @@ class WechatAuthService {
       };
     } catch (error: any) {
       if (error.errCode === -2) {
-        throw new WechatAuthError(
-          '用户取消授权',
-          'USER_CANCELLED'
-        );
+        throw new WechatAuthError('用户取消授权', 'USER_CANCELLED');
       }
       if (error.errCode === -4) {
-        throw new WechatAuthError(
-          '微信拒绝授权',
-          'AUTH_DENIED'
-        );
+        throw new WechatAuthError('微信拒绝授权', 'AUTH_DENIED');
       }
       if (error.errCode === -5) {
-        throw new WechatAuthError(
-          '微信版本不支持此功能',
-          'UNSUPPORTED'
-        );
+        throw new WechatAuthError('微信版本不支持此功能', 'UNSUPPORTED');
       }
-      throw new WechatAuthError(
-        error.errStr || error.message || '微信授权失败',
-        'UNKNOWN'
-      );
+      throw new WechatAuthError(error.errStr || error.message || '微信授权失败', 'UNKNOWN');
     }
   }
 
-  async getUserInfo(accessToken: string, openid: string): Promise<{
+  async getUserInfo(
+    accessToken: string,
+    openid: string,
+  ): Promise<{
     nickname: string;
     avatar: string;
     unionid?: string;
@@ -140,7 +125,7 @@ class WechatAuthService {
     } catch (error: any) {
       throw new WechatAuthError(
         error.errStr || error.message || '获取用户信息失败',
-        'GET_USER_INFO_FAILED'
+        'GET_USER_INFO_FAILED',
       );
     }
   }

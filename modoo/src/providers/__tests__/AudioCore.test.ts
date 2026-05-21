@@ -1,9 +1,4 @@
-import {
-  sanitizeTimeValue,
-  validateUrl,
-  encodeUrl,
-  UnifiedAudioPlayer,
-} from '../AudioCore';
+import { sanitizeTimeValue, validateUrl, encodeUrl, UnifiedAudioPlayer } from '../AudioCore';
 
 // Mock expo-audio
 const mockPlayer = () => {
@@ -204,9 +199,7 @@ describe('UnifiedAudioPlayer', () => {
     test('pauses all players', async () => {
       const bgPlayer = mockPlayer();
       const voicePlayer = mockPlayer();
-      expoAudio.createAudioPlayer
-        .mockReturnValueOnce(bgPlayer)
-        .mockReturnValueOnce(voicePlayer);
+      expoAudio.createAudioPlayer.mockReturnValueOnce(bgPlayer).mockReturnValueOnce(voicePlayer);
 
       await player.play({
         tracks: [
@@ -332,9 +325,7 @@ describe('UnifiedAudioPlayer', () => {
     test('sets volume on specified track', async () => {
       const bgPlayer = mockPlayer();
       const voicePlayer = mockPlayer();
-      expoAudio.createAudioPlayer
-        .mockReturnValueOnce(bgPlayer)
-        .mockReturnValueOnce(voicePlayer);
+      expoAudio.createAudioPlayer.mockReturnValueOnce(bgPlayer).mockReturnValueOnce(voicePlayer);
 
       await player.play({
         tracks: [
@@ -456,12 +447,14 @@ describe('UnifiedAudioPlayer', () => {
     test('removeTrack does not affect other tracks', async () => {
       const bgPlayer = mockPlayer();
       const ambientPlayer = mockPlayer();
-      expoAudio.createAudioPlayer
-        .mockReturnValueOnce(bgPlayer)
-        .mockReturnValueOnce(ambientPlayer);
+      expoAudio.createAudioPlayer.mockReturnValueOnce(bgPlayer).mockReturnValueOnce(ambientPlayer);
 
       await player.addTrack({ id: 'bg', url: 'https://example.com/bg.mp3', role: 'background' });
-      await player.addTrack({ id: 'ambient', url: 'https://example.com/ambient.mp3', role: 'background' });
+      await player.addTrack({
+        id: 'ambient',
+        url: 'https://example.com/ambient.mp3',
+        role: 'background',
+      });
 
       await player.removeTrack('bg');
       expect(bgPlayer.remove).toHaveBeenCalled();

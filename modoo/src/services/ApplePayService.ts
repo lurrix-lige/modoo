@@ -57,11 +57,11 @@ export class ApplePayService {
     try {
       const { Platform } = await import('react-native');
       const isSupported = Platform.OS === 'ios' && parseFloat(Platform.Version) >= 10;
-      
+
       if (!isSupported && Platform.OS !== 'ios') {
         console.warn('Apple Pay is only available on iOS');
       }
-      
+
       return isSupported;
     } catch {
       return false;
@@ -71,7 +71,7 @@ export class ApplePayService {
   public async createOrder(planId: string): Promise<ApplePayResult> {
     try {
       const response: any = await apiService.post('/payment/apple/create-order', { planId });
-      
+
       if (response && response.data) {
         const orderInfo: ApplePayOrderInfo = {
           orderId: response.data.orderId,
@@ -79,17 +79,28 @@ export class ApplePayService {
           countryCode: response.data.countryCode || 'CN',
           currencyCode: response.data.currencyCode || 'CNY',
           merchantIdentifier: response.data.merchantIdentifier || 'merchant.com.modoo',
-          merchantCapabilities: response.data.merchantCapabilities || ['supports3DS', 'supportsCredit', 'supportsDebit'],
-          supportedNetworks: response.data.supportedNetworks || ['amex', 'masterCard', 'visa', 'discover'],
+          merchantCapabilities: response.data.merchantCapabilities || [
+            'supports3DS',
+            'supportsCredit',
+            'supportsDebit',
+          ],
+          supportedNetworks: response.data.supportedNetworks || [
+            'amex',
+            'masterCard',
+            'visa',
+            'discover',
+          ],
           total: {
             label: response.data.total?.label || '会员订阅',
             amount: response.data.total?.amount || '0.01',
             type: 'final',
           },
-          lineItems: response.data.lineItems || [{
-            label: response.data.total?.label || '会员订阅',
-            amount: response.data.total?.amount || '0.01',
-          }],
+          lineItems: response.data.lineItems || [
+            {
+              label: response.data.total?.label || '会员订阅',
+              amount: response.data.total?.amount || '0.01',
+            },
+          ],
           metadata: {
             orderId: response.data.orderNo,
           },
@@ -159,15 +170,15 @@ export class ApplePayService {
 
   private mapErrorCode(code: string | undefined): ApplePayErrorCode {
     if (!code) return ApplePayErrorCode.ORDER_CREATE_FAILED;
-    
+
     if (code === 'ORDER_NOT_FOUND') {
       return ApplePayErrorCode.ORDER_NOT_FOUND;
     }
-    
+
     if (code === 'AMOUNT_MISMATCH') {
       return ApplePayErrorCode.AMOUNT_MISMATCH;
     }
-    
+
     return ApplePayErrorCode.VERIFY_FAILED;
   }
 }

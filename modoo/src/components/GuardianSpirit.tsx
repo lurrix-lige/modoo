@@ -1,10 +1,10 @@
 /**
  * 守护精灵展示组件
- * 
+ *
  * 提供可复用的守护精灵动画展示功能，支持多种动画效果和配置选项。
  * 支持双层圆形设计，与 ChildrenHomeScreen 保持视觉一致性。
  * 支持显示精灵名称，自动处理断行和对齐。
- * 
+ *
  * @component
  * @example
  * // 双层圆形设计（与 ChildrenHomeScreen 一致）
@@ -15,7 +15,7 @@
  *   innerColor="#E67A5A"      // 内层颜色
  *   iconColor="#FFFFFF"       // 图标颜色
  * />
- * 
+ *
  * @example
  * // 单层圆形设计（简洁模式）
  * <GuardianSpirit
@@ -26,7 +26,15 @@
  * />
  */
 import React, { useRef, useEffect } from 'react';
-import { View, Text, Animated, StyleSheet, TouchableWithoutFeedback, StyleProp, ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  Animated,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { Moon, Star, ShieldCheck, Zap } from 'lucide-react-native';
 import { iconSizes, commonColors } from '../theme';
 
@@ -169,10 +177,10 @@ export interface GuardianSpiritProps {
 /**
  * 图标映射表 */
 const iconMap: Record<GuardianIconType, any> = {
-  'moon': Moon,
-  'star': Star,
+  moon: Moon,
+  star: Star,
   'shield-checkmark': ShieldCheck,
-  'zap': Zap,
+  zap: Zap,
 };
 
 /**
@@ -238,7 +246,7 @@ export default function GuardianSpirit({
           duration: animationDuration,
           useNativeDriver: false,
         }),
-      ])
+      ]),
     );
   };
 
@@ -259,7 +267,7 @@ export default function GuardianSpirit({
           duration,
           useNativeDriver: false,
         }),
-      ])
+      ]),
     );
   };
 
@@ -279,7 +287,7 @@ export default function GuardianSpirit({
           duration: animationDuration,
           useNativeDriver: false,
         }),
-      ])
+      ]),
     );
   };
 
@@ -305,7 +313,7 @@ export default function GuardianSpirit({
           duration,
           useNativeDriver: false,
         }),
-      ])
+      ]),
     );
   };
 
@@ -346,15 +354,9 @@ export default function GuardianSpirit({
    */
   const getTransformStyle = () => {
     if (animated) {
-      return [
-        { scale: scaleAnim },
-        { translateY: translateYAnim },
-      ];
+      return [{ scale: scaleAnim }, { translateY: translateYAnim }];
     }
-    return [
-      { scale: 1 },
-      { translateY: 0 },
-    ];
+    return [{ scale: 1 }, { translateY: 0 }];
   };
 
   // 获取图标组件
@@ -400,9 +402,7 @@ export default function GuardianSpirit({
         </View>
       )}
       {/* 单层设计：直接显示图标 */}
-      {!showInnerCircle && (
-        <IconComp size={iconSize} color={iconColor} />
-      )}
+      {!showInnerCircle && <IconComp size={iconSize} color={iconColor} />}
     </Animated.View>
   );
 
@@ -440,24 +440,24 @@ export default function GuardianSpirit({
 }
 
 const styles = StyleSheet.create({
-  spiritContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   iconContainer: {
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   innerContainer: {
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   nameText: {
-    textAlign: 'center',
-    fontWeight: '600',
-    marginTop: 8,
-    lineHeight: 1.4,
     flexShrink: 1,
+    fontWeight: '600',
+    lineHeight: 1.4,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  spiritContainer: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
 });

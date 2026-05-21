@@ -31,7 +31,7 @@ export function CheckInCalendar({
   colors,
 }: CheckInCalendarProps) {
   const { t } = useTranslation();
-  
+
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -47,15 +47,16 @@ export function CheckInCalendar({
     const now = new Date();
 
     for (let i = 0; i < firstDay; i++) {
-      days.push(
-        <View key={`empty-${i}`} style={styles.dayCell} />
-      );
+      days.push(<View key={`empty-${i}`} style={styles.dayCell} />);
     }
 
     for (let day = 1; day <= daysCount; day++) {
       const dateStr = `${currentMonth.getFullYear()}-${(currentMonth.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       const isCheckedIn = checkInHistory.has(dateStr);
-      const isToday = day === now.getDate() && currentMonth.getMonth() === now.getMonth() && currentMonth.getFullYear() === now.getFullYear();
+      const isToday =
+        day === now.getDate() &&
+        currentMonth.getMonth() === now.getMonth() &&
+        currentMonth.getFullYear() === now.getFullYear();
 
       days.push(
         <View
@@ -77,7 +78,7 @@ export function CheckInCalendar({
           >
             {day}
           </Text>
-        </View>
+        </View>,
       );
     }
 
@@ -91,7 +92,9 @@ export function CheckInCalendar({
           <ChevronLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.calendarTitle, { color: colors.textPrimary }]}>
-          {((t('checkIn.months', { returnObjects: true }) as string[])[currentMonth.getMonth()] || `${currentMonth.getMonth() + 1}`)} {currentMonth.getFullYear()}
+          {(t('checkIn.months', { returnObjects: true }) as string[])[currentMonth.getMonth()] ||
+            `${currentMonth.getMonth() + 1}`}{' '}
+          {currentMonth.getFullYear()}
         </Text>
         <TouchableOpacity onPress={onNextMonth}>
           <ChevronRight size={24} color={colors.textPrimary} />
@@ -114,44 +117,44 @@ export function CheckInCalendar({
 const styles = StyleSheet.create({
   calendarCard: {
     borderRadius: spacing.md,
-    padding: spacing.lg,
     marginBottom: spacing.lg,
+    padding: spacing.lg,
   },
   calendarHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.lg,
   },
   calendarTitle: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
   },
-  weekDays: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  dayCell: {
+    alignItems: 'center',
+    borderRadius: responsive.moderateScale(18),
+    height: responsive.verticalScale(36),
+    justifyContent: 'center',
     marginBottom: spacing.sm,
+    width: responsive.scale(36),
   },
-  weekDayText: {
-    fontSize: typography.fontSize.xs,
+  dayText: {
+    fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
-    textAlign: 'center',
-    flex: 1,
   },
   daysGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-  dayCell: {
-    width: responsive.scale(36),
-    height: responsive.verticalScale(36),
-    borderRadius: responsive.moderateScale(18),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  dayText: {
-    fontSize: typography.fontSize.sm,
+  weekDayText: {
+    flex: 1,
+    fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.medium,
+    textAlign: 'center',
+  },
+  weekDays: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
   },
 });

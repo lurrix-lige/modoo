@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { SafeAreaContainer, useCheckIn, CheckInStatsCard, CheckInCalendar, CheckInHistoryList, TimePickerModal } from '../../../components';
+  SafeAreaContainer,
+  useCheckIn,
+  CheckInStatsCard,
+  CheckInCalendar,
+  CheckInHistoryList,
+  TimePickerModal,
+} from '../../../components';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { Star, Moon, Sun, Footprints, Stamp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { RootStackParamList } from '../../../navigation/types';
 import { logger } from '../../../utils/logger';
 
@@ -49,9 +57,7 @@ export default function CheckInScreen() {
   return (
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
-          {t('checkIn.title')}
-        </Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('checkIn.title')}</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           {t('checkIn.subtitle')}
         </Text>
@@ -66,14 +72,21 @@ export default function CheckInScreen() {
           </Text>
 
           {todayChecked && (
-            <View style={[styles.checkedBadge, { backgroundColor: colors.surface, borderColor: colors.error }]}>
+            <View
+              style={[
+                styles.checkedBadge,
+                { backgroundColor: colors.surface, borderColor: colors.error },
+              ]}
+            >
               <Footprints size={24} color={colors.error} />
             </View>
           )}
 
           <View style={styles.timeRow}>
             <View style={styles.timeItem}>
-              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.sleepTime')}</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
+                {t('checkIn.sleepTime')}
+              </Text>
               <TouchableOpacity
                 style={[styles.timeButton, { backgroundColor: colors.background }]}
                 onPress={() => setShowSleepTimePicker(true)}
@@ -84,7 +97,9 @@ export default function CheckInScreen() {
             </View>
 
             <View style={styles.timeItem}>
-              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.wakeTime')}</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
+                {t('checkIn.wakeTime')}
+              </Text>
               <TouchableOpacity
                 style={[styles.timeButton, { backgroundColor: colors.background }]}
                 onPress={() => setShowWakeTimePicker(true)}
@@ -96,7 +111,9 @@ export default function CheckInScreen() {
           </View>
 
           <View style={styles.qualitySection}>
-            <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>{t('checkIn.sleepQuality')}</Text>
+            <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
+              {t('checkIn.sleepQuality')}
+            </Text>
             <View style={styles.starsRow}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity key={star} onPress={() => setQuality(star)}>
@@ -159,27 +176,19 @@ export default function CheckInScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
-  },
-  subtitle: {
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing.xs,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
+  checkInButton: {
+    borderRadius: borderRadius.xl,
+    bottom: spacing.lg,
+    height: 64,
+    position: 'absolute',
+    right: spacing.lg,
+    width: 64,
+    ...shadows.large,
   },
   checkInCard: {
-    padding: spacing.lg,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.xxl,
+    padding: spacing.lg,
     ...shadows.medium,
     position: 'relative',
   },
@@ -188,10 +197,51 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.lg,
   },
-  timeRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
+  checkedBadge: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    height: 40,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: spacing.lg,
+    top: spacing.lg,
+    width: 40,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing.xl,
+  },
+  header: {
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  qualitySection: {
     marginBottom: spacing.lg,
+  },
+  stampButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    height: 64,
+    justifyContent: 'center',
+    width: 64,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  subtitle: {
+    fontSize: typography.fontSize.sm,
+    marginTop: spacing.xs,
+  },
+  timeButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    padding: spacing.md,
   },
   timeItem: {
     flex: 1,
@@ -200,50 +250,17 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.xs,
     marginBottom: spacing.sm,
   },
-  timeButton: {
+  timeRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    gap: spacing.sm,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   timeValue: {
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.medium,
   },
-  qualitySection: {
-    marginBottom: spacing.lg,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  checkedBadge: {
-    position: 'absolute',
-    top: spacing.lg,
-    right: spacing.lg,
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkInButton: {
-    position: 'absolute',
-    bottom: spacing.lg,
-    right: spacing.lg,
-    width: 64,
-    height: 64,
-    borderRadius: borderRadius.xl,
-    ...shadows.large,
-  },
-  stampButton: {
-    width: 64,
-    height: 64,
-    borderRadius: borderRadius.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
+  title: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: typography.fontWeight.bold,
   },
 });

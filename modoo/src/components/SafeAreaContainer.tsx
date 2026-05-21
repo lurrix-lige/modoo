@@ -9,16 +9,13 @@ interface SafeAreaContainerProps {
   edges?: readonly ('top' | 'right' | 'bottom' | 'left')[];
 }
 
-export function SafeAreaContainer({ 
-  children, 
-  style, 
+export function SafeAreaContainer({
+  children,
+  style,
   edges = ['top', 'left', 'right'],
 }: SafeAreaContainerProps) {
   return (
-    <RNSafeAreaView 
-      style={[sharedStyles.container, style]}
-      edges={edges}
-    >
+    <RNSafeAreaView style={[sharedStyles.container, style]} edges={edges}>
       {children}
     </RNSafeAreaView>
   );

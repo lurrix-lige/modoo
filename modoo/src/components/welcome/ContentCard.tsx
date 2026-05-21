@@ -3,11 +3,11 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BookOpen, Leaf, GraduationCap, FileText, Star } from 'lucide-react-native';
 
 const contentIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
-  'book': BookOpen,
-  'leaf': Leaf,
-  'school': GraduationCap,
+  book: BookOpen,
+  leaf: Leaf,
+  school: GraduationCap,
   'document-text': FileText,
-  'star': Star,
+  star: Star,
 };
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, typography } from '../../theme';
@@ -65,7 +65,10 @@ export function ContentCard({ item, onPress }: ContentCardProps) {
       <View style={styles.cardContent}>
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-            {(() => { const IconComp = contentIconMap[getIconName(item.type)] || BookOpen; return <IconComp size={32} color={colors.primary} />; })()}
+            {(() => {
+              const IconComp = contentIconMap[getIconName(item.type)] || BookOpen;
+              return <IconComp size={32} color={colors.primary} />;
+            })()}
           </View>
           <View style={styles.headerBadges}>
             {item.duration && (
@@ -96,58 +99,58 @@ export function ContentCard({ item, onPress }: ContentCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    padding: spacing.lg,
     minHeight: 180,
+    padding: spacing.lg,
   },
   cardContent: {
     flex: 1,
     flexDirection: 'column',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerBadges: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.xs,
-    lineHeight: 22,
-    flexShrink: 1,
-  },
   description: {
+    flexGrow: 0,
+    flexShrink: 1,
     fontSize: typography.fontSize.sm,
     lineHeight: 18,
-    flexShrink: 1,
-    flexGrow: 0,
   },
   duration: {
     fontSize: typography.fontSize.sm,
   },
-  premiumBadge: {
+  header: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  headerBadges: {
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'flex-end',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    height: 56,
+    justifyContent: 'center',
+    width: 56,
+  },
+  premiumBadge: {
+    alignItems: 'center',
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    gap: spacing.xs,
   },
   premiumText: {
     fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.medium,
+  },
+  title: {
+    flexShrink: 1,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+    lineHeight: 22,
+    marginBottom: spacing.xs,
   },
 });

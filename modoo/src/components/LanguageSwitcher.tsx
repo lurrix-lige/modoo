@@ -13,38 +13,38 @@ export function LanguageSwitcher({ horizontal = false }: LanguageSwitcherProps) 
   const { colors } = useTheme();
 
   const styles = StyleSheet.create({
-    container: {
-      flexDirection: horizontal ? 'row' : 'column',
-      gap: spacing.md,
-    },
-    button: {
-      paddingVertical: spacing.md,
-      paddingHorizontal: spacing.lg,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.surface,
-      minWidth: horizontal ? 120 : '100%',
-      alignItems: 'center',
-    },
     activeButton: {
       backgroundColor: colors.primary,
       borderColor: colors.primary,
     },
-    text: {
-      fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-      color: colors.textPrimary,
+    activeNativeName: {
+      color: 'rgba(255, 255, 255, 0.85)',
     },
     activeText: {
       color: '#ffffff',
       fontWeight: '600',
     },
-    nativeName: {
-      fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-      color: colors.textSecondary,
+    button: {
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+      borderRadius: 12,
+      borderWidth: 1,
+      minWidth: horizontal ? 120 : '100%',
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
     },
-    activeNativeName: {
-      color: 'rgba(255, 255, 255, 0.85)',
+    container: {
+      flexDirection: horizontal ? 'row' : 'column',
+      gap: spacing.md,
+    },
+    nativeName: {
+      color: colors.textSecondary,
+      fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    },
+    text: {
+      color: colors.textPrimary,
+      fontSize: responsive.scaledFontSize(typography.fontSize.lg),
     },
   });
 
@@ -52,7 +52,7 @@ export function LanguageSwitcher({ horizontal = false }: LanguageSwitcherProps) 
     <View style={styles.container}>
       {availableLanguages.map((lang) => {
         const isActive = lang.code === currentLanguage;
-        
+
         return (
           <TouchableOpacity
             key={lang.code}
@@ -60,9 +60,7 @@ export function LanguageSwitcher({ horizontal = false }: LanguageSwitcherProps) 
             style={[styles.button, isActive && styles.activeButton]}
             activeOpacity={0.7}
           >
-            <Text style={[styles.text, isActive && styles.activeText]}>
-              {lang.nativeName}
-            </Text>
+            <Text style={[styles.text, isActive && styles.activeText]}>{lang.nativeName}</Text>
             <Text style={[styles.nativeName, isActive && styles.activeNativeName]}>
               {lang.name}
             </Text>

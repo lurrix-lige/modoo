@@ -60,7 +60,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       isPlaying,
       progress: audioProgress,
       duration: audioDuration,
-      audioContextExists: !!audioContext
+      audioContextExists: !!audioContext,
     });
   }, []);
 
@@ -128,7 +128,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     logger.debug('Auto-play useEffect triggered', {
       storyExists: !!story,
       audioUrlExists: !!story?.audioUrl,
-      audioUrl: story?.audioUrl
+      audioUrl: story?.audioUrl,
     });
 
     if (!story) {
@@ -160,7 +160,10 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
         logger.info('Auto-play result', { success, title: story.title });
 
         if (!success) {
-          logger.error('Auto-play returned false', { title: story.title, audioUrl: story.audioUrl });
+          logger.error('Auto-play returned false', {
+            title: story.title,
+            audioUrl: story.audioUrl,
+          });
           setError('Failed to start audio playback');
           return;
         }
@@ -211,7 +214,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       const newPosition = Math.min(effectiveDuration, audioProgress + seconds);
       audioSeekTo(newPosition);
     },
-    [audioProgress, effectiveDuration, audioSeekTo]
+    [audioProgress, effectiveDuration, audioSeekTo],
   );
 
   const skipBackward = useCallback(
@@ -219,7 +222,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       const newPosition = Math.max(0, audioProgress - seconds);
       audioSeekTo(newPosition);
     },
-    [audioProgress, audioSeekTo]
+    [audioProgress, audioSeekTo],
   );
 
   const clearError = useCallback(() => {

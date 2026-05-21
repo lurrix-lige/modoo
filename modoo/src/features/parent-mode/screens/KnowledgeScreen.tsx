@@ -13,7 +13,17 @@ import { Search, FileText, Eye, Clock, MessageSquare, Heart } from 'lucide-react
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Article } from '../../../services';
 import { logger } from '../../../utils/logger';
@@ -52,10 +62,10 @@ export default function KnowledgeScreen() {
     }
   };
 
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = articles.filter((article) => {
     const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    const matchesSearch = article.title.includes(searchKeyword) ||
-      article.summary.includes(searchKeyword);
+    const matchesSearch =
+      article.title.includes(searchKeyword) || article.summary.includes(searchKeyword);
     return matchesCategory && matchesSearch;
   });
 
@@ -66,7 +76,7 @@ export default function KnowledgeScreen() {
       </View>
 
       <View style={styles.skeletonArticles}>
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <View key={i} style={[styles.skeletonArticleCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.skeletonArticleCover, { backgroundColor: colors.border }]} />
             <View style={styles.skeletonArticleInfo}>
@@ -105,7 +115,10 @@ export default function KnowledgeScreen() {
 
       <View style={styles.searchContainer}>
         <View style={[styles.searchInput, { backgroundColor: colors.surface }]}>
-          <Search size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
+          <Search
+            size={responsive.moderateScaleForIcon(iconSizes.md)}
+            color={colors.textSecondary}
+          />
           <TextInput
             style={[styles.searchText, { color: colors.textPrimary }]}
             placeholder={t('knowledge.searchPlaceholder')}
@@ -119,14 +132,13 @@ export default function KnowledgeScreen() {
 
       <View style={styles.categoryContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {CATEGORIES.map(cat => (
+          {CATEGORIES.map((cat) => (
             <TouchableOpacity
               key={cat.id}
               style={[
                 styles.categoryButton,
                 {
-                  backgroundColor:
-                    selectedCategory === cat.id ? colors.secondary : colors.surface,
+                  backgroundColor: selectedCategory === cat.id ? colors.secondary : colors.surface,
                 },
               ]}
               onPress={() => setSelectedCategory(cat.id)}
@@ -135,8 +147,7 @@ export default function KnowledgeScreen() {
                 style={[
                   styles.categoryText,
                   {
-                    color:
-                      selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
+                    color: selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
                   },
                 ]}
               >
@@ -147,7 +158,7 @@ export default function KnowledgeScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -156,7 +167,7 @@ export default function KnowledgeScreen() {
           renderLoadingSkeleton()
         ) : (
           <>
-            {filteredArticles.map(article => (
+            {filteredArticles.map((article) => (
               <TouchableOpacity
                 key={article.id}
                 style={[styles.articleCard, { backgroundColor: colors.surface }]}
@@ -170,7 +181,10 @@ export default function KnowledgeScreen() {
                       resizeMode="cover"
                     />
                   ) : (
-                    <FileText size={responsive.moderateScaleForIcon(iconSizes.xxl)} color={commonColors.white} />
+                    <FileText
+                      size={responsive.moderateScaleForIcon(iconSizes.xxl)}
+                      color={commonColors.white}
+                    />
                   )}
                 </View>
                 <View style={styles.articleInfo}>
@@ -184,24 +198,45 @@ export default function KnowledgeScreen() {
                     </View>
                     <View style={styles.articleMeta}>
                       <View style={styles.metaItem}>
-                        <Eye size={responsive.moderateScaleForIcon(iconSizes.sm)} color={colors.textSecondary} />
+                        <Eye
+                          size={responsive.moderateScaleForIcon(iconSizes.sm)}
+                          color={colors.textSecondary}
+                        />
                         <Text style={[styles.metaText, { color: colors.textSecondary }]}>
                           {article.views}
                         </Text>
                       </View>
                       <View style={styles.metaItem}>
-                        <Clock size={responsive.moderateScaleForIcon(iconSizes.sm)} color={colors.textSecondary} />
+                        <Clock
+                          size={responsive.moderateScaleForIcon(iconSizes.sm)}
+                          color={colors.textSecondary}
+                        />
                         <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                          {article.readTime}{t('knowledge.minutes')}
+                          {article.readTime}
+                          {t('knowledge.minutes')}
                         </Text>
                       </View>
                     </View>
                   </View>
-                  <Text style={[styles.articleTitle, { color: colors.textPrimary }]} numberOfLines={2}>
-                    {article.titleKey ? (t(article.titleKey) !== article.titleKey ? t(article.titleKey) : article.title) : article.title}
+                  <Text
+                    style={[styles.articleTitle, { color: colors.textPrimary }]}
+                    numberOfLines={2}
+                  >
+                    {article.titleKey
+                      ? t(article.titleKey) !== article.titleKey
+                        ? t(article.titleKey)
+                        : article.title
+                      : article.title}
                   </Text>
-                  <Text style={[styles.articleSummary, { color: colors.textSecondary }]} numberOfLines={2}>
-                    {article.summaryKey ? (t(article.summaryKey) !== article.summaryKey ? t(article.summaryKey) : article.summary) : article.summary}
+                  <Text
+                    style={[styles.articleSummary, { color: colors.textSecondary }]}
+                    numberOfLines={2}
+                  >
+                    {article.summaryKey
+                      ? t(article.summaryKey) !== article.summaryKey
+                        ? t(article.summaryKey)
+                        : article.summary
+                      : article.summary}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -212,15 +247,22 @@ export default function KnowledgeScreen() {
                 style={[styles.quickButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.navigate('Dialogue')}
               >
-                <MessageSquare size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.warning} />
-                <Text style={[styles.quickText, { color: colors.textPrimary }]}>{t('knowledge.dialogue')}</Text>
+                <MessageSquare
+                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                  color={colors.warning}
+                />
+                <Text style={[styles.quickText, { color: colors.textPrimary }]}>
+                  {t('knowledge.dialogue')}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.quickButton, { backgroundColor: colors.surface }]}
                 onPress={() => navigation.navigate('Favorites')}
               >
                 <Heart size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.error} />
-                <Text style={[styles.quickText, { color: colors.textPrimary }]}>{t('knowledge.favorites')}</Text>
+                <Text style={[styles.quickText, { color: colors.textPrimary }]}>
+                  {t('knowledge.favorites')}
+                </Text>
               </TouchableOpacity>
             </View>
           </>
@@ -232,40 +274,40 @@ export default function KnowledgeScreen() {
 
 const styles = StyleSheet.create({
   header: {
+    paddingBottom: spacing.lg,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
   },
   title: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     fontWeight: typography.fontWeight.bold,
   },
   searchContainer: {
-    paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.xl,
   },
   searchInput: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    height: responsive.verticalScale(48),
     borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    height: responsive.verticalScale(48),
+    paddingHorizontal: spacing.md,
   },
   searchText: {
     flex: 1,
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
     height: '100%',
     marginLeft: spacing.sm,
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
   },
   categoryContainer: {
-    paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
   categoryButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
     borderRadius: borderRadius.round,
     marginRight: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   categoryText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
@@ -276,41 +318,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   articleCard: {
-    flexDirection: 'row',
-    padding: spacing.md,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.md,
     ...shadows.small,
   },
   articleCover: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(100),
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    height: responsive.verticalScale(100),
+    justifyContent: 'center',
     marginRight: spacing.md,
     overflow: 'hidden',
+    width: responsive.moderateScale(80),
   },
   articleCoverImage: {
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   articleInfo: {
     flex: 1,
   },
   tagsRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: spacing.xs,
   },
   articleTags: {
     flexDirection: 'row',
   },
   tag: {
+    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: borderRadius.sm,
   },
   tagText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
@@ -329,8 +371,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   metaItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: responsive.moderateScale(4),
   },
   metaText: {
@@ -339,17 +381,17 @@ const styles = StyleSheet.create({
   quickAccess: {
     flexDirection: 'row',
     gap: spacing.md,
-    marginTop: spacing.md,
     marginBottom: spacing.xxl,
+    marginTop: spacing.md,
   },
   quickButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: spacing.sm,
     justifyContent: 'center',
     padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    gap: spacing.sm,
     ...shadows.small,
   },
   quickText: {
@@ -365,29 +407,29 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   skeletonTextShort: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(18),
     borderRadius: responsive.moderateScale(9),
+    height: responsive.verticalScale(18),
+    width: responsive.moderateScale(80),
   },
   skeletonTextLong: {
-    width: '100%',
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
     marginBottom: spacing.sm,
+    width: '100%',
   },
   skeletonArticles: {
     gap: spacing.md,
   },
   skeletonArticleCard: {
+    borderRadius: borderRadius.lg,
     flexDirection: 'row',
     padding: spacing.md,
-    borderRadius: borderRadius.lg,
   },
   skeletonArticleCover: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(100),
     borderRadius: borderRadius.md,
+    height: responsive.verticalScale(100),
     marginRight: spacing.md,
+    width: responsive.moderateScale(80),
   },
   skeletonArticleInfo: {
     flex: 1,
@@ -397,42 +439,42 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   skeletonTag: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
+    width: responsive.moderateScale(60),
   },
   skeletonMeta: {
     flexDirection: 'row',
     gap: spacing.md,
   },
   skeletonMetaItem: {
-    width: responsive.moderateScale(40),
-    height: responsive.verticalScale(12),
     borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(12),
+    width: responsive.moderateScale(40),
   },
   skeletonQuickAccess: {
     flexDirection: 'row',
     gap: spacing.md,
-    marginTop: spacing.md,
     marginBottom: spacing.xxl,
+    marginTop: spacing.md,
   },
   skeletonQuickButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: spacing.sm,
     justifyContent: 'center',
     padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    gap: spacing.sm,
   },
   skeletonQuickIcon: {
-    width: responsive.moderateScale(24),
-    height: responsive.moderateScale(24),
     borderRadius: responsive.moderateScale(12),
+    height: responsive.moderateScale(24),
+    width: responsive.moderateScale(24),
   },
   skeletonQuickText: {
-    width: responsive.moderateScale(60),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
+    width: responsive.moderateScale(60),
   },
 });

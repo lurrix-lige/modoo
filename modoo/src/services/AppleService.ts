@@ -50,11 +50,13 @@ class AppleService {
       return {
         userId: credential.user,
         email: credential.email ?? undefined,
-        fullName: credential.fullName ? {
-          givenName: credential.fullName.givenName ?? undefined,
-          familyName: credential.fullName.familyName ?? undefined,
-          nickname: credential.fullName.nickname ?? undefined,
-        } : undefined,
+        fullName: credential.fullName
+          ? {
+              givenName: credential.fullName.givenName ?? undefined,
+              familyName: credential.fullName.familyName ?? undefined,
+              nickname: credential.fullName.nickname ?? undefined,
+            }
+          : undefined,
         identityToken: credential.identityToken ?? undefined,
         authorizationCode: credential.authorizationCode ?? undefined,
       };

@@ -10,7 +10,7 @@ import {
   RotateCcw,
   Sun,
   Check,
-  ShieldAlert
+  ShieldAlert,
 } from 'lucide-react-native';
 import Slider from '@react-native-community/slider';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,7 +22,16 @@ import { usePictureInPicture } from '../../../hooks/usePictureInPicture';
 import { logger } from '../../../utils/logger';
 import { StoryInfo } from '../components/StoryInfo';
 import { PlayerControls } from '../components/PlayerControls';
-import { useTheme, spacing, borderRadius, typography, responsive, iconSizes, shadows, commonColors } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  responsive,
+  iconSizes,
+  shadows,
+  commonColors,
+} from '../../../theme';
 import { usePlayer } from '../hooks/usePlayer';
 import { useSleepTimer } from '../hooks/useSleepTimer';
 import { audioFocusManager } from '../../../providers/AudioFocusManager';
@@ -51,11 +60,27 @@ export default function StoryPlayerScreen() {
   const { child } = useAppStore();
 
   const { shareNative, isLoading: isSharing } = useShare();
-  
+
   const currentSpirit = getGuardianSpiritById(child?.guardianSpiritId || 'moon');
 
   const { isLandscape, toggleOrientation, lockToPortrait } = useOrientation();
-  const { isPlaying, isBuffering, progress, duration, isLoading, story, error: playerError, resume, pause, stop, seekTo, skipForward, skipBackward, toggleFavorite, clearError } = usePlayer(route.params?.storyId);
+  const {
+    isPlaying,
+    isBuffering,
+    progress,
+    duration,
+    isLoading,
+    story,
+    error: playerError,
+    resume,
+    pause,
+    stop,
+    seekTo,
+    skipForward,
+    skipBackward,
+    toggleFavorite,
+    clearError,
+  } = usePlayer(route.params?.storyId);
   const { isNightMode, toggleBrightness } = useBrightness();
 
   const handleSleepTimerExpire = useCallback(() => {
@@ -89,7 +114,11 @@ export default function StoryPlayerScreen() {
   const [isSliding, setIsSliding] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
 
-  const { isAvailable: isPiPAvailable, isActive: isPiPActive, togglePiP } = usePictureInPicture({
+  const {
+    isAvailable: isPiPAvailable,
+    isActive: isPiPActive,
+    togglePiP,
+  } = usePictureInPicture({
     onEnterPiP: () => logger.info('Entered Picture-in-Picture mode'),
     onExitPiP: () => logger.info('Exited Picture-in-Picture mode'),
   });
@@ -147,10 +176,13 @@ export default function StoryPlayerScreen() {
     setSliderValue(value);
   }, []);
 
-  const handleSlidingComplete = useCallback((value: number) => {
-    setIsSliding(false);
-    seekTo(value);
-  }, [seekTo]);
+  const handleSlidingComplete = useCallback(
+    (value: number) => {
+      setIsSliding(false);
+      seekTo(value);
+    },
+    [seekTo],
+  );
 
   if (isLoading) {
     return (
@@ -187,7 +219,10 @@ export default function StoryPlayerScreen() {
         <View style={[styles.contentSection, contentStyle]}>
           <View style={styles.header}>
             <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-              <ArrowLeft size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.textPrimary} />
+              <ArrowLeft
+                size={responsive.moderateScaleForIcon(iconSizes.xl)}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1}>
               {story.title}
@@ -259,7 +294,9 @@ export default function StoryPlayerScreen() {
             disabled={!!playerError}
           />
 
-          <View style={[styles.secondaryControls, isLandscapeMode && styles.landscapeSecondaryControls]}>
+          <View
+            style={[styles.secondaryControls, isLandscapeMode && styles.landscapeSecondaryControls]}
+          >
             <TouchableOpacity style={styles.secondaryButton} onPress={handleFavorite}>
               <Heart
                 size={responsive.moderateScaleForIcon(iconSizes.lg)}
@@ -339,62 +376,37 @@ export default function StoryPlayerScreen() {
         onCancelTimer={handleCancelTimer}
       />
 
-      {playerError && (
-        <ErrorToast
-          visible={true}
-          message={playerError}
-          onDismiss={clearError}
-        />
-      )}
+      {playerError && <ErrorToast visible={true} message={playerError} onDismiss={clearError} />}
     </SafeAreaContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    padding: spacing.xs,
+  },
+  bufferingText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    fontWeight: typography.fontWeight.medium,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
   },
-  mainLayout: {
-    flex: 1,
-  },
-  portraitContainer: {
-    flexDirection: 'column',
-  },
-  landscapeContainer: {
-    flexDirection: 'row',
-  },
   contentSection: {
     flex: 1,
-  },
-  portraitContent: {
-    flex: 1,
-  },
-  landscapeContent: {
-    flex: 2,
-    justifyContent: 'center',
-    paddingRight: spacing.lg,
   },
   controlsSection: {
     flex: 1,
     justifyContent: 'center',
   },
-  portraitControls: {
-    flex: 1,
-  },
-  landscapeControls: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-  },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-  },
-  backButton: {
-    padding: spacing.xs,
   },
   headerActions: {
     flexDirection: 'row',
@@ -403,37 +415,75 @@ const styles = StyleSheet.create({
   headerButton: {
     padding: spacing.xs,
   },
-  moreButton: {
-    padding: spacing.xs,
-  },
   headerTitle: {
+    flex: 1,
     fontSize: responsive.scaledFontSize(typography.fontSize.lg),
     fontWeight: typography.fontWeight.semibold,
-    flex: 1,
-    textAlign: 'center',
     marginHorizontal: spacing.sm,
+    textAlign: 'center',
   },
-  loadingContainer: {
+  landscapeContainer: {
+    flexDirection: 'row',
+  },
+  landscapeContent: {
+    flex: 2,
+    justifyContent: 'center',
+    paddingRight: spacing.lg,
+  },
+  landscapeControls: {
     flex: 1,
     justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  landscapeSecondaryControls: {
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    justifyContent: 'center',
+    marginTop: spacing.lg,
+  },
+  loadingContainer: {
     alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
   loadingText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
   },
-  progressSection: {
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.lg,
+  mainLayout: {
+    flex: 1,
+  },
+  moreButton: {
+    padding: spacing.xs,
+  },
+  portraitContainer: {
+    flexDirection: 'column',
+  },
+  portraitContent: {
+    flex: 1,
+  },
+  portraitControls: {
+    flex: 1,
   },
   progressBar: {
-    width: '100%',
     height: responsive.verticalScale(40),
+    width: '100%',
   },
-  bufferingText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    textAlign: 'center',
-    marginTop: spacing.xs,
-    fontWeight: typography.fontWeight.medium,
+  progressSection: {
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.xl,
+  },
+  secondaryButton: {
+    alignItems: 'center',
+    padding: spacing.md,
+  },
+  secondaryControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.lg,
+  },
+  shareButtonContainer: {
+    alignItems: 'center',
   },
   timeRow: {
     flexDirection: 'row',
@@ -443,22 +493,6 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
   },
-  secondaryControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  landscapeSecondaryControls: {
-    marginTop: spacing.lg,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  secondaryButton: {
-    padding: spacing.md,
-    alignItems: 'center',
-  },
   timerButtonContainer: {
     alignItems: 'center',
   },
@@ -466,25 +500,22 @@ const styles = StyleSheet.create({
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
     marginTop: spacing.xs,
   },
-  shareButtonContainer: {
-    alignItems: 'center',
-  },
   tipCard: {
-    margin: spacing.xl,
-    padding: spacing.lg,
+    alignItems: 'center',
+    alignSelf: 'center',
     borderRadius: borderRadius.lg,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: spacing.md,
-    alignSelf: 'center',
+    justifyContent: 'center',
+    margin: spacing.xl,
     minWidth: '80%',
+    padding: spacing.lg,
     ...shadows.large,
   },
   tipText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    textAlign: 'center',
     flexWrap: 'wrap',
     flex: 1,
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    textAlign: 'center',
   },
 });

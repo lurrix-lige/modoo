@@ -4,7 +4,11 @@ import { wechatPayService, PayResult, RefundResult } from '../services/WechatPay
 
 export interface UseWechatPayResult {
   purchaseWithWechat: (planId: string, planName?: string) => Promise<PayResult>;
-  applyRefund: (orderId: string, refundAmount?: number, refundReason?: string) => Promise<RefundResult>;
+  applyRefund: (
+    orderId: string,
+    refundAmount?: number,
+    refundReason?: string,
+  ) => Promise<RefundResult>;
   queryOrder: (orderId: string) => Promise<any>;
   isLoading: boolean;
   error: string | null;
@@ -27,57 +31,63 @@ export function useWechatPay(): UseWechatPayResult {
     }
   }, []);
 
-  const purchaseWithWechat = useCallback(async (planId: string, planName?: string): Promise<PayResult> => {
-    if (!wechatPayService.isInstalled()) {
-      const errorMsg = '微信未安装，请先安装微信';
-      setError(errorMsg);
-      return { success: false, error: errorMsg, errorCode: 'NOT_INSTALLED' };
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await wechatPayService.createAndPay(planId);
-
-      if (!result.success) {
-        setError(result.error || '支付失败');
+  const purchaseWithWechat = useCallback(
+    async (planId: string, planName?: string): Promise<PayResult> => {
+      if (!wechatPayService.isInstalled()) {
+        const errorMsg = '微信未安装，请先安装微信';
+        setError(errorMsg);
+        return { success: false, error: errorMsg, errorCode: 'NOT_INSTALLED' };
       }
 
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.message || '支付过程中出现错误';
-      setError(errorMessage);
-      return { success: false, error: errorMessage, errorCode: 'UNKNOWN' };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      setIsLoading(true);
+      setError(null);
 
-  const applyRefund = useCallback(async (
-    orderId: string,
-    refundAmount?: number,
-    refundReason?: string
-  ): Promise<RefundResult> => {
-    setIsLoading(true);
-    setError(null);
+      try {
+        const result = await wechatPayService.createAndPay(planId);
 
-    try {
-      const result = await wechatPayService.applyRefund(orderId, refundAmount, refundReason);
+        if (!result.success) {
+          setError(result.error || '支付失败');
+        }
 
-      if (!result.success) {
-        setError(result.error || '退款申请失败');
+        return result;
+      } catch (err: any) {
+        const errorMessage = err.message || '支付过程中出现错误';
+        setError(errorMessage);
+        return { success: false, error: errorMessage, errorCode: 'UNKNOWN' };
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [],
+  );
 
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.message || '退款申请失败';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const applyRefund = useCallback(
+    async (
+      orderId: string,
+      refundAmount?: number,
+      refundReason?: string,
+    ): Promise<RefundResult> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await wechatPayService.applyRefund(orderId, refundAmount, refundReason);
+
+        if (!result.success) {
+          setError(result.error || '退款申请失败');
+        }
+
+        return result;
+      } catch (err: any) {
+        const errorMessage = err.message || '退款申请失败';
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   const queryOrder = useCallback(async (orderId: string): Promise<any> => {
     setIsLoading(true);

@@ -57,7 +57,10 @@ export function FreeContentSection({ content, onContentPress }: FreeContentSecti
                   { backgroundColor: thumbnailColors[index % thumbnailColors.length] },
                 ]}
               >
-                {(() => { const IconComp = getIconForType(item.type); return <IconComp size={32} color={commonColors.white} />; })()}
+                {(() => {
+                  const IconComp = getIconForType(item.type);
+                  return <IconComp size={32} color={commonColors.white} />;
+                })()}
               </View>
               <View style={styles.contentInfo}>
                 <Text style={[styles.contentTitle, { color: colors.textPrimary }]}>
@@ -82,55 +85,55 @@ export function FreeContentSection({ content, onContentPress }: FreeContentSecti
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.xl,
     marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
+  contentCard: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    width: 140,
   },
-  iconBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+  contentDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    marginBottom: 4,
   },
-  title: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: '600',
+  contentInfo: {
+    padding: spacing.sm,
   },
   contentList: {
     flexDirection: 'row',
     gap: spacing.md,
     paddingRight: spacing.xl,
   },
-  contentCard: {
-    width: 140,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  contentInfo: {
-    padding: spacing.sm,
-  },
   contentTitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     fontWeight: '500',
     marginBottom: 4,
   },
-  contentDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    marginBottom: 4,
-  },
   duration: {
-    fontSize: responsive.scaledFontSize(11),  // 11px 非常小，使用固定值
+    fontSize: responsive.scaledFontSize(11), // 11px 非常小，使用固定值
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  iconBadge: {
+    alignItems: 'center',
+    borderRadius: 14,
+    height: 28,
+    justifyContent: 'center',
+    width: 28,
+  },
+  thumbnail: {
+    alignItems: 'center',
+    height: 100,
+    justifyContent: 'center',
+    width: '100%',
+  },
+  title: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: '600',
   },
 });

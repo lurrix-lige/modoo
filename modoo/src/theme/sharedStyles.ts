@@ -13,30 +13,30 @@ export const sharedStyles = StyleSheet.create({
 
   // 布局 - 行
   rowBetween: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   rowCenter: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
   },
   rowStart: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'flex-start',
   },
   rowEnd: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'flex-end',
   },
 
   // 布局 - 列
   columnCenter: {
-    flexDirection: 'column',
     alignItems: 'center',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
 
@@ -50,11 +50,11 @@ export const sharedStyles = StyleSheet.create({
 
   // 绝对定位
   absoluteFill: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
 
   // 内边距

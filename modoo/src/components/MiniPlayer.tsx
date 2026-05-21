@@ -36,7 +36,9 @@ export function MiniPlayer({ title, isPlaying, progress, onPlayPause, onPress }:
           <Text style={[styles.title, { color: colors.textPrimary }]} numberOfLines={1}>
             {title}
           </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t('story.playing')}</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {t('story.playing')}
+          </Text>
         </View>
       </View>
 
@@ -45,24 +47,21 @@ export function MiniPlayer({ title, isPlaying, progress, onPlayPause, onPress }:
           style={[
             styles.glowIndicator,
             {
-              backgroundColor: isPlaying
-                ? colors.primary
-                : 'transparent',
+              backgroundColor: isPlaying ? colors.primary : 'transparent',
               boxShadow: isPlaying ? `0 0 8px 8px ${colors.primary}` : 'none',
             },
           ]}
         />
         <TouchableOpacity style={styles.playButton} onPress={onPlayPause}>
-          {isPlaying ? <Pause size={24} color={colors.primary} /> : <Play size={24} color={colors.primary} />}
+          {isPlaying ? (
+            <Pause size={24} color={colors.primary} />
+          ) : (
+            <Play size={24} color={colors.primary} />
+          )}
         </TouchableOpacity>
       </View>
 
-      <View
-        style={[
-          styles.progressBar,
-          { backgroundColor: colors.border },
-        ]}
-      >
+      <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
         <View
           style={[
             styles.progressFill,
@@ -78,23 +77,49 @@ export function MiniPlayer({ title, isPlaying, progress, onPlayPause, onPress }:
 }
 
 const styles = StyleSheet.create({
+  avatarContainer: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 40,
+  },
   container: {
     borderTopWidth: 1,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
+  glowIndicator: {
+    borderRadius: 4,
+    height: 8,
+    marginRight: spacing.md,
+    width: 8,
+  },
   leftSection: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
   },
-  avatarContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
+  playButton: {
+    padding: spacing.xs,
+  },
+  progressBar: {
+    bottom: 0,
+    height: 2,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+  },
+  progressFill: {
+    height: '100%',
+  },
+  rightSection: {
     alignItems: 'center',
-    marginRight: spacing.md,
+    flexDirection: 'row',
+  },
+  subtitle: {
+    fontSize: typography.fontSize.xs,
   },
   textContainer: {
     flex: 1,
@@ -103,31 +128,5 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: typography.fontSize.xs,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  glowIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: spacing.md,
-  },
-  playButton: {
-    padding: spacing.xs,
-  },
-  progressBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-  },
-  progressFill: {
-    height: '100%',
   },
 });

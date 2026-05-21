@@ -4,16 +4,26 @@ import { SafeAreaContainer } from '../../../components';
 import { BookOpen, Leaf, GraduationCap, FileText, Star } from 'lucide-react-native';
 
 const dashboardIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
-  'book': BookOpen,
-  'leaf': Leaf,
-  'school': GraduationCap,
+  book: BookOpen,
+  leaf: Leaf,
+  school: GraduationCap,
   'document-text': FileText,
-  'star': Star,
+  star: Star,
 };
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { Button, Card } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
@@ -42,13 +52,18 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
   };
 
   // 使用国际化 key 进行翻译，如果没有则使用直接值
-  const title = item.titleKey ? t(item.titleKey) : (item.title || '');
-  const description = item.descriptionKey ? t(item.descriptionKey) : (item.description || '');
+  const title = item.titleKey ? t(item.titleKey) : item.title || '';
+  const description = item.descriptionKey ? t(item.descriptionKey) : item.description || '';
 
   return (
     <Card style={styles.contentCard} onPress={onPress} variant="glass" elevated>
       <View style={[styles.contentIcon, { backgroundColor: colors.primary + '20' }]}>
-        {(() => { const IconComp = dashboardIconMap[getIcon(item.type)] || Star; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />; })()}
+        {(() => {
+          const IconComp = dashboardIconMap[getIcon(item.type)] || Star;
+          return (
+            <IconComp size={responsive.moderateScaleForIcon(iconSizes.xl)} color={colors.primary} />
+          );
+        })()}
       </View>
       <Text style={[styles.contentTitle, { color: colors.textPrimary }]} numberOfLines={1}>
         {title}
@@ -77,7 +92,9 @@ function MembershipPromoCard({ onUpgrade }: { onUpgrade: () => void }) {
           <Star size={responsive.moderateScaleForIcon(iconSizes.hero)} color={commonColors.white} />
         </View>
         <Text style={styles.promoTitle}>{t('dashboard.unlockContent')}</Text>
-        <Text style={[styles.promoDesc, { color: commonColors.white }]}>{t('dashboard.unlockDesc')}</Text>
+        <Text style={[styles.promoDesc, { color: commonColors.white }]}>
+          {t('dashboard.unlockDesc')}
+        </Text>
       </View>
       <Button title={t('dashboard.upgradeNow')} onPress={onUpgrade} style={styles.promoButton} />
     </View>
@@ -89,7 +106,10 @@ export default function UserDashboardScreen() {
   const { colors } = useTheme();
   const { userState, isChildMode, switchToParentMode } = useAppStore();
   const { t } = useTranslation();
-  const [content, setContent] = useState<{ featured: ContentItem[]; categories: { [key: string]: ContentItem[] } } | null>(null);
+  const [content, setContent] = useState<{
+    featured: ContentItem[];
+    categories: { [key: string]: ContentItem[] };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -183,42 +203,51 @@ export default function UserDashboardScreen() {
           <>
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                {userState.isPaid ? t('dashboard.recommendedForYou') : t('dashboard.excitingContent')}
+                {userState.isPaid
+                  ? t('dashboard.recommendedForYou')
+                  : t('dashboard.excitingContent')}
               </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.horizontalScroll}
+              >
                 {content.featured.map((item) => (
-                  <ContentCard
-                    key={item.id}
-                    item={item}
-                    onPress={() => handleContentPress(item)}
-                  />
+                  <ContentCard key={item.id} item={item} onPress={() => handleContentPress(item)} />
                 ))}
               </ScrollView>
             </View>
 
-            {Object.entries(content.categories).map(([category, items]) => (
-              items.length > 0 && (
-                <View key={category} style={styles.section}>
-                  <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                    {getCategoryTitle(category)}
-                  </Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-                    {items.map((item) => (
-                      <ContentCard
-                        key={item.id}
-                        item={item}
-                        onPress={() => handleContentPress(item)}
-                      />
-                    ))}
-                  </ScrollView>
-                </View>
-              )
-            ))}
+            {Object.entries(content.categories).map(
+              ([category, items]) =>
+                items.length > 0 && (
+                  <View key={category} style={styles.section}>
+                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                      {getCategoryTitle(category)}
+                    </Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.horizontalScroll}
+                    >
+                      {items.map((item) => (
+                        <ContentCard
+                          key={item.id}
+                          item={item}
+                          onPress={() => handleContentPress(item)}
+                        />
+                      ))}
+                    </ScrollView>
+                  </View>
+                ),
+            )}
           </>
         )}
       </ScrollView>
-      
-      <View style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+
+      <View
+        style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
+      >
         <Button
           title={t('common.getStarted')}
           onPress={() => navigation.navigate('ParentTab')}
@@ -233,6 +262,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  contentCard: {
+    marginRight: spacing.md,
+    padding: spacing.md,
+    width: responsive.moderateScale(160),
+  },
+  contentDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    marginBottom: spacing.xs,
+  },
+  contentIcon: {
+    borderRadius: responsive.moderateScale(24),
+    height: responsive.moderateScale(48),
+    width: responsive.moderateScale(48),
+    ...sharedStyles.columnCenter,
+    marginBottom: spacing.sm,
+  },
+  contentTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.xs,
+  },
+  footer: {
+    borderTopWidth: 1,
+    padding: spacing.xl,
+  },
   header: {
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
@@ -240,22 +294,30 @@ const styles = StyleSheet.create({
   headerRow: {
     ...sharedStyles.rowBetween,
   },
-  switchButton: {
-    paddingHorizontal: spacing.md,
-    height: responsive.verticalScale(36),
+  horizontalScroll: {
+    marginHorizontal: -spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
-  welcomeText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.bold,
-    marginBottom: spacing.xs,
+  premiumBadge: {
+    ...sharedStyles.rowStart,
+    alignSelf: 'flex-start',
+    borderRadius: borderRadius.sm,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
-  userName: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+  premiumText: {
+    color: commonColors.white,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    fontWeight: typography.fontWeight.semibold,
+  },
+  promoButton: {
+    backgroundColor: commonColors.white,
   },
   promoCard: {
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
     borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
+    marginHorizontal: spacing.xl,
     padding: spacing.xl,
     ...shadows.medium,
   },
@@ -263,10 +325,14 @@ const styles = StyleSheet.create({
     ...sharedStyles.columnCenter,
     marginBottom: spacing.lg,
   },
+  promoDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    textAlign: 'center',
+  },
   promoIcon: {
-    width: responsive.moderateScale(80),
-    height: responsive.moderateScale(80),
     borderRadius: responsive.moderateScale(40),
+    height: responsive.moderateScale(80),
+    width: responsive.moderateScale(80),
     ...sharedStyles.columnCenter,
     marginBottom: spacing.md,
   },
@@ -277,13 +343,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
     textAlign: 'center',
   },
-  promoDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    textAlign: 'center',
-  },
-  promoButton: {
-    backgroundColor: commonColors.white,
-  },
   section: {
     marginBottom: spacing.xl,
     paddingHorizontal: spacing.xl,
@@ -293,49 +352,19 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.lg,
   },
-  contentCard: {
-    width: responsive.moderateScale(160),
-    padding: spacing.md,
-    marginRight: spacing.md,
-  },
-  contentIcon: {
-    width: responsive.moderateScale(48),
-    height: responsive.moderateScale(48),
-    borderRadius: responsive.moderateScale(24),
-    ...sharedStyles.columnCenter,
-    marginBottom: spacing.sm,
-  },
-  contentTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.xs,
-  },
-  contentDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    marginBottom: spacing.xs,
-  },
-  premiumBadge: {
-    ...sharedStyles.rowStart,
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
-  },
-  premiumText: {
-    color: commonColors.white,
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    fontWeight: typography.fontWeight.semibold,
-  },
-  horizontalScroll: {
-    marginHorizontal: -spacing.xl,
-    paddingHorizontal: spacing.xl,
-  },
-  footer: {
-    borderTopWidth: 1,
-    padding: spacing.xl,
-  },
   startButton: {
     width: '100%',
+  },
+  switchButton: {
+    height: responsive.verticalScale(36),
+    paddingHorizontal: spacing.md,
+  },
+  userName: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+  },
+  welcomeText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.xs,
   },
 });

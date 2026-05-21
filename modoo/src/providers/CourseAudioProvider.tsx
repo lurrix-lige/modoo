@@ -45,78 +45,87 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
   // 因此使用课程数据中的时长作为兜底
   const effectiveDuration = unifiedAudio.duration || fallbackDuration;
 
-  const play = useCallback(async (track: CourseAudioTrack): Promise<boolean> => {
-    logger.debug('CourseAudioProvider.play called with track', { track });
+  const play = useCallback(
+    async (track: CourseAudioTrack): Promise<boolean> => {
+      logger.debug('CourseAudioProvider.play called with track', { track });
 
-    if (currentTrackRef.current?.id === track.id && unifiedAudio.isPlaying) {
-      logger.debug('Same track already playing');
-      return true;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    currentTrackRef.current = track;
-    setFallbackDuration(track.duration || 0);
-
-    const tracks: Array<{ id: string; url: string; volume: number; loop: boolean; role: 'main' | 'background' }> = [];
-
-    if (track.backgroundMusicUrl) {
-      const bgValidation = validateUrl(track.backgroundMusicUrl);
-      if (bgValidation.valid) {
-        tracks.push({
-          id: 'background',
-          url: track.backgroundMusicUrl,
-          volume: backgroundVolume,
-          loop: true,
-          role: 'background',
-        });
-      }
-    }
-
-    if (track.voiceGuideUrl) {
-      const voiceValidation = validateUrl(track.voiceGuideUrl);
-      if (voiceValidation.valid) {
-        tracks.push({
-          id: 'voice',
-          url: track.voiceGuideUrl,
-          volume: voiceVolume,
-          loop: false,
-          role: 'main',
-        });
-      }
-    }
-
-    if (tracks.length === 0) {
-      setError('No valid audio URLs provided');
-      setIsLoading(false);
-      return false;
-    }
-
-    try {
-      const success = await unifiedAudio.play({ tracks });
-
-      if (success) {
-        audioFocusManager.request('course', 'main', (action: FocusAction) => {
-          if (action === 'stop') {
-            unifiedAudio.stop();
-            audioFocusManager.release('course');
-            setError(null);
-          }
-        });
-        setIsLoading(false);
+      if (currentTrackRef.current?.id === track.id && unifiedAudio.isPlaying) {
+        logger.debug('Same track already playing');
         return true;
-      } else {
-        setError('Failed to play course audio');
+      }
+
+      setIsLoading(true);
+      setError(null);
+      currentTrackRef.current = track;
+      setFallbackDuration(track.duration || 0);
+
+      const tracks: Array<{
+        id: string;
+        url: string;
+        volume: number;
+        loop: boolean;
+        role: 'main' | 'background';
+      }> = [];
+
+      if (track.backgroundMusicUrl) {
+        const bgValidation = validateUrl(track.backgroundMusicUrl);
+        if (bgValidation.valid) {
+          tracks.push({
+            id: 'background',
+            url: track.backgroundMusicUrl,
+            volume: backgroundVolume,
+            loop: true,
+            role: 'background',
+          });
+        }
+      }
+
+      if (track.voiceGuideUrl) {
+        const voiceValidation = validateUrl(track.voiceGuideUrl);
+        if (voiceValidation.valid) {
+          tracks.push({
+            id: 'voice',
+            url: track.voiceGuideUrl,
+            volume: voiceVolume,
+            loop: false,
+            role: 'main',
+          });
+        }
+      }
+
+      if (tracks.length === 0) {
+        setError('No valid audio URLs provided');
         setIsLoading(false);
         return false;
       }
-    } catch (err) {
-      logger.error('Failed to play course audio', { err });
-      setError('Playback failed');
-      setIsLoading(false);
-      return false;
-    }
-  }, [unifiedAudio, backgroundVolume, voiceVolume]);
+
+      try {
+        const success = await unifiedAudio.play({ tracks });
+
+        if (success) {
+          audioFocusManager.request('course', 'main', (action: FocusAction) => {
+            if (action === 'stop') {
+              unifiedAudio.stop();
+              audioFocusManager.release('course');
+              setError(null);
+            }
+          });
+          setIsLoading(false);
+          return true;
+        } else {
+          setError('Failed to play course audio');
+          setIsLoading(false);
+          return false;
+        }
+      } catch (err) {
+        logger.error('Failed to play course audio', { err });
+        setError('Playback failed');
+        setIsLoading(false);
+        return false;
+      }
+    },
+    [unifiedAudio, backgroundVolume, voiceVolume],
+  );
 
   const pause = useCallback(() => {
     unifiedAudio.pause();
@@ -144,22 +153,31 @@ export function CourseAudioProvider({ children }: { children: React.ReactNode })
     setError(null);
   }, [unifiedAudio]);
 
-  const seekTo = useCallback(async (position: number) => {
-    logger.debug('CourseAudioProvider.seekTo called with position', { position });
-    await unifiedAudio.seekTo(position);
-  }, [unifiedAudio]);
+  const seekTo = useCallback(
+    async (position: number) => {
+      logger.debug('CourseAudioProvider.seekTo called with position', { position });
+      await unifiedAudio.seekTo(position);
+    },
+    [unifiedAudio],
+  );
 
-  const setBackgroundVolume = useCallback((volume: number) => {
-    const clampedVolume = Math.max(0, Math.min(1, volume));
-    setBackgroundVolumeState(clampedVolume);
-    unifiedAudio.setVolume('background', clampedVolume);
-  }, [unifiedAudio]);
+  const setBackgroundVolume = useCallback(
+    (volume: number) => {
+      const clampedVolume = Math.max(0, Math.min(1, volume));
+      setBackgroundVolumeState(clampedVolume);
+      unifiedAudio.setVolume('background', clampedVolume);
+    },
+    [unifiedAudio],
+  );
 
-  const setVoiceVolume = useCallback((volume: number) => {
-    const clampedVolume = Math.max(0, Math.min(1, volume));
-    setVoiceVolumeState(clampedVolume);
-    unifiedAudio.setVolume('voice', clampedVolume);
-  }, [unifiedAudio]);
+  const setVoiceVolume = useCallback(
+    (volume: number) => {
+      const clampedVolume = Math.max(0, Math.min(1, volume));
+      setVoiceVolumeState(clampedVolume);
+      unifiedAudio.setVolume('voice', clampedVolume);
+    },
+    [unifiedAudio],
+  );
 
   return (
     <CourseAudioContext.Provider

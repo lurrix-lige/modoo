@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const LOG_LEVEL = __DEV__ ? 'debug' : 'warn';
 
 const levels = {

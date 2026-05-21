@@ -48,10 +48,22 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
       />
 
       <View style={[styles.storyInfo, isLandscape && styles.landscapeStoryInfo]}>
-        <Text style={[styles.storyTitle, isLandscape && styles.landscapeStoryTitle, { color: colors.textPrimary }]}>
+        <Text
+          style={[
+            styles.storyTitle,
+            isLandscape && styles.landscapeStoryTitle,
+            { color: colors.textPrimary },
+          ]}
+        >
           {story.title}
         </Text>
-        <Text style={[styles.storyDesc, isLandscape && styles.landscapeStoryDesc, { color: colors.textSecondary }]}>
+        <Text
+          style={[
+            styles.storyDesc,
+            isLandscape && styles.landscapeStoryDesc,
+            { color: colors.textSecondary },
+          ]}
+        >
           {story.description}
         </Text>
 
@@ -107,67 +119,67 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
 };
 
 const styles = StyleSheet.create({
-  playerSection: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-  },
-  landscapePlayerSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xl,
-    paddingVertical: spacing.md,
-  },
   avatarContainer: {
     marginBottom: spacing.lg,
   },
   landscapeAvatarContainer: {
     marginBottom: 0,
   },
-  storyInfo: {
+  landscapeNavButtons: {
+    justifyContent: 'flex-start',
+    marginTop: spacing.md,
+  },
+  landscapePlayerSection: {
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.xl,
+    paddingVertical: spacing.md,
+  },
+  landscapeStoryDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    lineHeight: responsive.verticalScale(20),
+    textAlign: 'left',
   },
   landscapeStoryInfo: {
     alignItems: 'flex-start',
     flex: 1,
+  },
+  landscapeStoryTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
+    marginBottom: spacing.xs,
+    textAlign: 'left',
+  },
+  navButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    height: responsive.moderateScale(40),
+    justifyContent: 'center',
+    width: responsive.moderateScale(40),
+  },
+  navButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'center',
+    marginTop: spacing.lg,
+  },
+  playerSection: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+  },
+  storyDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    lineHeight: responsive.verticalScale(24),
+    textAlign: 'center',
+  },
+  storyInfo: {
+    alignItems: 'center',
   },
   storyTitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.sm,
     textAlign: 'center',
-  },
-  landscapeStoryTitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xl),
-    textAlign: 'left',
-    marginBottom: spacing.xs,
-  },
-  storyDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    textAlign: 'center',
-    lineHeight: responsive.verticalScale(24),
-  },
-  landscapeStoryDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    textAlign: 'left',
-    lineHeight: responsive.verticalScale(20),
-  },
-  navButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginTop: spacing.lg,
-  },
-  landscapeNavButtons: {
-    marginTop: spacing.md,
-    justifyContent: 'flex-start',
-  },
-  navButton: {
-    width: responsive.moderateScale(40),
-    height: responsive.moderateScale(40),
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
   },
 });

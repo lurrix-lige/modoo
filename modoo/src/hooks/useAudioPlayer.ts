@@ -104,95 +104,109 @@ export function useAudioPlayer() {
     });
   }, [syncActiveIds]);
 
-  const play = useCallback(async (src: string): Promise<boolean> => {
-    try {
+  const play = useCallback(
+    async (src: string): Promise<boolean> => {
+      try {
+        if (!playerRef.current) {
+          logger.error('useAudioPlayer: player not initialized');
+          return false;
+        }
+
+        trackMapRef.current.clear();
+
+        await playerRef.current.unloadAll();
+
+        const success = await playerRef.current.play({
+          tracks: [
+            {
+              id: 'main',
+              url: src,
+              volume: volumeRef.current,
+              loop: true,
+              role: 'main',
+            },
+          ],
+        });
+
+        if (success) {
+          trackMapRef.current.set('main', { url: src, volume: volumeRef.current });
+          syncActiveIds();
+          registerFocus();
+          setState((prev) => ({ ...prev, isPlaying: true }));
+        }
+        return success;
+      } catch (error) {
+        logger.error('Failed to play audio', { error });
+        setState((prev) => ({ ...prev, isPlaying: false }));
+        return false;
+      }
+    },
+    [syncActiveIds, registerFocus],
+  );
+
+  const addTrack = useCallback(
+    async (id: string, url: string, volume?: number): Promise<boolean> => {
       if (!playerRef.current) {
         logger.error('useAudioPlayer: player not initialized');
         return false;
       }
 
-      trackMapRef.current.clear();
+      if (trackMapRef.current.has(id)) {
+        logger.debug('Track already active', { id });
+        return false;
+      }
 
-      await playerRef.current.unloadAll();
-
-      const success = await playerRef.current.play({
-        tracks: [{
-          id: 'main',
-          url: src,
-          volume: volumeRef.current,
-          loop: true,
-          role: 'main',
-        }],
+      const trackVolume = Math.max(0, Math.min(1, volume ?? volumeRef.current));
+      const success = await playerRef.current.addTrack({
+        id,
+        url,
+        volume: trackVolume,
+        loop: true,
+        role: 'background',
       });
 
       if (success) {
-        trackMapRef.current.set('main', { url: src, volume: volumeRef.current });
+        trackMapRef.current.set(id, { url, volume: trackVolume });
         syncActiveIds();
-        registerFocus();
-        setState((prev) => ({ ...prev, isPlaying: true }));
+
+        if (trackMapRef.current.size === 1) {
+          registerFocus();
+        }
+
+        setState((prev) => ({ ...prev, isPlaying: true, volume: trackVolume }));
       }
+
       return success;
-    } catch (error) {
-      logger.error('Failed to play audio', { error });
-      setState((prev) => ({ ...prev, isPlaying: false }));
-      return false;
-    }
-  }, [syncActiveIds, registerFocus]);
+    },
+    [syncActiveIds, registerFocus],
+  );
 
-  const addTrack = useCallback(async (id: string, url: string, volume?: number): Promise<boolean> => {
-    if (!playerRef.current) {
-      logger.error('useAudioPlayer: player not initialized');
-      return false;
-    }
+  const removeTrack = useCallback(
+    async (id: string): Promise<void> => {
+      if (!playerRef.current) return;
 
-    if (trackMapRef.current.has(id)) {
-      logger.debug('Track already active', { id });
-      return false;
-    }
-
-    const trackVolume = Math.max(0, Math.min(1, volume ?? volumeRef.current));
-    const success = await playerRef.current.addTrack({
-      id,
-      url,
-      volume: trackVolume,
-      loop: true,
-      role: 'background',
-    });
-
-    if (success) {
-      trackMapRef.current.set(id, { url, volume: trackVolume });
+      trackMapRef.current.delete(id);
       syncActiveIds();
+      await playerRef.current.removeTrack(id);
 
-      if (trackMapRef.current.size === 1) {
-        registerFocus();
+      if (trackMapRef.current.size === 0) {
+        audioFocusManager.release(focusIdRef.current);
+        setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
       }
+    },
+    [syncActiveIds],
+  );
 
-      setState((prev) => ({ ...prev, isPlaying: true, volume: trackVolume }));
-    }
-
-    return success;
-  }, [syncActiveIds, registerFocus]);
-
-  const removeTrack = useCallback(async (id: string): Promise<void> => {
-    if (!playerRef.current) return;
-
-    trackMapRef.current.delete(id);
-    syncActiveIds();
-    await playerRef.current.removeTrack(id);
-
-    if (trackMapRef.current.size === 0) {
-      audioFocusManager.release(focusIdRef.current);
-      setState((prev) => ({ ...prev, isPlaying: false, currentTime: 0 }));
-    }
-  }, [syncActiveIds]);
-
-  const toggleTrack = useCallback(async (id: string, url: string, volume?: number): Promise<boolean> => {
-    if (trackMapRef.current.has(id)) {
-      await removeTrack(id);
-      return false;
-    }
-    return await addTrack(id, url, volume);
-  }, [addTrack, removeTrack]);
+  const toggleTrack = useCallback(
+    async (id: string, url: string, volume?: number): Promise<boolean> => {
+      if (trackMapRef.current.has(id)) {
+        await removeTrack(id);
+        return false;
+      }
+      return await addTrack(id, url, volume);
+    },
+    [addTrack, removeTrack],
+  );
 
   const hasTrack = useCallback((id: string): boolean => {
     return trackMapRef.current.has(id);
@@ -217,7 +231,7 @@ export function useAudioPlayer() {
         }
         return false;
       }
-      const success = await playerRef.current?.resume() ?? false;
+      const success = (await playerRef.current?.resume()) ?? false;
       if (success) {
         setState((prev) => ({ ...prev, isPlaying: true }));
       }
@@ -228,13 +242,16 @@ export function useAudioPlayer() {
     }
   }, []);
 
-  const toggle = useCallback(async (src: string): Promise<boolean> => {
-    if (state.isPlaying) {
-      pause();
-      return false;
-    }
-    return await play(src);
-  }, [state.isPlaying, pause, play]);
+  const toggle = useCallback(
+    async (src: string): Promise<boolean> => {
+      if (state.isPlaying) {
+        pause();
+        return false;
+      }
+      return await play(src);
+    },
+    [state.isPlaying, pause, play],
+  );
 
   const stop = useCallback(() => {
     try {
@@ -249,7 +266,8 @@ export function useAudioPlayer() {
   }, [syncActiveIds]);
 
   const setVolume = useCallback((volume: number) => {
-    const safeVolume = (volume == null || isNaN(volume) || !isFinite(volume)) ? volumeRef.current : volume;
+    const safeVolume =
+      volume == null || isNaN(volume) || !isFinite(volume) ? volumeRef.current : volume;
     const clampedVolume = Math.max(0, Math.min(1, safeVolume));
     volumeRef.current = clampedVolume;
     for (const trackId of trackMapRef.current.keys()) {
@@ -268,7 +286,7 @@ export function useAudioPlayer() {
 
   const resumeTrack = useCallback(async (id: string): Promise<boolean> => {
     try {
-      return await playerRef.current?.resumeTrack(id) ?? false;
+      return (await playerRef.current?.resumeTrack(id)) ?? false;
     } catch (error) {
       logger.error('Failed to resume track', { id, error });
       return false;

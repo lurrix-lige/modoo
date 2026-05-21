@@ -26,32 +26,38 @@ export function useOrientation(): UseOrientationReturn {
   /**
    * 将原生方向转换为应用内方向类型
    */
-  const convertOrientation = useCallback((nativeOrientation: ScreenOrientation.Orientation): OrientationType => {
-    switch (nativeOrientation) {
-      case ScreenOrientation.Orientation.LANDSCAPE_LEFT:
-        return 'landscape-left';
-      case ScreenOrientation.Orientation.LANDSCAPE_RIGHT:
-        return 'landscape-right';
-      default:
-        return 'portrait';
-    }
-  }, []);
+  const convertOrientation = useCallback(
+    (nativeOrientation: ScreenOrientation.Orientation): OrientationType => {
+      switch (nativeOrientation) {
+        case ScreenOrientation.Orientation.LANDSCAPE_LEFT:
+          return 'landscape-left';
+        case ScreenOrientation.Orientation.LANDSCAPE_RIGHT:
+          return 'landscape-right';
+        default:
+          return 'portrait';
+      }
+    },
+    [],
+  );
 
   /**
    * 检查是否为横屏方向
    */
-  const checkIsLandscape = useCallback((nativeOrientation: ScreenOrientation.Orientation): boolean => {
-    return (
-      nativeOrientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-      nativeOrientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
-    );
-  }, []);
+  const checkIsLandscape = useCallback(
+    (nativeOrientation: ScreenOrientation.Orientation): boolean => {
+      return (
+        nativeOrientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+        nativeOrientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+      );
+    },
+    [],
+  );
 
   /**
    * 安全地执行方向操作，统一错误处理
    */
   const safeOrientationOperation = useCallback(
-    async <T,>(operation: () => Promise<T>, errorMessage: string): Promise<T | undefined> => {
+    async <T>(operation: () => Promise<T>, errorMessage: string): Promise<T | undefined> => {
       try {
         return await operation();
       } catch (error) {
@@ -64,7 +70,7 @@ export function useOrientation(): UseOrientationReturn {
         return undefined;
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -74,7 +80,7 @@ export function useOrientation(): UseOrientationReturn {
     const checkOrientation = async () => {
       const result = await safeOrientationOperation(
         () => ScreenOrientation.getOrientationAsync(),
-        'Failed to get orientation'
+        'Failed to get orientation',
       );
 
       if (result !== undefined) {
@@ -102,7 +108,7 @@ export function useOrientation(): UseOrientationReturn {
       subscription.remove();
       safeOrientationOperation(
         () => ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT),
-        'Failed to reset orientation on unmount'
+        'Failed to reset orientation on unmount',
       );
     };
   }, [convertOrientation, checkIsLandscape, safeOrientationOperation]);
@@ -133,7 +139,13 @@ export function useOrientation(): UseOrientationReturn {
     await safeOrientationOperation(async () => {
       await ScreenOrientation.lockAsync(targetLock);
       setIsLandscape(newIsLandscape);
-      setOrientation(newIsLandscape ? (targetLock === ScreenOrientation.OrientationLock.LANDSCAPE_LEFT ? 'landscape-left' : 'landscape-right') : 'portrait');
+      setOrientation(
+        newIsLandscape
+          ? targetLock === ScreenOrientation.OrientationLock.LANDSCAPE_LEFT
+            ? 'landscape-left'
+            : 'landscape-right'
+          : 'portrait',
+      );
       logger.info(`Orientation changed to ${newIsLandscape ? orientation : 'portrait'}`);
     }, 'Failed to change orientation');
 

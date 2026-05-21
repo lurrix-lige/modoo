@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Switch,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, Bell, ChevronRight, CheckCircle, Moon, Calendar, Eye, User, Star, MessageCircle, Gift } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Bell,
+  ChevronRight,
+  CheckCircle,
+  Moon,
+  Calendar,
+  Eye,
+  User,
+  Star,
+  MessageCircle,
+  Gift,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService } from '../../../services';
 import { logger } from '../../../utils/logger';
@@ -88,12 +101,15 @@ export default function NotificationSettingsScreen() {
     key: keyof NotificationSettings,
     title: string,
     description: string,
-    iconName: string
+    iconName: string,
   ) => (
     <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
       <View style={styles.settingLeft}>
         <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight }]}>
-          {(() => { const IconComp = notificationIconMap[iconName] || Bell; return <IconComp size={20} color={colors.primary} />; })()}
+          {(() => {
+            const IconComp = notificationIconMap[iconName] || Bell;
+            return <IconComp size={20} color={colors.primary} />;
+          })()}
         </View>
         <View style={styles.settingContent}>
           <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>{title}</Text>
@@ -116,7 +132,9 @@ export default function NotificationSettingsScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <ArrowLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('settings.notifications')}</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>
+          {t('settings.notifications')}
+        </Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -128,19 +146,19 @@ export default function NotificationSettingsScreen() {
             'sleepReminder',
             t('settings.sleepReminder'),
             t('settings.sleepReminderDesc'),
-            'moon-outline'
+            'moon-outline',
           )}
           {renderSettingItem(
             'checkInReminder',
             t('settings.checkInReminder'),
             t('settings.checkInReminderDesc'),
-            'checkmark-circle-outline'
+            'checkmark-circle-outline',
           )}
           {renderSettingItem(
             'reportNotification',
             t('settings.reportNotification'),
             t('settings.reportNotificationDesc'),
-            'document-text-outline'
+            'document-text-outline',
           )}
         </View>
 
@@ -152,13 +170,13 @@ export default function NotificationSettingsScreen() {
             'expertReminder',
             t('settings.expertReminder'),
             t('settings.expertReminderDesc'),
-            'chatbubbles-outline'
+            'chatbubbles-outline',
           )}
           {renderSettingItem(
             'activityReminder',
             t('settings.activityReminder'),
             t('settings.activityReminderDesc'),
-            'gift-outline'
+            'gift-outline',
           )}
         </View>
 
@@ -171,21 +189,30 @@ export default function NotificationSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
   backButton: {
     marginRight: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.bold,
   },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
+  },
+  footerText: {
+    fontSize: typography.fontSize.sm,
+    paddingVertical: spacing.xl,
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: spacing.xl,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 40,
   },
   section: {
     borderRadius: borderRadius.xl,
@@ -195,32 +222,27 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: typography.fontSize.sm,
+    paddingBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+  },
+  settingContent: {
+    flex: 1,
+  },
+  settingDesc: {
+    fontSize: typography.fontSize.sm,
   },
   settingItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderBottomWidth: 1,
   },
   settingLeft: {
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  settingContent: {
     flex: 1,
   },
   settingTitle: {
@@ -228,12 +250,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.medium,
     marginBottom: 2,
   },
-  settingDesc: {
-    fontSize: typography.fontSize.sm,
-  },
-  footerText: {
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    paddingVertical: spacing.xl,
+  title: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
   },
 });

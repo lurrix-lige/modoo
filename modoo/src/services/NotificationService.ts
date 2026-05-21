@@ -104,7 +104,7 @@ export class NotificationService {
     bookingId: string,
     date: string,
     time: string,
-    expertName: string
+    expertName: string,
   ): Promise<void> {
     logger.debug('Booking reminder scheduled (notifications temporarily disabled)', {
       bookingId,
@@ -125,7 +125,11 @@ export class NotificationService {
     }
   }
 
-  public async presentLocalNotification(title: string, body: string, data?: Record<string, string>): Promise<void> {
+  public async presentLocalNotification(
+    title: string,
+    body: string,
+    data?: Record<string, string>,
+  ): Promise<void> {
     try {
       const notificationRequest: Notifications.NotificationRequestInput = {
         content: {

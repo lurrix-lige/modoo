@@ -9,11 +9,31 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { Play, Check, Lock, Star, BookOpen, Clock, Trophy, CheckCircle, PlayCircle, ArrowLeft, Sun } from 'lucide-react-native';
+import {
+  Play,
+  Check,
+  Lock,
+  Star,
+  BookOpen,
+  Clock,
+  Trophy,
+  CheckCircle,
+  PlayCircle,
+  ArrowLeft,
+  Sun,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { apiService, Course, Lesson } from '../../../services';
 import { useCourseLocalization } from '../hooks/useCourseLocalization';
@@ -77,7 +97,7 @@ export default function CourseDetailScreen() {
 
   const handleContinueLearning = () => {
     // 找到第一个未完成的课程，如果都完成了就找第一个
-    const targetLesson = lessons.find(lesson => !lesson.isCompleted) || lessons[0];
+    const targetLesson = lessons.find((lesson) => !lesson.isCompleted) || lessons[0];
     if (targetLesson) {
       handleLessonPress(targetLesson);
     } else {
@@ -92,7 +112,9 @@ export default function CourseDetailScreen() {
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <ArrowLeft size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('course.courseDetail')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            {t('course.courseDetail')}
+          </Text>
           <View style={styles.headerRight}>
             <Sun size={24} color={colors.textPrimary} />
           </View>
@@ -103,13 +125,13 @@ export default function CourseDetailScreen() {
             <View style={[styles.skeletonTextLg, { backgroundColor: colors.border }]} />
             <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
             <View style={styles.skeletonStatsRow}>
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <View key={i} style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
               ))}
             </View>
           </View>
           <View style={[styles.skeletonTitle, { backgroundColor: colors.border }]} />
-          {[1, 2, 3, 4].map(i => (
+          {[1, 2, 3, 4].map((i) => (
             <View key={i} style={[styles.skeletonLessonCard, { backgroundColor: colors.surface }]}>
               <View style={[styles.skeletonLessonNum, { backgroundColor: colors.border }]} />
               <View style={styles.skeletonLessonInfo}>
@@ -129,14 +151,16 @@ export default function CourseDetailScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <ArrowLeft size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('course.courseDetail')}</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+          {t('course.courseDetail')}
+        </Text>
         <View style={styles.headerRight}>
           <Sun size={24} color={colors.textPrimary} />
         </View>
       </View>
 
-      <ScrollView 
-        style={styles.content} 
+      <ScrollView
+        style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -149,7 +173,9 @@ export default function CourseDetailScreen() {
       >
         <View style={[styles.courseHeader, { backgroundColor: colors.surface }]}>
           <View style={[styles.courseImage, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.courseLevel, { color: commonColors.white }]}>Level {course.level}</Text>
+            <Text style={[styles.courseLevel, { color: commonColors.white }]}>
+              Level {course.level}
+            </Text>
           </View>
           <Text style={[styles.courseName, { color: colors.textPrimary }]}>
             {getCourseName(course)}
@@ -162,64 +188,80 @@ export default function CourseDetailScreen() {
             <View style={styles.statItem}>
               <BookOpen size={20} color={colors.primary} />
               <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {course.totalLessons}{t('course.lessons')}
+                {course.totalLessons}
+                {t('course.lessons')}
               </Text>
             </View>
             <View style={styles.statItem}>
               <Clock size={20} color={colors.primary} />
               <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {lessons.reduce((acc, lesson) => acc + lesson.duration, 0)}{t('course.minutes')}
+                {lessons.reduce((acc, lesson) => acc + lesson.duration, 0)}
+                {t('course.minutes')}
               </Text>
             </View>
             <View style={styles.statItem}>
               <Trophy size={20} color={colors.warning} />
               <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {Math.floor(((course.completedLessons || 0) / (course.totalLessons || 1) * 100))}%
+                {Math.floor(((course.completedLessons || 0) / (course.totalLessons || 1)) * 100)}%
               </Text>
             </View>
           </View>
         </View>
 
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.courseContent')}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+          {t('course.courseContent')}
+        </Text>
 
         {lessons.map((lesson, index) => (
-              <TouchableOpacity
-                key={lesson.id}
-                style={[styles.lessonCard, { backgroundColor: colors.surface }]}
-                onPress={() => handleLessonPress(lesson)}
-              >
-                <View
-                  style={[
-                    styles.lessonNumber,
-                    { backgroundColor: lesson.isCompleted ? colors.success : colors.primary },
-                  ]}
-                >
-                  {lesson.isCompleted ? (
-                    <Check size={16} color={commonColors.white} />
-                  ) : (
-                    <Text style={[styles.lessonNumberText, { color: commonColors.white }]}>{index + 1}</Text>
-                  )}
-                </View>
+          <TouchableOpacity
+            key={lesson.id}
+            style={[styles.lessonCard, { backgroundColor: colors.surface }]}
+            onPress={() => handleLessonPress(lesson)}
+          >
+            <View
+              style={[
+                styles.lessonNumber,
+                { backgroundColor: lesson.isCompleted ? colors.success : colors.primary },
+              ]}
+            >
+              {lesson.isCompleted ? (
+                <Check size={16} color={commonColors.white} />
+              ) : (
+                <Text style={[styles.lessonNumberText, { color: commonColors.white }]}>
+                  {index + 1}
+                </Text>
+              )}
+            </View>
 
-                <View style={styles.lessonInfo}>
-                  <Text style={[styles.lessonName, { color: colors.textPrimary }]}>
-                    {getLessonTitle(lesson)}
-                  </Text>
-                  <Text style={[styles.lessonDuration, { color: colors.textSecondary }]}>
-                    {lesson.duration}{t('course.minutes')}
-                  </Text>
-                </View>
+            <View style={styles.lessonInfo}>
+              <Text style={[styles.lessonName, { color: colors.textPrimary }]}>
+                {getLessonTitle(lesson)}
+              </Text>
+              <Text style={[styles.lessonDuration, { color: colors.textSecondary }]}>
+                {lesson.duration}
+                {t('course.minutes')}
+              </Text>
+            </View>
 
-                {lesson.isCompleted ? <CheckCircle size={28} color={colors.success} /> : <PlayCircle size={28} color={colors.primary} />}
-              </TouchableOpacity>
-            ))}
+            {lesson.isCompleted ? (
+              <CheckCircle size={28} color={colors.success} />
+            ) : (
+              <PlayCircle size={28} color={colors.primary} />
+            )}
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: colors.surface }]}>
-        <TouchableOpacity style={[styles.continueButton, { backgroundColor: colors.primary }]} onPress={handleContinueLearning}>
+        <TouchableOpacity
+          style={[styles.continueButton, { backgroundColor: colors.primary }]}
+          onPress={handleContinueLearning}
+        >
           <Play size={24} color={commonColors.white} />
           <Text style={[styles.continueButtonText, { color: commonColors.white }]}>
-            {course.completedLessons && course.completedLessons > 0 ? t('course.continueLearning') : t('course.startLearning')}
+            {course.completedLessons && course.completedLessons > 0
+              ? t('course.continueLearning')
+              : t('course.startLearning')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -232,9 +274,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   loadingText: {
     fontSize: typography.fontSize.md,
@@ -259,19 +301,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   courseHeader: {
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
     alignItems: 'center',
+    borderRadius: borderRadius.xl,
     marginBottom: spacing.xl,
+    padding: spacing.xl,
     ...shadows.medium,
   },
   courseImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 50,
+    height: 100,
+    justifyContent: 'center',
     marginBottom: spacing.lg,
+    width: 100,
   },
   courseLevel: {
     fontSize: typography.fontSize.xxl,
@@ -284,16 +326,16 @@ const styles = StyleSheet.create({
   },
   courseDesc: {
     fontSize: typography.fontSize.sm,
-    textAlign: 'center',
     marginBottom: spacing.lg,
+    textAlign: 'center',
   },
   courseStats: {
     flexDirection: 'row',
     gap: spacing.xl,
   },
   statItem: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.xs,
   },
   statText: {
@@ -305,20 +347,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   lessonCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.lg,
     ...shadows.small,
   },
   lessonNumber: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 14,
+    height: 28,
+    justifyContent: 'center',
     marginRight: spacing.md,
+    width: 28,
   },
   lessonNumberText: {
     fontSize: typography.fontSize.sm,
@@ -340,12 +382,12 @@ const styles = StyleSheet.create({
     ...shadows.small,
   },
   continueButton: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: 56,
     borderRadius: borderRadius.md,
+    flexDirection: 'row',
     gap: spacing.sm,
+    height: 56,
+    justifyContent: 'center',
   },
   continueButtonText: {
     fontSize: typography.fontSize.lg,
@@ -353,33 +395,33 @@ const styles = StyleSheet.create({
   },
   // Skeleton styles
   skeletonHero: {
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
     alignItems: 'center',
+    borderRadius: borderRadius.xl,
     marginBottom: spacing.xl,
+    padding: spacing.xl,
   },
   skeletonCircle: {
-    width: 100,
-    height: 100,
     borderRadius: 50,
+    height: 100,
     marginBottom: spacing.lg,
+    width: 100,
   },
   skeletonTextLg: {
-    width: '60%',
-    height: 24,
     borderRadius: 12,
+    height: 24,
     marginBottom: spacing.sm,
+    width: '60%',
   },
   skeletonTextMd: {
-    width: '80%',
-    height: 16,
     borderRadius: 8,
+    height: 16,
     marginBottom: spacing.xs,
+    width: '80%',
   },
   skeletonTextSm: {
-    width: 60,
-    height: 14,
     borderRadius: 7,
+    height: 14,
+    width: 60,
   },
   skeletonStatsRow: {
     flexDirection: 'row',
@@ -387,23 +429,23 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   skeletonTitle: {
-    width: 120,
-    height: 20,
     borderRadius: 10,
+    height: 20,
     marginBottom: spacing.md,
+    width: 120,
   },
   skeletonLessonCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
     marginBottom: spacing.md,
+    padding: spacing.lg,
   },
   skeletonLessonNum: {
-    width: 28,
-    height: 28,
     borderRadius: 14,
+    height: 28,
     marginRight: spacing.md,
+    width: 28,
   },
   skeletonLessonInfo: {
     flex: 1,

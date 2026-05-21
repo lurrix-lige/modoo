@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme, spacing, typography, commonColors } from '../theme';
 import { useTranslation } from 'react-i18next';
 import { Hourglass } from 'lucide-react-native';
@@ -15,11 +10,7 @@ interface LoadingStateProps {
   icon?: React.ComponentType<{ size: number; color: string }>;
 }
 
-export const LoadingState: React.FC<LoadingStateProps> = ({
-  text,
-  size = 'large',
-  icon: Icon,
-}) => {
+export const LoadingState: React.FC<LoadingStateProps> = ({ text, size = 'large', icon: Icon }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -27,16 +18,10 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     <View style={styles.container}>
       {Icon ? (
         <View style={styles.icon}>
-          <Icon
-            size={size === 'large' ? 48 : 32}
-            color={colors.primary}
-          />
+          <Icon size={size === 'large' ? 48 : 32} color={colors.primary} />
         </View>
       ) : (
-        <ActivityIndicator
-          size={size === 'large' ? 'large' : 'small'}
-          color={colors.primary}
-        />
+        <ActivityIndicator size={size === 'large' ? 'large' : 'small'} color={colors.primary} />
       )}
       <Text
         style={[
@@ -54,9 +39,9 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: spacing.xxl,
   },
   icon: {

@@ -76,9 +76,7 @@ function ErrorFallback({ error, onRetry, onGoHome }: ErrorFallbackProps) {
           <AlertCircle size={64} color={colors.error} />
         </View>
 
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
-          {t('common.error')}
-        </Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('common.error')}</Text>
 
         <Text style={[styles.message, { color: colors.textSecondary }]}>
           {t('common.errorMessage')}
@@ -86,9 +84,7 @@ function ErrorFallback({ error, onRetry, onGoHome }: ErrorFallbackProps) {
 
         {error && __DEV__ && (
           <View style={[styles.devInfo, { backgroundColor: colors.surface }]}>
-            <Text style={[styles.devInfoText, { color: colors.error }]}>
-              {error.message}
-            </Text>
+            <Text style={[styles.devInfoText, { color: colors.error }]}>{error.message}</Text>
           </View>
         )}
 
@@ -119,74 +115,74 @@ function ErrorFallback({ error, onRetry, onGoHome }: ErrorFallbackProps) {
 }
 
 const styles = StyleSheet.create({
+  actions: {
+    gap: spacing.md,
+    width: '100%',
+  },
   container: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: spacing.xl,
   },
   content: {
     alignItems: 'center',
     maxWidth: 300,
   },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
+  devInfo: {
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+    width: '100%',
+  },
+  devInfoText: {
+    fontFamily: 'monospace',
+    fontSize: typography.fontSize.xs,
+  },
+  homeButton: {
     alignItems: 'center',
+    borderRadius: borderRadius.md,
+    borderWidth: 1.5,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    height: 48,
+    justifyContent: 'center',
+  },
+  homeButtonText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 60,
+    height: 120,
+    justifyContent: 'center',
     marginBottom: spacing.xl,
+    width: 120,
+  },
+  message: {
+    fontSize: typography.fontSize.md,
+    lineHeight: 24,
+    marginBottom: spacing.xl,
+    textAlign: 'center',
+  },
+  retryButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    height: 48,
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
   },
   title: {
     fontSize: typography.fontSize.xxl,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.md,
     textAlign: 'center',
-  },
-  message: {
-    fontSize: typography.fontSize.md,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: spacing.xl,
-  },
-  devInfo: {
-    width: '100%',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-  },
-  devInfoText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: 'monospace',
-  },
-  actions: {
-    width: '100%',
-    gap: spacing.md,
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    borderRadius: borderRadius.md,
-    gap: spacing.sm,
-  },
-  retryButtonText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  homeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    borderRadius: borderRadius.md,
-    borderWidth: 1.5,
-    gap: spacing.sm,
-  },
-  homeButtonText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
   },
 });
 

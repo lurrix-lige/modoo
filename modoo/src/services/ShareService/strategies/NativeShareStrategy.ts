@@ -18,16 +18,17 @@ export class NativeShareStrategy extends BaseShareStrategy {
 
       const shareMessage = ShareContentOptimizer.generateShareMessage(options, 'native');
 
-      const shareOptions = Platform.OS === 'ios'
-        ? {
-            title: optimized.title,
-            message: shareMessage,
-          }
-        : {
-            title: optimized.title,
-            message: shareMessage,
-            url: optimized.url,
-          };
+      const shareOptions =
+        Platform.OS === 'ios'
+          ? {
+              title: optimized.title,
+              message: shareMessage,
+            }
+          : {
+              title: optimized.title,
+              message: shareMessage,
+              url: optimized.url,
+            };
 
       const result = await Share.share(shareOptions);
 
@@ -39,9 +40,7 @@ export class NativeShareStrategy extends BaseShareStrategy {
 
       return this.createSuccessResult(result);
     } catch (error) {
-      return this.createErrorResult(
-        error instanceof Error ? error.message : 'Share failed'
-      );
+      return this.createErrorResult(error instanceof Error ? error.message : 'Share failed');
     }
   }
 }

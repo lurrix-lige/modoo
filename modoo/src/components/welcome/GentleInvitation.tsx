@@ -42,46 +42,46 @@ export function GentleInvitation({ onStart }: GentleInvitationProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
+  button: {
+    flexShrink: 0,
+    marginLeft: spacing.md,
   },
   card: {
-    padding: spacing.lg,
     minHeight: 120,
+    padding: spacing.lg,
   },
   cardContent: {
+    alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+  },
+  container: {
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
+  },
+  description: {
+    flexGrow: 0,
+    flexShrink: 1,
+    fontSize: typography.fontSize.sm,
+    lineHeight: 18,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: borderRadius.lg,
-    justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
+    borderRadius: borderRadius.lg,
     flexShrink: 0,
+    height: 56,
+    justifyContent: 'center',
+    marginRight: spacing.md,
+    width: 56,
   },
   textContainer: {
     flex: 1,
     flexShrink: 1,
   },
   title: {
+    flexShrink: 1,
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.xs,
-    flexShrink: 1,
-  },
-  description: {
-    fontSize: typography.fontSize.sm,
-    lineHeight: 18,
-    flexShrink: 1,
-    flexGrow: 0,
-  },
-  button: {
-    marginLeft: spacing.md,
-    flexShrink: 0,
   },
 });

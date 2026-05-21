@@ -10,10 +10,7 @@ export const share = {
    * @param options 分享选项
    * @returns 分享结果
    */
-  async to(
-    platform: SharePlatform,
-    options: ShareOptions
-  ): Promise<ShareResult> {
+  async to(platform: SharePlatform, options: ShareOptions): Promise<ShareResult> {
     return factory.share(platform, options);
   },
 
@@ -59,10 +56,7 @@ export const share = {
    * @param preferredPlatforms 优先尝试的平台列表
    * @returns 分享结果
    */
-  async auto(
-    options: ShareOptions,
-    preferredPlatforms?: SharePlatform[]
-  ): Promise<ShareResult> {
+  async auto(options: ShareOptions, preferredPlatforms?: SharePlatform[]): Promise<ShareResult> {
     const platforms = preferredPlatforms || ['wechat', 'qq', 'weibo', 'native'];
     return factory.shareWithBestAvailable(platforms, options);
   },
@@ -88,7 +82,11 @@ export const share = {
    * 注册自定义分享策略
    * @param strategy 分享策略
    */
-  registerStrategy(strategy: { platform: SharePlatform; canShare: () => boolean; share: (options: ShareOptions) => Promise<ShareResult> }): void {
+  registerStrategy(strategy: {
+    platform: SharePlatform;
+    canShare: () => boolean;
+    share: (options: ShareOptions) => Promise<ShareResult>;
+  }): void {
     factory.registerStrategy(strategy as any);
   },
 

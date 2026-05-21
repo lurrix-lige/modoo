@@ -105,34 +105,34 @@ export const responsive = {
   getSpacing,
   getMaxContentWidth,
   updateWindowDimensions,
-  
+
   // Screen size flags
   isXSmallScreen,
   isSmallScreen,
   isMediumScreen,
   isLargePhone,
   isLargeScreen,
-  
+
   // Tablet flags
   isTablet,
   isSmallTablet,
   isMediumTablet,
   isLargeTablet,
   isTabletInLandscape,
-  
+
   // Desktop flags
   isSmallDesktop,
   isLargeDesktop,
-  
+
   // Orientation flags
   isPortrait,
   isLandscape,
-  
+
   // Platform flags
   isIOS,
   isAndroid,
   isWeb,
-  
+
   // Dimensions
   screenWidth,
   screenHeight,

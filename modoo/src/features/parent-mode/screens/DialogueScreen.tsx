@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, MessageCircle, ChevronRight, Moon, Heart, Send, Copy, Star } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  MessageCircle,
+  ChevronRight,
+  Moon,
+  Heart,
+  Send,
+  Copy,
+  Star,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Dialogue } from '../../../services';
 import { LoadingState, ErrorToast } from '../../../components';
@@ -33,12 +50,18 @@ interface FavoriteState {
   [key: string]: boolean;
 }
 
-export default function DialogueScreen({ route }: { route?: { params?: { scenario?: string } } | undefined }) {
+export default function DialogueScreen({
+  route,
+}: {
+  route?: { params?: { scenario?: string } } | undefined;
+}) {
   const navigation = useNavigation<DialogueScreenNavigationProp>();
   const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const initialScenario = route?.params?.scenario as DialogueScenario | 'all' | undefined;
-  const [selectedScenario, setSelectedScenario] = useState<DialogueScenario | 'all'>(initialScenario || 'all');
+  const [selectedScenario, setSelectedScenario] = useState<DialogueScenario | 'all'>(
+    initialScenario || 'all',
+  );
   const [dialogues, setDialogues] = useState<Dialogue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [favoriteStates, setFavoriteStates] = useState<FavoriteState>({});
@@ -64,7 +87,7 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
       const response = await apiService.getDialogues();
       setDialogues(response.dialogues);
       const favorites: FavoriteState = {};
-      response.dialogues.forEach(d => {
+      response.dialogues.forEach((d) => {
         favorites[d.id] = d.isFavorite || false;
       });
       setFavoriteStates(favorites);
@@ -94,13 +117,15 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
     setError({ visible: false, message: '' });
   };
 
-  const filteredDialogues = selectedScenario === 'all'
-    ? dialogues
-    : dialogues.filter(d => 
-        d.scenario === selectedScenario || 
-        d.scenarioKey?.includes(`.${selectedScenario}.`) ||
-        d.category === selectedScenario
-      );
+  const filteredDialogues =
+    selectedScenario === 'all'
+      ? dialogues
+      : dialogues.filter(
+          (d) =>
+            d.scenario === selectedScenario ||
+            d.scenarioKey?.includes(`.${selectedScenario}.`) ||
+            d.category === selectedScenario,
+        );
 
   const getTextForKeyOrValue = (key?: string, fallbackValue?: string): string => {
     if (key) {
@@ -141,10 +166,10 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
       const currentState = favoriteStates[dialogueId] || false;
       if (currentState) {
         await apiService.unfavoriteDialogue(dialogueId);
-        setFavoriteStates(prev => ({ ...prev, [dialogueId]: false }));
+        setFavoriteStates((prev) => ({ ...prev, [dialogueId]: false }));
       } else {
         await apiService.favoriteDialogue(dialogueId);
-        setFavoriteStates(prev => ({ ...prev, [dialogueId]: true }));
+        setFavoriteStates((prev) => ({ ...prev, [dialogueId]: true }));
       }
     } catch (error) {
       logger.error('Failed to toggle favorite', { error });
@@ -155,9 +180,9 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
   const handleUse = async (dialogueId: string) => {
     try {
       await apiService.useDialogue(dialogueId);
-      setDialogues(prev => prev.map(d => 
-        d.id === dialogueId ? { ...d, useCount: (d.useCount || 0) + 1 } : d
-      ));
+      setDialogues((prev) =>
+        prev.map((d) => (d.id === dialogueId ? { ...d, useCount: (d.useCount || 0) + 1 } : d)),
+      );
     } catch (error) {
       logger.error('Failed to record usage', { error });
     }
@@ -182,8 +207,7 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
                 {
                   backgroundColor:
                     selectedScenario === scenario.id ? colors.warning : scenarioButtonBg,
-                  borderColor:
-                    selectedScenario === scenario.id ? 'transparent' : colors.border,
+                  borderColor: selectedScenario === scenario.id ? 'transparent' : colors.border,
                   borderWidth: selectedScenario === scenario.id ? 0 : 1,
                 },
               ]}
@@ -194,7 +218,9 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
                   styles.scenarioText,
                   {
                     color:
-                      selectedScenario === scenario.id ? scenarioSelectedTextColor : scenarioButtonTextColor,
+                      selectedScenario === scenario.id
+                        ? scenarioSelectedTextColor
+                        : scenarioButtonTextColor,
                   },
                 ]}
               >
@@ -212,7 +238,10 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
       ) : (
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {filteredDialogues.map((dialogue) => (
-            <View key={dialogue.id} style={[styles.dialogueCard, { backgroundColor: colors.surface }]}>
+            <View
+              key={dialogue.id}
+              style={[styles.dialogueCard, { backgroundColor: colors.surface }]}
+            >
               <View style={styles.dialogueHeader}>
                 <View style={[styles.scenarioTag, { backgroundColor: scenarioTagBg }]}>
                   <Text style={[styles.scenarioTagText, { color: scenarioTagTextColor }]}>
@@ -237,13 +266,13 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
                   >
                     <Copy size={20} color={colors.textSecondary} />
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.actionButton}
                     onPress={() => toggleFavorite(dialogue.id)}
                   >
-                    <Heart 
-                      size={20} 
-                      color={favoriteStates[dialogue.id] ? colors.error : colors.textSecondary} 
+                    <Heart
+                      size={20}
+                      color={favoriteStates[dialogue.id] ? colors.error : colors.textSecondary}
                       fill={favoriteStates[dialogue.id] ? colors.error : 'none'}
                     />
                   </TouchableOpacity>
@@ -269,7 +298,10 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
               <View style={styles.tagsRow}>
                 <View style={styles.tagsContainer}>
                   {dialogue.tags.map((tag, index) => (
-                    <View key={`${dialogue.id}-${tag}-${index}`} style={[styles.tag, { backgroundColor: colors.border }]}>
+                    <View
+                      key={`${dialogue.id}-${tag}-${index}`}
+                      style={[styles.tag, { backgroundColor: colors.border }]}
+                    >
                       <Text style={[styles.tagText, { color: colors.textSecondary }]}>
                         #{getTagText(tag)}
                       </Text>
@@ -301,84 +333,64 @@ export default function DialogueScreen({ route }: { route?: { params?: { scenari
 }
 
 const styles = StyleSheet.create({
-  header: {
-    ...sharedStyles.rowStart,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+  actionButton: {
+    padding: spacing.xs,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.md,
   },
   backButton: {
     marginRight: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  scenarioContainer: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-  },
-  scenarioButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.round,
-    marginRight: spacing.sm,
-  },
-  scenarioText: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
   },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
   },
   dialogueCard: {
-    padding: spacing.lg,
     borderRadius: borderRadius.xl,
     marginBottom: spacing.md,
+    padding: spacing.lg,
     ...shadows.small,
   },
   dialogueHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row',
     gap: spacing.sm,
+    justifyContent: 'space-between',
     marginBottom: spacing.sm,
-  },
-  scenarioTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  scenarioTagText: {
-    fontSize: typography.fontSize.xs,
-  },
-  premiumTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  premiumText: {
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.medium,
   },
   dialogueTitle: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.md,
   },
+  header: {
+    ...sharedStyles.rowStart,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  premiumTag: {
+    alignItems: 'center',
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  premiumText: {
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
+  },
   responseBox: {
-    padding: spacing.md,
     borderRadius: borderRadius.md,
     marginBottom: spacing.md,
+    padding: spacing.md,
   },
   responseHeader: {
     ...sharedStyles.rowStart,
@@ -393,36 +405,56 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     lineHeight: 24,
   },
-  tagsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  scenarioButton: {
+    borderRadius: borderRadius.round,
+    marginRight: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  scenarioContainer: {
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.xl,
+  },
+  scenarioTag: {
+    alignSelf: 'flex-start',
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  scenarioTagText: {
+    fontSize: typography.fontSize.xs,
+  },
+  scenarioText: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
+  tag: {
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  tagText: {
+    fontSize: typography.fontSize.xs,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.xs,
   },
-  tag: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
+  tagsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
   },
-  tagText: {
-    fontSize: typography.fontSize.xs,
+  title: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
   },
   useCount: {
     marginLeft: spacing.sm,
   },
   useCountText: {
     fontSize: typography.fontSize.xs,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  actionButton: {
-    padding: spacing.xs,
   },
 });

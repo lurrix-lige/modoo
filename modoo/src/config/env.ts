@@ -1,11 +1,11 @@
 /**
  * 环境变量配置管理
- * 
+ *
  * 命名规范：
  * - 前端暴露变量必须以 EXPO_PUBLIC_ 前缀开头
  * - 第三方服务变量使用服务商名称作为前缀（WECHAT_, APPLE_）
  * - 变量名使用大写蛇形命名法（UPPER_SNAKE_CASE）
- * 
+ *
  * 使用方式：
  * import { CONFIG } from './config/env';
  * const baseUrl = CONFIG.api.BASE_URL;
@@ -104,8 +104,12 @@ export const APP_CONFIG: AppConfig = {
 export const API_CONFIG: ApiConfig = {
   BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.124.13:3000',
   VERSION: '/api/v1',
-  TIMEOUT: APP_CONFIG.ENV === 'development' ? 30000 : parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || '10000', 10),
-  RETRIES: APP_CONFIG.ENV === 'development' ? 0 : parseInt(process.env.EXPO_PUBLIC_API_RETRIES || '3', 10),
+  TIMEOUT:
+    APP_CONFIG.ENV === 'development'
+      ? 30000
+      : parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || '10000', 10),
+  RETRIES:
+    APP_CONFIG.ENV === 'development' ? 0 : parseInt(process.env.EXPO_PUBLIC_API_RETRIES || '3', 10),
   RETRY_DELAY: parseInt(process.env.EXPO_PUBLIC_API_RETRY_DELAY || '1000', 10),
   MAX_REFRESH_RETRIES: parseInt(process.env.EXPO_PUBLIC_API_MAX_REFRESH_RETRIES || '1', 10),
 };
@@ -192,11 +196,11 @@ export const CONFIG: Config = {
 // ============================================
 export function validateConfig(): void {
   const missingConfigs: string[] = [];
-  
+
   if (!CONFIG.wechat.APP_ID) {
     missingConfigs.push('WECHAT_APP_ID');
   }
-  
+
   if (missingConfigs.length > 0) {
     console.warn(`[CONFIG WARNING] Missing environment variables: ${missingConfigs.join(', ')}`);
   }

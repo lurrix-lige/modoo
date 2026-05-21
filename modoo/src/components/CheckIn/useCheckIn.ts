@@ -113,12 +113,14 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
         logger.debug('[CheckIn] History', { historyData });
         const historySet = new Set(historyData.map((item: any) => item.date));
         setCheckInHistory(historySet);
-        setHistoryRecords(historyData.map((item: any) => ({
-          date: item.date,
-          sleepTime: item.sleepTime || '',
-          wakeTime: item.wakeTime || '',
-          quality: item.quality || 0,
-        })));
+        setHistoryRecords(
+          historyData.map((item: any) => ({
+            date: item.date,
+            sleepTime: item.sleepTime || '',
+            wakeTime: item.wakeTime || '',
+            quality: item.quality || 0,
+          })),
+        );
 
         const now = new Date();
         const startOfWeek = new Date(now);
@@ -147,7 +149,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
         if (showAlerts) {
           Alert.alert(
             t('checkIn.error') || 'Error',
-            t('checkIn.invalidSleepTime') || 'Invalid sleep time format'
+            t('checkIn.invalidSleepTime') || 'Invalid sleep time format',
           );
         }
         return;
@@ -157,7 +159,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
         if (showAlerts) {
           Alert.alert(
             t('checkIn.error') || 'Error',
-            t('checkIn.invalidWakeTime') || 'Invalid wake time format'
+            t('checkIn.invalidWakeTime') || 'Invalid wake time format',
           );
         }
         return;
@@ -185,7 +187,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
         Alert.alert(
           t('checkIn.title') || 'Success',
           t('checkIn.checkInSuccess') || 'Check-in recorded successfully!',
-          [{ text: t('common.ok') || 'OK' }]
+          [{ text: t('common.ok') || 'OK' }],
         );
       }
 
@@ -196,14 +198,26 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
       if (showAlerts) {
         Alert.alert(
           t('common.error') || 'Error',
-          t('checkIn.checkInFailed') || 'Failed to record check-in. Please try again.'
+          t('checkIn.checkInFailed') || 'Failed to record check-in. Please try again.',
         );
       }
       onError?.(error);
     } finally {
       setIsLoading(false);
     }
-  }, [sleepTime, wakeTime, quality, getCheckInDate, validateTime, enableValidation, showAlerts, loadCheckInData, onSuccess, onError, t]);
+  }, [
+    sleepTime,
+    wakeTime,
+    quality,
+    getCheckInDate,
+    validateTime,
+    enableValidation,
+    showAlerts,
+    loadCheckInData,
+    onSuccess,
+    onError,
+    t,
+  ]);
 
   useEffect(() => {
     loadCheckInData();

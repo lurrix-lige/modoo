@@ -37,7 +37,7 @@ export interface RefundResult {
 export class WechatPayError extends Error {
   constructor(
     message: string,
-    public code: string
+    public code: string,
   ) {
     super(message);
     this.name = 'WechatPayError';
@@ -174,13 +174,13 @@ class WechatPayService {
   }
 
   async createOrder(planId: string): Promise<CreateOrderResult> {
-    const response = await apiService.post<ApiResponse<CreateOrderResponse>>('/payment/wechat/create-order', { planId });
+    const response = await apiService.post<ApiResponse<CreateOrderResponse>>(
+      '/payment/wechat/create-order',
+      { planId },
+    );
 
     if (!response.success || !response.data) {
-      throw new WechatPayError(
-        response.message || '创建订单失败',
-        'CREATE_ORDER_FAILED'
-      );
+      throw new WechatPayError(response.message || '创建订单失败', 'CREATE_ORDER_FAILED');
     }
 
     const data = response.data;
@@ -229,13 +229,20 @@ class WechatPayService {
     }
   }
 
-  async applyRefund(orderId: string, refundAmount?: number, refundReason?: string): Promise<RefundResult> {
+  async applyRefund(
+    orderId: string,
+    refundAmount?: number,
+    refundReason?: string,
+  ): Promise<RefundResult> {
     try {
-      const response = await apiService.post<ApiResponse<RefundResponse>>('/payment/wechat/refund', {
-        orderId,
-        refundAmount,
-        refundReason,
-      });
+      const response = await apiService.post<ApiResponse<RefundResponse>>(
+        '/payment/wechat/refund',
+        {
+          orderId,
+          refundAmount,
+          refundReason,
+        },
+      );
 
       if (!response.success || !response.data) {
         return {
@@ -262,10 +269,7 @@ class WechatPayService {
     const response = await apiService.get<ApiResponse<any>>(`/payment/order/${orderId}`);
 
     if (!response.success) {
-      throw new WechatPayError(
-        response.message || '查询订单失败',
-        'QUERY_ORDER_FAILED'
-      );
+      throw new WechatPayError(response.message || '查询订单失败', 'QUERY_ORDER_FAILED');
     }
 
     return response.data;

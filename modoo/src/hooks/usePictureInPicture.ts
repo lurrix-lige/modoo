@@ -28,7 +28,9 @@ const isPiPAvailable = () => {
   return false;
 };
 
-export const usePictureInPicture = (options?: UsePictureInPictureOptions): PictureInPictureState => {
+export const usePictureInPicture = (
+  options?: UsePictureInPictureOptions,
+): PictureInPictureState => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [isActive, setIsActive] = useState(false);
 

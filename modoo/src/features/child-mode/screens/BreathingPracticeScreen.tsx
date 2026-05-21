@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { ArrowLeft, Play, Pause, RefreshCw, CheckCircle, Settings } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, commonColors, sharedStyles, shadows } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  commonColors,
+  sharedStyles,
+  shadows,
+} from '../../../theme';
 import { BreathingBalloon, ErrorToast } from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { logger } from '../../../utils/logger';
@@ -117,17 +119,13 @@ export default function BreathingPracticeScreen() {
           phaseIndex = (phaseIndex + 1) % phases.length;
 
           if (phaseIndex === 0) {
-            setTotalCycles(prev => prev + 1);
+            setTotalCycles((prev) => prev + 1);
           }
 
           runPhase();
         }, phase.duration);
       } catch (error) {
-        showPracticeError(
-          t('common.error'),
-          'PRACTICE_ERROR',
-          error
-        );
+        showPracticeError(t('common.error'), 'PRACTICE_ERROR', error);
         setIsActive(false);
       }
     };
@@ -135,11 +133,7 @@ export default function BreathingPracticeScreen() {
     runPhase();
   };
 
-  const showPracticeError = (
-    message: string,
-    code: string,
-    error?: unknown
-  ) => {
+  const showPracticeError = (message: string, code: string, error?: unknown) => {
     logger.error(message, error ? { error } : undefined);
     setPracticeError({
       visible: true,
@@ -173,264 +167,208 @@ export default function BreathingPracticeScreen() {
   };
 
   return (
-    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
+    <SafeAreaContainer
+      style={[sharedStyles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'left', 'right']}
+    >
       <View style={styles.mainContainer}>
         <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-              <ArrowLeft size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('breathing.exercises')}</Text>
-            <View style={styles.placeholder} />
-          </View>
-
-          <View style={styles.content}>
-            <View style={styles.patternSelector}>
-          <TouchableOpacity
-            style={[
-              styles.patternButton,
-              {
-                backgroundColor: selectedPattern === '4-4-4-4' ? colors.primary : colors.surface,
-              },
-            ]}
-            onPress={() => switchPattern('4-4-4-4')}
-          >
-            <Text
-              style={[
-                styles.patternText,
-                { color: selectedPattern === '4-4-4-4' ? commonColors.white : colors.textPrimary },
-              ]}
-            >
-              {t('breathing.balanceBreathing')}
-            </Text>
-            <Text
-              style={[
-                styles.patternDesc,
-                { color: selectedPattern === '4-4-4-4' ? commonColors.white : colors.textSecondary },
-              ]}
-            >
-              4-4-4-4
-            </Text>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <ArrowLeft size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.patternButton,
-              {
-                backgroundColor: selectedPattern === '4-7-8' ? colors.primary : colors.surface,
-              },
-            ]}
-            onPress={() => switchPattern('4-7-8')}
-          >
-            <Text
-              style={[
-                styles.patternText,
-                { color: selectedPattern === '4-7-8' ? commonColors.white : colors.textPrimary },
-              ]}
-            >
-              {t('breathing.relaxBreathing')}
-            </Text>
-            <Text
-              style={[
-                styles.patternDesc,
-                { color: selectedPattern === '4-7-8' ? commonColors.white : colors.textSecondary },
-              ]}
-            >
-              4-7-8
-            </Text>
-          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            {t('breathing.exercises')}
+          </Text>
+          <View style={styles.placeholder} />
         </View>
 
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-              {t('common.loading')}
-            </Text>
-          </View>
-        ) : (
-          <>
-            <View style={styles.balloonContainer}>
-              <BreathingBalloon isActive={isActive} scale={1} />
-
-              <View style={styles.phaseInfo}>
-                {isActive ? (
-                  <>
-                    <Text style={[styles.phaseText, { color: colors.primary }]}>
-                      {getPhaseName(selectedPattern, currentPhase)}
-                    </Text>
-                    <Text style={[styles.timerText, { color: colors.textPrimary }]}>
-                      {timeLeft}
-                    </Text>
-                  </>
-                ) : (
-                  <Text style={[styles.phaseText, { color: colors.textSecondary }]}>
-                    {t('breathing.tapToStart')}
-                  </Text>
-                )}
-              </View>
-            </View>
-
-            <View style={styles.phasesGuide}>
-              {phases.map((phase, index) => (
-                <View key={index} style={styles.phaseGuideItem}>
-                  <View
-                    style={[
-                      styles.phaseDot,
-                      {
-                        backgroundColor:
-                          isActive && currentPhase === index ? colors.primary : colors.border,
-                      },
-                    ]}
-                  />
-                  <Text
-                    style={[
-                      styles.phaseGuideText,
-                      { color: isActive && currentPhase === index ? colors.primary : colors.textSecondary },
-                    ]}
-                  >
-                    {getPhaseName(selectedPattern, index)}
-                  </Text>
-                  <Text style={[styles.phaseDuration, { color: colors.textPlaceholder }]}>
-                    {phase.duration / 1000}{t('common.seconds')}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {isActive && totalCycles > 0 && (
-              <View style={styles.cycleCounter}>
-                <RefreshCw size={20} color={colors.success} />
-                <Text style={[styles.cycleText, { color: colors.success }]}>
-                  {t('common.completed')} {totalCycles}{t('common.cycles')}
-                </Text>
-              </View>
-            )}
-          </>
-        )}
-      </View>
-
-      <View style={[styles.footer, { backgroundColor: colors.surface }]}>
+        <View style={styles.content}>
+          <View style={styles.patternSelector}>
             <TouchableOpacity
               style={[
-                styles.mainButton,
-                { backgroundColor: isActive ? colors.error : colors.primary },
+                styles.patternButton,
+                {
+                  backgroundColor: selectedPattern === '4-4-4-4' ? colors.primary : colors.surface,
+                },
               ]}
-              onPress={togglePractice}
-              disabled={isLoading}
+              onPress={() => switchPattern('4-4-4-4')}
             >
-              {isActive ? <Pause size={24} color={colors.textPrimary} /> : <Play size={24} color={colors.textPrimary} />}
-              <Text style={[styles.mainButtonText, { color: commonColors.white }]}>
-                {isActive ? t('breathing.pause') : t('common.start')}
+              <Text
+                style={[
+                  styles.patternText,
+                  {
+                    color: selectedPattern === '4-4-4-4' ? commonColors.white : colors.textPrimary,
+                  },
+                ]}
+              >
+                {t('breathing.balanceBreathing')}
+              </Text>
+              <Text
+                style={[
+                  styles.patternDesc,
+                  {
+                    color:
+                      selectedPattern === '4-4-4-4' ? commonColors.white : colors.textSecondary,
+                  },
+                ]}
+              >
+                4-4-4-4
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.patternButton,
+                {
+                  backgroundColor: selectedPattern === '4-7-8' ? colors.primary : colors.surface,
+                },
+              ]}
+              onPress={() => switchPattern('4-7-8')}
+            >
+              <Text
+                style={[
+                  styles.patternText,
+                  { color: selectedPattern === '4-7-8' ? commonColors.white : colors.textPrimary },
+                ]}
+              >
+                {t('breathing.relaxBreathing')}
+              </Text>
+              <Text
+                style={[
+                  styles.patternDesc,
+                  {
+                    color: selectedPattern === '4-7-8' ? commonColors.white : colors.textSecondary,
+                  },
+                ]}
+              >
+                4-7-8
               </Text>
             </TouchableOpacity>
           </View>
 
-          <ErrorToast
-            visible={practiceError.visible}
-            message={practiceError.message}
-            code={practiceError.code}
-            severity="error"
-            duration={0}
-            onRetry={handleRetry}
-            onDismiss={handleDismissError}
-          />
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+                {t('common.loading')}
+              </Text>
+            </View>
+          ) : (
+            <>
+              <View style={styles.balloonContainer}>
+                <BreathingBalloon isActive={isActive} scale={1} />
+
+                <View style={styles.phaseInfo}>
+                  {isActive ? (
+                    <>
+                      <Text style={[styles.phaseText, { color: colors.primary }]}>
+                        {getPhaseName(selectedPattern, currentPhase)}
+                      </Text>
+                      <Text style={[styles.timerText, { color: colors.textPrimary }]}>
+                        {timeLeft}
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={[styles.phaseText, { color: colors.textSecondary }]}>
+                      {t('breathing.tapToStart')}
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.phasesGuide}>
+                {phases.map((phase, index) => (
+                  <View key={index} style={styles.phaseGuideItem}>
+                    <View
+                      style={[
+                        styles.phaseDot,
+                        {
+                          backgroundColor:
+                            isActive && currentPhase === index ? colors.primary : colors.border,
+                        },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.phaseGuideText,
+                        {
+                          color:
+                            isActive && currentPhase === index
+                              ? colors.primary
+                              : colors.textSecondary,
+                        },
+                      ]}
+                    >
+                      {getPhaseName(selectedPattern, index)}
+                    </Text>
+                    <Text style={[styles.phaseDuration, { color: colors.textPlaceholder }]}>
+                      {phase.duration / 1000}
+                      {t('common.seconds')}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              {isActive && totalCycles > 0 && (
+                <View style={styles.cycleCounter}>
+                  <RefreshCw size={20} color={colors.success} />
+                  <Text style={[styles.cycleText, { color: colors.success }]}>
+                    {t('common.completed')} {totalCycles}
+                    {t('common.cycles')}
+                  </Text>
+                </View>
+              )}
+            </>
+          )}
         </View>
-      </SafeAreaContainer>
+
+        <View style={[styles.footer, { backgroundColor: colors.surface }]}>
+          <TouchableOpacity
+            style={[
+              styles.mainButton,
+              { backgroundColor: isActive ? colors.error : colors.primary },
+            ]}
+            onPress={togglePractice}
+            disabled={isLoading}
+          >
+            {isActive ? (
+              <Pause size={24} color={colors.textPrimary} />
+            ) : (
+              <Play size={24} color={colors.textPrimary} />
+            )}
+            <Text style={[styles.mainButtonText, { color: commonColors.white }]}>
+              {isActive ? t('breathing.pause') : t('common.start')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <ErrorToast
+          visible={practiceError.visible}
+          message={practiceError.message}
+          code={practiceError.code}
+          severity="error"
+          duration={0}
+          onRetry={handleRetry}
+          onDismiss={handleDismissError}
+        />
+      </View>
+    </SafeAreaContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  header: {
-    ...sharedStyles.rowBetween,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
   backButton: {
     padding: spacing.sm,
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  placeholder: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: spacing.xl,
-  },
-  loadingContainer: {
-    ...sharedStyles.columnCenter,
-  },
-  loadingText: {
-    fontSize: typography.fontSize.md,
-  },
-  patternSelector: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.xxl,
-  },
-  patternButton: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    ...sharedStyles.columnCenter,
-  },
-  patternText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    textAlign: 'center',
-  },
-  patternDesc: {
-    fontSize: typography.fontSize.xs,
-    marginTop: spacing.xs,
-    textAlign: 'center',
   },
   balloonContainer: {
     ...sharedStyles.columnCenter,
     marginBottom: spacing.xxl,
   },
-  phaseInfo: {
-    ...sharedStyles.columnCenter,
-    marginTop: spacing.xl,
-  },
-  phaseText: {
-    fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
-    marginBottom: spacing.sm,
-  },
-  timerText: {
-    fontSize: 64,
-    fontWeight: typography.fontWeight.bold,
-  },
-  phasesGuide: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  phaseGuideItem: {
-    ...sharedStyles.columnCenter,
-  },
-  phaseDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginBottom: spacing.xs,
-  },
-  phaseGuideText: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-  },
-  phaseDuration: {
-    fontSize: typography.fontSize.xs,
+  content: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'flex-start',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
   },
   cycleCounter: {
     ...sharedStyles.rowCenter,
@@ -444,14 +382,93 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     ...shadows.small,
   },
+  header: {
+    ...sharedStyles.rowBetween,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  headerTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  loadingContainer: {
+    ...sharedStyles.columnCenter,
+  },
+  loadingText: {
+    fontSize: typography.fontSize.md,
+  },
   mainButton: {
     ...sharedStyles.rowCenter,
-    height: 56,
     borderRadius: borderRadius.md,
     gap: spacing.sm,
+    height: 56,
   },
   mainButtonText: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
+  },
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  patternButton: {
+    borderRadius: borderRadius.lg,
+    flex: 1,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    ...sharedStyles.columnCenter,
+  },
+  patternDesc: {
+    fontSize: typography.fontSize.xs,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  patternSelector: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.xxl,
+  },
+  patternText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+    textAlign: 'center',
+  },
+  phaseDot: {
+    borderRadius: 6,
+    height: 12,
+    marginBottom: spacing.xs,
+    width: 12,
+  },
+  phaseDuration: {
+    fontSize: typography.fontSize.xs,
+  },
+  phaseGuideItem: {
+    ...sharedStyles.columnCenter,
+  },
+  phaseGuideText: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
+  phaseInfo: {
+    ...sharedStyles.columnCenter,
+    marginTop: spacing.xl,
+  },
+  phaseText: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.sm,
+  },
+  phasesGuide: {
+    flexDirection: 'row',
+    gap: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  placeholder: {
+    width: 40,
+  },
+  timerText: {
+    fontSize: 64,
+    fontWeight: typography.fontWeight.bold,
   },
 });

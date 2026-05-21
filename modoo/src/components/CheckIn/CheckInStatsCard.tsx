@@ -52,40 +52,40 @@ export function CheckInStatsCard({ streak, thisWeekCount, colors }: CheckInStats
 }
 
 const styles = StyleSheet.create({
-  statsCard: {
-    flexDirection: 'row',
-    borderRadius: spacing.md,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: spacing.xs,
+  statDivider: {
+    marginHorizontal: spacing.lg,
+    width: 1,
   },
   statIcon: {
-    width: iconSizes.xl,
-    height: iconSizes.xl,
-    borderRadius: iconSizes.xl / 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: iconSizes.xl / 2,
+    height: iconSizes.xl,
+    justifyContent: 'center',
+    width: iconSizes.xl,
   },
-  statValue: {
-    fontSize: typography.fontSize.xxl,
-    fontWeight: typography.fontWeight.bold,
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
   },
   statLabel: {
     fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.medium,
   },
-  statDivider: {
-    width: 1,
-    marginHorizontal: spacing.lg,
+  statRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xs,
+    width: '100%',
+  },
+  statValue: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: typography.fontWeight.bold,
+  },
+  statsCard: {
+    borderRadius: spacing.md,
+    flexDirection: 'row',
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
   },
 });

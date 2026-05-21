@@ -10,7 +10,15 @@ import {
 } from 'react-native';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles } from '../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+} from '../theme';
 
 interface DatePickerModalProps {
   visible: boolean;
@@ -32,11 +40,11 @@ export default function DatePickerModal({
 }: DatePickerModalProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  
+
   const [selectedDate, setSelectedDate] = useState(new Date(initialDate));
   const [currentYear, setCurrentYear] = useState(selectedDate.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(selectedDate.getMonth());
-  
+
   const yearScrollRef = useRef<ScrollView>(null);
   const monthScrollRef = useRef<ScrollView>(null);
   const dayScrollRef = useRef<ScrollView>(null);
@@ -89,9 +97,9 @@ export default function DatePickerModal({
   const goToPrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
-      setCurrentYear(prev => prev - 1);
+      setCurrentYear((prev) => prev - 1);
     } else {
-      setCurrentMonth(prev => prev - 1);
+      setCurrentMonth((prev) => prev - 1);
     }
   };
 
@@ -99,9 +107,11 @@ export default function DatePickerModal({
     const maxDateObj = new Date(maxDate);
     const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
     const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-    
-    if (nextYear < maxDateObj.getFullYear() || 
-        (nextYear === maxDateObj.getFullYear() && nextMonth <= maxDateObj.getMonth())) {
+
+    if (
+      nextYear < maxDateObj.getFullYear() ||
+      (nextYear === maxDateObj.getFullYear() && nextMonth <= maxDateObj.getMonth())
+    ) {
       setCurrentMonth(nextMonth);
       setCurrentYear(nextYear);
     }
@@ -111,7 +121,7 @@ export default function DatePickerModal({
   const selectDate = (day: number) => {
     const newDate = new Date(currentYear, currentMonth, day);
     const maxDateObj = new Date(maxDate);
-    
+
     if (newDate <= maxDateObj) {
       setSelectedDate(newDate);
     }
@@ -129,12 +139,7 @@ export default function DatePickerModal({
   const maxDateObj = new Date(maxDate);
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent={true} animationType="slide" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback onPress={() => {}}>
@@ -152,7 +157,9 @@ export default function DatePickerModal({
               {/* 日期显示 */}
               <View style={styles.dateDisplay}>
                 <Text style={[styles.dateValue, { color: colors.textPrimary }]}>
-                  {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日                </Text>
+                  {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月
+                  {selectedDate.getDate()}日{' '}
+                </Text>
               </View>
 
               {/* 年份选择 */}
@@ -176,7 +183,9 @@ export default function DatePickerModal({
                           ]}
                           onPress={() => {
                             setCurrentYear(year);
-                            setSelectedDate(new Date(year, selectedDate.getMonth(), selectedDate.getDate()));
+                            setSelectedDate(
+                              new Date(year, selectedDate.getMonth(), selectedDate.getDate()),
+                            );
                           }}
                         >
                           <Text
@@ -212,7 +221,8 @@ export default function DatePickerModal({
                   onPress={goToNextMonth}
                   disabled={
                     currentYear > maxDateObj.getFullYear() ||
-                    (currentYear === maxDateObj.getFullYear() && currentMonth >= maxDateObj.getMonth())
+                    (currentYear === maxDateObj.getFullYear() &&
+                      currentMonth >= maxDateObj.getMonth())
                   }
                 >
                   <ChevronRight size={24} color={colors.textSecondary} />
@@ -234,25 +244,22 @@ export default function DatePickerModal({
                 {Array.from({ length: firstDayOfMonth }).map((_, i) => (
                   <View key={`empty-${i}`} style={styles.dayCell} />
                 ))}
-                
+
                 {/* 日期 */}
                 {Array.from({ length: daysInMonth }, (_, i) => {
                   const day = i + 1;
                   const date = new Date(currentYear, currentMonth, day);
-                  const isSelected = 
+                  const isSelected =
                     selectedDate.getFullYear() === currentYear &&
                     selectedDate.getMonth() === currentMonth &&
                     selectedDate.getDate() === day;
                   const isToday = date.toDateString() === new Date().toDateString();
                   const isPast = date > maxDateObj;
-                  
+
                   return (
                     <TouchableOpacity
                       key={day}
-                      style={[
-                        styles.dayCell,
-                        isPast && { opacity: 0.3 },
-                      ]}
+                      style={[styles.dayCell, isPast && { opacity: 0.3 }]}
                       onPress={() => !isPast && selectDate(day)}
                       disabled={isPast}
                     >
@@ -307,88 +314,51 @@ export default function DatePickerModal({
 }
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  cancelButton: {
+    borderRadius: borderRadius.md,
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    paddingVertical: spacing.md,
+    ...sharedStyles.columnCenter,
   },
-  modalContainer: {
-    width: '100%',
-    maxHeight: '85%',
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    paddingBottom: spacing.xl,
-    ...shadows.large,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-  },
-  modalTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
+  cancelText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
   },
   closeButton: {
     padding: spacing.sm,
   },
+  confirmButton: {
+    borderRadius: borderRadius.md,
+    flex: 1,
+    paddingVertical: spacing.md,
+    ...sharedStyles.columnCenter,
+  },
+  confirmText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.medium,
+  },
   dateDisplay: {
-    paddingVertical: spacing.xl,
     alignItems: 'center',
+    paddingVertical: spacing.xl,
   },
   dateValue: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
   },
-  yearSelector: {
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
-  },
-  yearScrollContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.sm,
-    gap: spacing.sm,
-  },
-  yearItem: {
-    width: 72,
-    height: 40,
-    borderRadius: borderRadius.md,
+  dayCell: {
+    alignItems: 'center',
+    aspectRatio: 1,
     justifyContent: 'center',
+    width: '14.28%',
+  },
+  dayContent: {
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    width: 32,
   },
-  yearText: {
-    fontSize: typography.fontSize.md,
-  },
-  yearTextActive: {
-    fontWeight: typography.fontWeight.bold,
-  },
-  monthNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-  },
-  navButton: {
-    padding: spacing.sm,
-  },
-  monthTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-  },
-  weekdayHeader: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
-  },
-  weekdayText: {
-    flex: 1,
-    textAlign: 'center',
+  dayText: {
     fontSize: typography.fontSize.sm,
   },
   daysGrid: {
@@ -396,46 +366,83 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingHorizontal: spacing.sm,
   },
-  dayCell: {
-    width: '14.28%',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dayContent: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dayText: {
-    fontSize: typography.fontSize.sm,
+  modalContainer: {
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
+    maxHeight: '85%',
+    paddingBottom: spacing.xl,
+    width: '100%',
+    ...shadows.large,
   },
   modalFooter: {
     flexDirection: 'row',
     gap: spacing.md,
-    paddingHorizontal: spacing.xl,
     marginTop: spacing.xl,
+    paddingHorizontal: spacing.xl,
   },
-  cancelButton: {
+  modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#E5E5E5',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  monthNav: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    ...sharedStyles.columnCenter,
   },
-  cancelText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
+  monthTitle: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
   },
-  confirmButton: {
+  navButton: {
+    padding: spacing.sm,
+  },
+  weekdayHeader: {
+    flexDirection: 'row',
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  weekdayText: {
     flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    ...sharedStyles.columnCenter,
+    fontSize: typography.fontSize.sm,
+    textAlign: 'center',
   },
-  confirmText: {
+  yearItem: {
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: borderRadius.md,
+    height: 40,
+    justifyContent: 'center',
+    width: 72,
+  },
+  yearScrollContainer: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  yearSelector: {
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  yearText: {
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
+  },
+  yearTextActive: {
+    fontWeight: typography.fontWeight.bold,
   },
 });

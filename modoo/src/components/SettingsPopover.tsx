@@ -1,21 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  Modal,
-  Pressable,
-} from 'react-native';
-import {
-  Sun,
-  Moon,
-  Smartphone,
-  Globe,
-  ChevronDown,
-  Check,
-} from 'lucide-react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Modal, Pressable } from 'react-native';
+import { Sun, Moon, Smartphone, Globe, ChevronDown, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, typography, commonColors } from '../theme';
 import { useThemeToggle } from '../theme/ThemeContext';
@@ -81,9 +66,8 @@ export function SettingsPopover() {
 
   const ThemeIcon = getCurrentThemeIcon();
 
-  const currentLanguageInfo = availableLanguages.find(
-    (lang) => lang.code === currentLanguage
-  ) || availableLanguages[0];
+  const currentLanguageInfo =
+    availableLanguages.find((lang) => lang.code === currentLanguage) || availableLanguages[0];
 
   const themeOptions = [
     {
@@ -246,75 +230,75 @@ export function SettingsPopover() {
 }
 
 const styles = StyleSheet.create({
-  triggerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xs,
+  checkIcon: {
+    marginLeft: spacing.xs,
   },
   chevron: {
     marginLeft: 2,
   },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 60,
-    paddingRight: 16,
+  divider: {
+    height: 1,
+    marginVertical: spacing.md,
   },
-  popoverContainer: {
-    width: 280,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  section: {
-    marginBottom: spacing.md,
-  },
-  sectionHeader: {
+  optionButton: {
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    minWidth: 80,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  sectionIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
+  optionLabel: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
   },
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  optionButton: {
-    flexDirection: 'row',
+  overlay: {
+    alignItems: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    flex: 1,
+    justifyContent: 'flex-start',
+    paddingRight: 16,
+    paddingTop: 60,
+  },
+  popoverContainer: {
+    borderRadius: borderRadius.xl,
+    elevation: 8,
+    padding: spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    width: 280,
+  },
+  section: {
+    marginBottom: spacing.md,
+  },
+  sectionHeader: {
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    minWidth: 80,
+    flexDirection: 'row',
+    marginBottom: spacing.md,
   },
-  optionLabel: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
+  sectionIcon: {
+    alignItems: 'center',
+    borderRadius: 14,
+    height: 28,
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+    width: 28,
   },
-  checkIcon: {
-    marginLeft: spacing.xs,
+  sectionTitle: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
   },
-  divider: {
-    height: 1,
-    marginVertical: spacing.md,
+  triggerButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: spacing.xs,
   },
 });

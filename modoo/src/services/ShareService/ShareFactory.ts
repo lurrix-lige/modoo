@@ -1,5 +1,16 @@
-import { SharePlatform, ShareOptions, ShareResult, ShareStrategy, ShareFactoryConfig } from './types';
-import { NativeShareStrategy, WechatShareStrategy, QQShareStrategy, WeiboShareStrategy } from './strategies';
+import {
+  SharePlatform,
+  ShareOptions,
+  ShareResult,
+  ShareStrategy,
+  ShareFactoryConfig,
+} from './types';
+import {
+  NativeShareStrategy,
+  WechatShareStrategy,
+  QQShareStrategy,
+  WeiboShareStrategy,
+} from './strategies';
 
 export class ShareFactory {
   private static instance: ShareFactory;
@@ -11,7 +22,7 @@ export class ShareFactory {
     this.strategies = new Map();
     this.defaultPlatform = config?.defaultPlatform || 'native';
     this.fallbackPlatform = config?.fallbackPlatform || 'native';
-    
+
     this.registerDefaultStrategies();
   }
 
@@ -52,12 +63,9 @@ export class ShareFactory {
     return available;
   }
 
-  public async share(
-    platform: SharePlatform,
-    options: ShareOptions
-  ): Promise<ShareResult> {
+  public async share(platform: SharePlatform, options: ShareOptions): Promise<ShareResult> {
     const strategy = this.getStrategy(platform);
-    
+
     if (!strategy) {
       return this.tryFallback(options);
     }
@@ -75,7 +83,7 @@ export class ShareFactory {
 
   public async shareWithBestAvailable(
     platforms: SharePlatform[],
-    options: ShareOptions
+    options: ShareOptions,
   ): Promise<ShareResult> {
     for (const platform of platforms) {
       if (this.isPlatformAvailable(platform)) {
@@ -85,7 +93,7 @@ export class ShareFactory {
         }
       }
     }
-    
+
     return this.tryFallback(options);
   }
 
@@ -102,7 +110,7 @@ export class ShareFactory {
         };
       }
     }
-    
+
     return {
       success: false,
       message: 'No share strategy available',

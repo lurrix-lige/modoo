@@ -26,54 +26,40 @@ export const TwoPaneLayout: React.FC<TwoPaneLayoutProps> = ({
   if (isTwoPane) {
     return (
       <View style={styles.twoPaneContainer}>
-        <View style={[styles.masterPane, { width: `${masterWidth}%` }]}>
-          {master}
-        </View>
-        {showDivider && (
-          <View style={styles.divider} />
-        )}
-        <View style={[styles.detailPane, { width: `${100 - masterWidth}%` }]}>
-          {detail}
-        </View>
+        <View style={[styles.masterPane, { width: `${masterWidth}%` }]}>{master}</View>
+        {showDivider && <View style={styles.divider} />}
+        <View style={[styles.detailPane, { width: `${100 - masterWidth}%` }]}>{detail}</View>
       </View>
     );
   }
 
   // Mobile/portrait mode - show one pane at a time
   if (showDetailView) {
-    return (
-      <View style={styles.singlePaneContainer}>
-        {detail}
-      </View>
-    );
+    return <View style={styles.singlePaneContainer}>{detail}</View>;
   }
 
-  return (
-    <View style={styles.singlePaneContainer}>
-      {master}
-    </View>
-  );
+  return <View style={styles.singlePaneContainer}>{master}</View>;
 };
 
 const styles = StyleSheet.create({
-  twoPaneContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  masterPane: {
-    flex: 1,
-    overflow: 'hidden',
-  },
   detailPane: {
     flex: 1,
     overflow: 'hidden',
   },
   divider: {
-    width: StyleSheet.hairlineWidth,
     backgroundColor: '#e5e7eb',
+    width: StyleSheet.hairlineWidth,
+  },
+  masterPane: {
+    flex: 1,
+    overflow: 'hidden',
   },
   singlePaneContainer: {
     flex: 1,
+  },
+  twoPaneContainer: {
+    flex: 1,
+    flexDirection: 'row',
   },
 });
 

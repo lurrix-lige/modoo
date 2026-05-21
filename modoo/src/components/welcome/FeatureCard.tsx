@@ -35,35 +35,35 @@ export function FeatureCard({ icon: Icon, titleKey, descriptionKey, onPress }: F
 
 const styles = StyleSheet.create({
   card: {
-    padding: spacing.lg,
     borderRadius: borderRadius.md,
     minHeight: 140,
+    padding: spacing.lg,
   },
   cardContent: {
+    alignItems: 'center',
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center',
+  },
+  description: {
+    flexGrow: 0,
+    flexShrink: 1,
+    fontSize: typography.fontSize.sm,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: borderRadius.lg,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    height: 56,
+    justifyContent: 'center',
     marginBottom: spacing.md,
+    width: 56,
   },
   title: {
+    flexShrink: 1,
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.xs,
     textAlign: 'center',
-    flexShrink: 1,
-  },
-  description: {
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    lineHeight: 18,
-    flexShrink: 1,
-    flexGrow: 0,
   },
 });

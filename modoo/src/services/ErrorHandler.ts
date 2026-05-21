@@ -111,7 +111,7 @@ class ErrorHandler {
     }
     logger.error(`[ErrorHandler] ${error.severity.toUpperCase()}`, logData);
 
-    this.listeners.forEach(listener => listener(error));
+    this.listeners.forEach((listener) => listener(error));
     this.config.onError?.(error);
   }
 
@@ -146,7 +146,7 @@ class ErrorHandler {
       onRetry?: () => void;
       isAuthError?: boolean;
       metadata?: Record<string, any>;
-    }
+    },
   ): AppError {
     const error: AppError = {
       id: this.generateErrorId(),
@@ -164,9 +164,9 @@ class ErrorHandler {
     // 检查是否需要去重
     const now = Date.now();
     const lastTime = this.lastErrorTime.get(code) || 0;
-    
+
     // 如果是认证错误或在去重窗口内，只记录日志不显示
-    if (this.isUnauthorizedError(code) && (now - lastTime) < this.errorDeduplicationWindow) {
+    if (this.isUnauthorizedError(code) && now - lastTime < this.errorDeduplicationWindow) {
       const logEntry: ErrorLogEntry = {
         error,
         userPath: [...this.userPath],
@@ -174,11 +174,11 @@ class ErrorHandler {
         resolved: false,
       };
       this.addErrorLog(logEntry);
-      
+
       logger.debug(`[ErrorHandler] Duplicate auth error suppressed`, { code });
       return error;
     }
-    
+
     // 更新最后显示时间
     this.lastErrorTime.set(code, now);
 
@@ -200,7 +200,7 @@ class ErrorHandler {
       resolved: false,
     };
     this.addErrorLog(logEntry);
-    
+
     const logData: Record<string, any> = {
       code: error.code,
       message: error.message,
@@ -209,7 +209,7 @@ class ErrorHandler {
       userPath: this.userPath.join(' -> '),
     };
     logger.error(`[ErrorHandler] AUTH_ERROR`, logData);
-    
+
     // 直接跳转到登录页，不弹出错误提示
     this.pendingNavigation = 'navigateToAuth';
     this.executePendingNavigation();
@@ -269,9 +269,7 @@ class ErrorHandler {
 
   isValidationError(code: string): boolean {
     return (
-      code === 'VALIDATION_ERROR' ||
-      code === 'INVALID_INPUT' ||
-      code === 'MISSING_REQUIRED_FIELD'
+      code === 'VALIDATION_ERROR' || code === 'INVALID_INPUT' || code === 'MISSING_REQUIRED_FIELD'
     );
   }
 
@@ -326,7 +324,7 @@ class ErrorHandler {
   }
 
   resolveError(errorId: string, resolutionTime?: number): void {
-    const entry = this.errorLogs.find(log => log.error.id === errorId);
+    const entry = this.errorLogs.find((log) => log.error.id === errorId);
     if (entry) {
       entry.resolved = true;
       entry.resolutionTime = resolutionTime;
@@ -357,7 +355,7 @@ class ErrorHandler {
     let totalResolutionTime = 0;
     let resolvedCount = 0;
 
-    this.errorLogs.forEach(log => {
+    this.errorLogs.forEach((log) => {
       stats.bySeverity[log.error.severity] = (stats.bySeverity[log.error.severity] || 0) + 1;
       stats.byCode[log.error.code] = (stats.byCode[log.error.code] || 0) + 1;
 

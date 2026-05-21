@@ -22,10 +22,9 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   style,
 }) => {
   let numColumns: number;
-  
-  const columnsConfig: ColumnsConfig = typeof columns === 'number' 
-    ? { mobile: columns, tablet: columns, desktop: columns }
-    : columns;
+
+  const columnsConfig: ColumnsConfig =
+    typeof columns === 'number' ? { mobile: columns, tablet: columns, desktop: columns } : columns;
 
   if (responsive.isLargeDesktop) {
     numColumns = columnsConfig.desktop || 4;
@@ -42,7 +41,7 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
           key={index}
           style={{
             width: `${100 / numColumns}%`,
-            paddingRight: (index % numColumns !== numColumns - 1) ? gap : 0,
+            paddingRight: index % numColumns !== numColumns - 1 ? gap : 0,
             paddingBottom: gap,
           }}
         >

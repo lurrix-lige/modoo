@@ -11,11 +11,29 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Music, ArrowLeft, Sun } from 'lucide-react-native';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  Music,
+  ArrowLeft,
+  Sun,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+} from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { useCourseAudio, CourseAudioTrack } from '../../../providers/CourseAudioProvider';
 import { apiService, Lesson } from '../../../services';
@@ -23,7 +41,10 @@ import { storageService } from '../../../infrastructure/storage';
 import { logger } from '../../../utils/logger';
 
 type CourseLearningRouteProp = RouteProp<ChildrenStackParamList, 'CourseLearning'>;
-type CourseLearningNavigationProp = NativeStackNavigationProp<ChildrenStackParamList, 'CourseLearning'>;
+type CourseLearningNavigationProp = NativeStackNavigationProp<
+  ChildrenStackParamList,
+  'CourseLearning'
+>;
 
 export default function CourseLearningScreen() {
   const navigation = useNavigation<CourseLearningNavigationProp>();
@@ -149,19 +170,39 @@ export default function CourseLearningScreen() {
   }, [voiceVolume]);
 
   // Animated interpolations for slider fills and thumbs
-  const bgFillWidth = bgBarWidth > 0
-    ? bgVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, bgBarWidth], extrapolate: 'clamp' })
-    : 0;
-  const bgThumbTranslate = bgBarWidth > 0
-    ? bgVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Math.max(0, bgBarWidth - 16)], extrapolate: 'clamp' })
-    : 0;
+  const bgFillWidth =
+    bgBarWidth > 0
+      ? bgVolumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, bgBarWidth],
+          extrapolate: 'clamp',
+        })
+      : 0;
+  const bgThumbTranslate =
+    bgBarWidth > 0
+      ? bgVolumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, Math.max(0, bgBarWidth - 16)],
+          extrapolate: 'clamp',
+        })
+      : 0;
 
-  const voiceFillWidth = voiceBarWidth > 0
-    ? voiceVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, voiceBarWidth], extrapolate: 'clamp' })
-    : 0;
-  const voiceThumbTranslate = voiceBarWidth > 0
-    ? voiceVolumeAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Math.max(0, voiceBarWidth - 16)], extrapolate: 'clamp' })
-    : 0;
+  const voiceFillWidth =
+    voiceBarWidth > 0
+      ? voiceVolumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, voiceBarWidth],
+          extrapolate: 'clamp',
+        })
+      : 0;
+  const voiceThumbTranslate =
+    voiceBarWidth > 0
+      ? voiceVolumeAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, Math.max(0, voiceBarWidth - 16)],
+          extrapolate: 'clamp',
+        })
+      : 0;
 
   // B5: Sequential init — settings must resolve before lesson data triggers audio load
   useEffect(() => {
@@ -200,7 +241,7 @@ export default function CourseLearningScreen() {
   useEffect(() => {
     if (duration > 0 && progress >= duration - 0.5 && currentLesson && !hasCompletedRef.current) {
       hasCompletedRef.current = true;
-      apiService.completeLesson(currentLesson.id).catch(err => {
+      apiService.completeLesson(currentLesson.id).catch((err) => {
         logger.error('Failed to complete lesson', { err, lessonId: currentLesson.id });
         hasCompletedRef.current = false;
       });
@@ -280,7 +321,12 @@ export default function CourseLearningScreen() {
       // D6: Restore saved playback position
       try {
         const savedProgress = await storageService.getCoursePlaybackProgress(currentLesson.id);
-        if (savedProgress && typeof savedProgress === 'object' && !Array.isArray(savedProgress) && 'progress' in savedProgress) {
+        if (
+          savedProgress &&
+          typeof savedProgress === 'object' &&
+          !Array.isArray(savedProgress) &&
+          'progress' in savedProgress
+        ) {
           const sp = (savedProgress as { progress: number }).progress;
           if (sp > 0 && sp < (currentLesson.duration || Infinity)) {
             seekTo(sp);
@@ -332,13 +378,17 @@ export default function CourseLearningScreen() {
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <ArrowLeft size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('common.loading')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            {t('common.loading')}
+          </Text>
           <View style={styles.headerRight}>
             <Sun size={24} color={colors.textPrimary} />
           </View>
         </View>
         <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+            {t('common.loading')}
+          </Text>
         </View>
       </SafeAreaContainer>
     );
@@ -375,14 +425,27 @@ export default function CourseLearningScreen() {
             {formatTime(progress)} / {formatTime(duration)}
           </Text>
           <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
-            <View style={[styles.progressBar, { width: `${duration > 0 ? (progress / duration) * 100 : 0}%`, backgroundColor: colors.primary }]} />
+            <View
+              style={[
+                styles.progressBar,
+                {
+                  width: `${duration > 0 ? (progress / duration) * 100 : 0}%`,
+                  backgroundColor: colors.primary,
+                },
+              ]}
+            />
           </View>
         </View>
 
         <View style={[styles.controlsSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.controls')}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t('course.controls')}
+          </Text>
           <View style={styles.controlsRow}>
-            <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.background }]} onPress={handleSkipBack}>
+            <TouchableOpacity
+              style={[styles.controlButton, { backgroundColor: colors.background }]}
+              onPress={handleSkipBack}
+            >
               <SkipBack size={24} color={colors.textPrimary} />
             </TouchableOpacity>
             <TouchableOpacity
@@ -391,14 +454,24 @@ export default function CourseLearningScreen() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <Text style={{ color: commonColors.white, fontSize: responsive.scaledFontSize(typography.fontSize.xxl) }}>...</Text>
+                <Text
+                  style={{
+                    color: commonColors.white,
+                    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+                  }}
+                >
+                  ...
+                </Text>
               ) : isPlaying ? (
                 <Pause size={32} color={commonColors.white} />
               ) : (
                 <Play size={32} color={commonColors.white} />
               )}
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.background }]} onPress={handleSkipForward}>
+            <TouchableOpacity
+              style={[styles.controlButton, { backgroundColor: colors.background }]}
+              onPress={handleSkipForward}
+            >
               <SkipForward size={24} color={colors.textPrimary} />
             </TouchableOpacity>
           </View>
@@ -406,21 +479,35 @@ export default function CourseLearningScreen() {
 
         {/* D1+D2: Volume controls with drag sliders and bar backgrounds */}
         <View style={[styles.volumeSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.volumeSettings')}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t('course.volumeSettings')}
+          </Text>
 
           {/* Background music volume slider */}
           <View style={styles.volumeRow}>
             <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
               <Music size={20} color={colors.primary} />
             </View>
-            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>{t('course.backgroundMusic')}</Text>
+            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
+              {t('course.backgroundMusic')}
+            </Text>
             <View
               style={[styles.sliderTrack, { backgroundColor: colors.border }]}
               onLayout={handleBgBarLayout}
               {...bgPanResponder.panHandlers}
             >
-              <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]} />
-              <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: bgThumbTranslate }] }]} />
+              <Animated.View
+                style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]}
+              />
+              <Animated.View
+                style={[
+                  styles.sliderThumb,
+                  {
+                    backgroundColor: colors.primary,
+                    transform: [{ translateX: bgThumbTranslate }],
+                  },
+                ]}
+              />
             </View>
             <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
               {Math.round(backgroundVolume * 100)}%
@@ -432,14 +519,29 @@ export default function CourseLearningScreen() {
             <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
               <Volume2 size={20} color={colors.primary} />
             </View>
-            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>{t('course.voiceGuide')}</Text>
+            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
+              {t('course.voiceGuide')}
+            </Text>
             <View
               style={[styles.sliderTrack, { backgroundColor: colors.border }]}
               onLayout={handleVoiceBarLayout}
               {...voicePanResponder.panHandlers}
             >
-              <Animated.View style={[styles.sliderFill, { backgroundColor: colors.primary, width: voiceFillWidth }]} />
-              <Animated.View style={[styles.sliderThumb, { backgroundColor: colors.primary, transform: [{ translateX: voiceThumbTranslate }] }]} />
+              <Animated.View
+                style={[
+                  styles.sliderFill,
+                  { backgroundColor: colors.primary, width: voiceFillWidth },
+                ]}
+              />
+              <Animated.View
+                style={[
+                  styles.sliderThumb,
+                  {
+                    backgroundColor: colors.primary,
+                    transform: [{ translateX: voiceThumbTranslate }],
+                  },
+                ]}
+              />
             </View>
             <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
               {Math.round(voiceVolume * 100)}%
@@ -454,7 +556,9 @@ export default function CourseLearningScreen() {
         )}
 
         <View style={[styles.guideSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('course.guide')}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t('course.guide')}
+          </Text>
           <Text style={[styles.guideText, { color: colors.textSecondary }]}>
             {currentLesson.description || t('course.followGuide')}
           </Text>
@@ -465,172 +569,114 @@ export default function CourseLearningScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: typography.fontSize.md,
-  },
-  header: {
-    ...sharedStyles.rowBetween,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
   backButton: {
     padding: spacing.sm,
   },
-  headerRight: {
-    padding: spacing.sm,
+  breatheCircle: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 90,
+    height: 180,
+    justifyContent: 'center',
+    width: 180,
   },
-  headerTitle: {
+  breatheText: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
-    flex: 1,
+    paddingHorizontal: spacing.lg,
     textAlign: 'center',
   },
   content: {
     flex: 1,
     paddingHorizontal: spacing.xl,
   },
-  visualGuideContainer: {
-    marginBottom: spacing.xl,
-  },
-  visualGuide: {
-    height: 250,
-    borderRadius: borderRadius.xl,
-    justifyContent: 'center',
+  controlButton: {
     alignItems: 'center',
-    ...shadows.medium,
-  },
-  breatheCircle: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 28,
+    height: 56,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  breatheText: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-    textAlign: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  progressSection: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.xl,
-    ...shadows.small,
-  },
-  progressLabel: {
-    fontSize: typography.fontSize.sm,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  progressBarContainer: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  controlsSection: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.xl,
+    width: 56,
     ...shadows.small,
   },
   controlsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
     gap: spacing.lg,
+    justifyContent: 'center',
     marginTop: spacing.md,
   },
-  controlButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shadows.small,
-  },
-  playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shadows.medium,
-  },
-  volumeSection: {
-    padding: spacing.lg,
+  controlsSection: {
     borderRadius: borderRadius.lg,
     marginBottom: spacing.xl,
+    padding: spacing.lg,
     ...shadows.small,
-  },
-  volumeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.md,
-  },
-  volumeIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  volumeLabel: {
-    fontSize: typography.fontSize.sm,
-    width: 100,
-  },
-  volumeValue: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-    fontVariant: ['tabular-nums'],
-    width: 40,
-    textAlign: 'right',
-  },
-  sliderTrack: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    position: 'relative',
-    justifyContent: 'center',
-  },
-  sliderFill: {
-    position: 'absolute',
-    height: 6,
-    borderRadius: 3,
-    left: 0,
-    top: 0,
-  },
-  sliderThumb: {
-    position: 'absolute',
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    top: -5,
-    left: 0,
   },
   errorMessage: {
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.xl,
+    padding: spacing.lg,
   },
   errorText: {
     fontSize: typography.fontSize.sm,
   },
   guideSection: {
-    padding: spacing.lg,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.xl,
+    padding: spacing.lg,
+    ...shadows.small,
+  },
+  guideText: {
+    fontSize: typography.fontSize.sm,
+    lineHeight: 1.6,
+  },
+  header: {
+    ...sharedStyles.rowBetween,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  headerRight: {
+    padding: spacing.sm,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: typography.fontSize.md,
+  },
+  playButton: {
+    alignItems: 'center',
+    borderRadius: 40,
+    height: 80,
+    justifyContent: 'center',
+    width: 80,
+    ...shadows.medium,
+  },
+  progressBar: {
+    borderRadius: 3,
+    height: '100%',
+  },
+  progressBarContainer: {
+    borderRadius: 3,
+    height: 6,
+    overflow: 'hidden',
+  },
+  progressLabel: {
+    fontSize: typography.fontSize.sm,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  progressSection: {
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
+    padding: spacing.lg,
     ...shadows.small,
   },
   sectionTitle: {
@@ -638,8 +684,66 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.sm,
   },
-  guideText: {
+  sliderFill: {
+    borderRadius: 3,
+    height: 6,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+  },
+  sliderThumb: {
+    borderRadius: 8,
+    height: 16,
+    left: 0,
+    position: 'absolute',
+    top: -5,
+    width: 16,
+  },
+  sliderTrack: {
+    borderRadius: 3,
+    flex: 1,
+    height: 6,
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  visualGuide: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    height: 250,
+    justifyContent: 'center',
+    ...shadows.medium,
+  },
+  visualGuideContainer: {
+    marginBottom: spacing.xl,
+  },
+  volumeIconContainer: {
+    alignItems: 'center',
+    borderRadius: 16,
+    height: 32,
+    justifyContent: 'center',
+    width: 32,
+  },
+  volumeLabel: {
     fontSize: typography.fontSize.sm,
-    lineHeight: 1.6,
+    width: 100,
+  },
+  volumeRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  volumeSection: {
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.xl,
+    padding: spacing.lg,
+    ...shadows.small,
+  },
+  volumeValue: {
+    fontSize: typography.fontSize.sm,
+    fontVariant: ['tabular-nums'],
+    fontWeight: typography.fontWeight.semibold,
+    textAlign: 'right',
+    width: 40,
   },
 });

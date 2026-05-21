@@ -1,5 +1,9 @@
 import { useAppStore } from '../store';
-import { AUTH_EXEMPT_ROUTES, isRouteAuthExempt, isRoutePaidRequired } from '../config/routeAuthConfig';
+import {
+  AUTH_EXEMPT_ROUTES,
+  isRouteAuthExempt,
+  isRoutePaidRequired,
+} from '../config/routeAuthConfig';
 
 export interface RoutePermissionResult {
   hasPermission: boolean;
@@ -29,15 +33,19 @@ export function useRoutePermission(screenName: string): RoutePermissionResult {
 }
 
 export function getAllAuthExemptRoutes(): string[] {
-  return AUTH_EXEMPT_ROUTES
-    .filter(route => !route.authRequired)
-    .map(route => route.screenName);
+  return AUTH_EXEMPT_ROUTES.filter((route) => !route.authRequired).map((route) => route.screenName);
 }
 
 export function getChildrenRoutes(): string[] {
-  return AUTH_EXEMPT_ROUTES
-    .filter(route =>
-      ['ChildrenHome', 'Course', 'Breathing', 'CheckIn', 'StoryPlayer', 'CourseDetail', 'BreathingPractice'].includes(route.screenName)
-    )
-    .map(route => route.screenName);
+  return AUTH_EXEMPT_ROUTES.filter((route) =>
+    [
+      'ChildrenHome',
+      'Course',
+      'Breathing',
+      'CheckIn',
+      'StoryPlayer',
+      'CourseDetail',
+      'BreathingPractice',
+    ].includes(route.screenName),
+  ).map((route) => route.screenName);
 }

@@ -24,49 +24,21 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: colors.error + '15' },
-        ]}
-      >
-        <Icon
-          size={64}
-          color={colors.error}
-        />
+      <View style={[styles.iconContainer, { backgroundColor: colors.error + '15' }]}>
+        <Icon size={64} color={colors.error} />
       </View>
-      <Text
-        style={[
-          styles.title,
-          { color: colors.textPrimary },
-        ]}
-      >
+      <Text style={[styles.title, { color: colors.textPrimary }]}>
         {title || t('common.error')}
       </Text>
       {description && (
-        <Text
-          style={[
-            styles.description,
-            { color: colors.textSecondary },
-          ]}
-        >
-          {description}
-        </Text>
+        <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
       )}
       {onAction && (
         <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: colors.primary },
-          ]}
+          style={[styles.actionButton, { backgroundColor: colors.primary }]}
           onPress={onAction}
         >
-          <Text
-            style={[
-              styles.actionText,
-              { color: commonColors.white },
-            ]}
-          >
+          <Text style={[styles.actionText, { color: commonColors.white }]}>
             {actionLabel || t('common.retry')}
           </Text>
         </TouchableOpacity>
@@ -76,40 +48,40 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 };
 
 const styles = StyleSheet.create({
+  actionButton: {
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    ...sharedStyles.rowCenter,
+  },
+  actionText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+  },
   container: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: spacing.xxl,
   },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: borderRadius.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
+  description: {
+    fontSize: typography.fontSize.md,
+    lineHeight: 22,
     marginBottom: spacing.xl,
+    textAlign: 'center',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    height: 120,
+    justifyContent: 'center',
+    marginBottom: spacing.xl,
+    width: 120,
   },
   title: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.sm,
     textAlign: 'center',
-  },
-  description: {
-    fontSize: typography.fontSize.md,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 22,
-  },
-  actionButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    ...sharedStyles.rowCenter,
-  },
-  actionText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
   },
 });

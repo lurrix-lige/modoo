@@ -3,12 +3,25 @@ import { Text } from 'react-native';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { EarIcon, GraduationCap, Leaf, Footprints, Home, Headphones, User } from 'lucide-react-native';
+import {
+  EarIcon,
+  GraduationCap,
+  Leaf,
+  Footprints,
+  Home,
+  Headphones,
+  User,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, responsive, typography } from '../theme';
 import { useAppStore } from '../store';
 
-import { RootStackParamList, ChildrenTabParamList, ParentTabParamList, AuthStackParamList } from './types';
+import {
+  RootStackParamList,
+  ChildrenTabParamList,
+  ParentTabParamList,
+  AuthStackParamList,
+} from './types';
 
 import { WelcomeHomeScreen } from '../features/home';
 import { LoginScreen, GuideScreen } from '../features/auth';
@@ -95,13 +108,17 @@ function ChildrenTabNavigator() {
         component={ChildrenHomeScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('home.stories')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <EarIcon size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <EarIcon size={size} color={color} />,
         }}
       />
       <ChildrenTab.Screen
@@ -109,13 +126,17 @@ function ChildrenTabNavigator() {
         component={BreathingScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('home.breathing')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <Leaf size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Leaf size={size} color={color} />,
         }}
       />
       <ChildrenTab.Screen
@@ -123,13 +144,17 @@ function ChildrenTabNavigator() {
         component={CourseScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('home.courses')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <GraduationCap size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <GraduationCap size={size} color={color} />,
         }}
       />
       <ChildrenTab.Screen
@@ -137,13 +162,17 @@ function ChildrenTabNavigator() {
         component={CheckInScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('home.checkIn')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <Footprints size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Footprints size={size} color={color} />,
         }}
       />
     </ChildrenTab.Navigator>
@@ -193,13 +222,17 @@ function ParentTabNavigator() {
         component={ParentHomeScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('parentHome.home')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
       <ParentTab.Screen
@@ -207,13 +240,17 @@ function ParentTabNavigator() {
         component={KnowledgeScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('parentHome.knowledge')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <EarIcon size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <EarIcon size={size} color={color} />,
         }}
       />
       <ParentTab.Screen
@@ -221,13 +258,17 @@ function ParentTabNavigator() {
         component={ServicesScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('parentHome.services')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <Headphones size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Headphones size={size} color={color} />,
         }}
       />
       <ParentTab.Screen
@@ -235,13 +276,17 @@ function ParentTabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ fontSize: responsive.scaledFontSize(typography.fontSize.xs), fontWeight: '500', color: color }}>
+            <Text
+              style={{
+                fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+                fontWeight: '500',
+                color: color,
+              }}
+            >
               {t('parentHome.profile')}
             </Text>
           ),
-          tabBarIcon: ({ color, size }) => (
-            <User size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </ParentTab.Navigator>
@@ -300,10 +345,13 @@ export function RootNavigator() {
     };
   }, [isDark, colors]);
 
-  const screenOptions = useMemo(() => ({
-    headerShown: false as const,
-    contentStyle: { backgroundColor: colors.background },
-  }), [colors.background]);
+  const screenOptions = useMemo(
+    () => ({
+      headerShown: false as const,
+      contentStyle: { backgroundColor: colors.background },
+    }),
+    [colors.background],
+  );
 
   return (
     <NavigationContainer theme={navigationTheme}>

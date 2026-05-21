@@ -13,10 +13,10 @@ export const Logo: React.FC<LogoProps> = ({
   size = 100,
   style,
   source = `${API_CONFIG.BASE_URL}/api/v1/images/logo.png`,
-  resizeMode = 'contain'
+  resizeMode = 'contain',
 }) => {
-  const isRemoteUrl = typeof source === 'string'
-    && (source.startsWith('http://') || source.startsWith('https://'));
+  const isRemoteUrl =
+    typeof source === 'string' && (source.startsWith('http://') || source.startsWith('https://'));
 
   const imageSource = isRemoteUrl ? { uri: source } : source;
 

@@ -2,23 +2,23 @@ import { logger } from './logger';
 
 export class DateLabelUtils {
   private static readonly WEEK_DAY_MAP: Record<string, string> = {
-    '周一': 'parentHome.monday',
-    '周二': 'parentHome.tuesday',
-    '周三': 'parentHome.wednesday',
-    '周四': 'parentHome.thursday',
-    '周五': 'parentHome.friday',
-    '周六': 'parentHome.saturday',
-    '周日': 'parentHome.sunday',
+    周一: 'parentHome.monday',
+    周二: 'parentHome.tuesday',
+    周三: 'parentHome.wednesday',
+    周四: 'parentHome.thursday',
+    周五: 'parentHome.friday',
+    周六: 'parentHome.saturday',
+    周日: 'parentHome.sunday',
   };
 
   private static readonly WEEK_DAY_MAP_EN: Record<string, string> = {
-    'Mon': 'parentHome.monday',
-    'Tue': 'parentHome.tuesday',
-    'Wed': 'parentHome.wednesday',
-    'Thu': 'parentHome.thursday',
-    'Fri': 'parentHome.friday',
-    'Sat': 'parentHome.saturday',
-    'Sun': 'parentHome.sunday',
+    Mon: 'parentHome.monday',
+    Tue: 'parentHome.tuesday',
+    Wed: 'parentHome.wednesday',
+    Thu: 'parentHome.thursday',
+    Fri: 'parentHome.friday',
+    Sat: 'parentHome.saturday',
+    Sun: 'parentHome.sunday',
   };
 
   public static readonly DATE_PATTERNS = {
@@ -64,7 +64,6 @@ export class DateLabelUtils {
       }
 
       return day;
-
     } catch (error) {
       logger.error('[DateLabelUtils] Error in getDayLabel', { error });
       return day;
@@ -110,13 +109,11 @@ export const getDayLabel = (day: string, t: (key: string) => string): string => 
 export const formatDate = (
   date: Date | string | number,
   locale: string = 'zh-CN',
-  options: Intl.DateTimeFormatOptions = {}
+  options: Intl.DateTimeFormatOptions = {},
 ): string => {
   try {
-    const dateObj = typeof date === 'string' || typeof date === 'number' 
-      ? new Date(date) 
-      : date;
-    
+    const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
+
     const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
@@ -134,13 +131,11 @@ export const formatDate = (
 export const formatTime = (
   date: Date | string | number,
   locale: string = 'zh-CN',
-  options: Intl.DateTimeFormatOptions = {}
+  options: Intl.DateTimeFormatOptions = {},
 ): string => {
   try {
-    const dateObj = typeof date === 'string' || typeof date === 'number' 
-      ? new Date(date) 
-      : date;
-    
+    const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
+
     const defaultOptions: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
       minute: '2-digit',
@@ -158,7 +153,7 @@ export const formatDateTime = (
   date: Date | string | number,
   locale: string = 'zh-CN',
   dateOptions: Intl.DateTimeFormatOptions = {},
-  timeOptions: Intl.DateTimeFormatOptions = {}
+  timeOptions: Intl.DateTimeFormatOptions = {},
 ): string => {
   try {
     const formattedDate = formatDate(date, locale, dateOptions);
@@ -172,13 +167,11 @@ export const formatDateTime = (
 
 export const formatRelativeTime = (
   date: Date | string | number,
-  locale: string = 'zh-CN'
+  locale: string = 'zh-CN',
 ): string => {
   try {
-    const dateObj = typeof date === 'string' || typeof date === 'number' 
-      ? new Date(date) 
-      : date;
-    
+    const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
+
     const now = new Date();
     const diffMs = now.getTime() - dateObj.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -202,16 +195,19 @@ export const formatRelativeTime = (
   }
 };
 
-export const getMonthNames = (locale: string = 'zh-CN', type: 'long' | 'short' | 'narrow' = 'long'): string[] => {
+export const getMonthNames = (
+  locale: string = 'zh-CN',
+  type: 'long' | 'short' | 'narrow' = 'long',
+): string[] => {
   try {
     const months: string[] = [];
     const date = new Date(2024, 0, 1);
-    
+
     for (let i = 0; i < 12; i++) {
       date.setMonth(i);
       months.push(date.toLocaleDateString(locale, { month: type }));
     }
-    
+
     return months;
   } catch (error) {
     logger.error('[DateUtils] Error in getMonthNames', { error });
@@ -219,16 +215,19 @@ export const getMonthNames = (locale: string = 'zh-CN', type: 'long' | 'short' |
   }
 };
 
-export const getWeekDayNames = (locale: string = 'zh-CN', type: 'long' | 'short' | 'narrow' = 'short'): string[] => {
+export const getWeekDayNames = (
+  locale: string = 'zh-CN',
+  type: 'long' | 'short' | 'narrow' = 'short',
+): string[] => {
   try {
     const days: string[] = [];
     const date = new Date(2024, 0, 7);
-    
+
     for (let i = 0; i < 7; i++) {
       date.setDate(date.getDate() + 1);
       days.push(date.toLocaleDateString(locale, { weekday: type }));
     }
-    
+
     return days;
   } catch (error) {
     logger.error('[DateUtils] Error in getWeekDayNames', { error });

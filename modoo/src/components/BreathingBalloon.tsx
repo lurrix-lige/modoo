@@ -40,7 +40,7 @@ export function BreathingBalloon({ isActive, scale = 1 }: BreathingBalloonProps)
               useNativeDriver: false,
             }),
           ]),
-        ])
+        ]),
       );
 
       breathingAnimation.start();
@@ -82,22 +82,22 @@ export function BreathingBalloon({ isActive, scale = 1 }: BreathingBalloonProps)
 
 const styles = StyleSheet.create({
   container: {
-    width: 200,
+    alignItems: 'center',
     height: 200,
     justifyContent: 'center',
-    alignItems: 'center',
+    width: 200,
   },
   innerCircle: {
-    width: 120,
-    height: 120,
     borderRadius: 60,
+    height: 120,
     position: 'absolute',
+    width: 120,
   },
   outerRing: {
-    width: 180,
-    height: 180,
     borderRadius: 90,
     borderWidth: 3,
+    height: 180,
     position: 'absolute',
+    width: 180,
   },
 });

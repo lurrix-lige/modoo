@@ -1,13 +1,17 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, responsive, iconSizes } from '../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  responsive,
+  iconSizes,
+} from '../theme';
 import { MembershipPlan } from '../services';
 import { formatCurrency } from '../utils/currency';
 
@@ -29,9 +33,11 @@ export function MembershipPlanCard({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
-  const featuresArray: string[] = (typeof (plan.features as unknown) === 'string'
-    ? (plan.features as unknown as string).split(' ').filter(Boolean)
-    : plan.features) as string[];
+  const featuresArray: string[] = (
+    typeof (plan.features as unknown) === 'string'
+      ? (plan.features as unknown as string).split(' ').filter(Boolean)
+      : plan.features
+  ) as string[];
 
   const price = plan.currentPrice ?? plan.price ?? 0;
   const planName = plan.nameKey
@@ -44,7 +50,11 @@ export function MembershipPlanCard({
         styles.card,
         {
           backgroundColor: plan.recommended ? colors.primary : colors.surface,
-          borderColor: isSelected ? colors.primary : (plan.recommended ? colors.primary : colors.border),
+          borderColor: isSelected
+            ? colors.primary
+            : plan.recommended
+              ? colors.primary
+              : colors.border,
           borderWidth: isSelected ? 2 : 1,
         },
       ]}
@@ -82,7 +92,8 @@ export function MembershipPlanCard({
                 { color: plan.recommended ? commonColors.white : colors.textSecondary },
               ]}
             >
-              {periodText || t(`membership.period.${plan.planKey.toLowerCase()}`, { defaultValue: '/月' })}
+              {periodText ||
+                t(`membership.period.${plan.planKey.toLowerCase()}`, { defaultValue: '/月' })}
             </Text>
           )}
         </View>
@@ -110,7 +121,10 @@ export function MembershipPlanCard({
 
       {isSelected && (
         <View style={[styles.selectedIndicator, { backgroundColor: colors.primary }]}>
-          <CheckCircle size={responsive.moderateScaleForIcon(iconSizes.md)} color={commonColors.white} />
+          <CheckCircle
+            size={responsive.moderateScaleForIcon(iconSizes.md)}
+            color={commonColors.white}
+          />
         </View>
       )}
     </TouchableOpacity>
@@ -120,67 +134,67 @@ export function MembershipPlanCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
     marginBottom: spacing.md,
+    padding: spacing.lg,
     position: 'relative',
     ...shadows.small,
   },
-  popularBadge: {
-    position: 'absolute',
-    top: responsive.verticalScale(-10),
-    right: spacing.md,
-    paddingHorizontal: responsive.moderateScale(12),
-    paddingVertical: responsive.verticalScale(2),
-    borderRadius: responsive.moderateScale(12),
+  featureItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
   },
-  popularText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    fontWeight: typography.fontWeight.semibold,
-    color: commonColors.white,
+  featureText: {
+    flex: 1,
+    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+  },
+  features: {
+    gap: spacing.xs,
   },
   header: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
   planName: {
+    flex: 1,
     fontSize: responsive.scaledFontSize(typography.fontSize.lg),
     fontWeight: typography.fontWeight.semibold,
-    flex: 1,
+  },
+  popularBadge: {
+    borderRadius: responsive.moderateScale(12),
+    paddingHorizontal: responsive.moderateScale(12),
+    paddingVertical: responsive.verticalScale(2),
+    position: 'absolute',
+    right: spacing.md,
+    top: responsive.verticalScale(-10),
+  },
+  popularText: {
+    color: commonColors.white,
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    fontWeight: typography.fontWeight.semibold,
   },
   priceContainer: {
     alignItems: 'flex-end',
-  },
-  priceValue: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.bold,
   },
   pricePeriod: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     marginTop: responsive.verticalScale(2),
   },
-  features: {
-    gap: spacing.xs,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  featureText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.sm),
-    flex: 1,
+  priceValue: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
   },
   selectedIndicator: {
-    position: 'absolute',
-    top: '50%',
-    right: spacing.lg,
-    width: responsive.moderateScale(24),
-    height: responsive.moderateScale(24),
-    borderRadius: responsive.moderateScale(12),
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: responsive.moderateScale(12),
+    height: responsive.moderateScale(24),
+    justifyContent: 'center',
+    position: 'absolute',
+    right: spacing.lg,
+    top: '50%',
     transform: [{ translateY: responsive.verticalScale(-12) }],
+    width: responsive.moderateScale(24),
   },
 });

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { User, Settings, Bell, Lock, Info, ChevronRight, Baby, ArrowRight, LogOut, CalendarCheck } from 'lucide-react-native';
+import {
+  User,
+  Settings,
+  Bell,
+  Lock,
+  Info,
+  ChevronRight,
+  Baby,
+  ArrowRight,
+  LogOut,
+  CalendarCheck,
+} from 'lucide-react-native';
 
 const profileIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   'person-outline': User,
@@ -22,7 +26,17 @@ const profileIconMap: Record<string, React.ComponentType<{ size: number; color: 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive, iconSizes } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+  iconSizes,
+} from '../../../theme';
 import { useAppStore } from '../../../store';
 import { ParentStackParamList } from '../../../navigation/types';
 import { ErrorToast } from '../../../components';
@@ -124,55 +138,60 @@ export default function ProfileScreen() {
   const handleChildProfilePress = async () => {
     try {
       const existingChild = await apiService.getChildProfile();
-      existingChild && navigation.navigate('ChildProfile', {
-        mode: 'view',
-        source: 'parent',
-        initialData: {
-          id: existingChild.id,
-          nickname: existingChild.nickname,
-          birthday: existingChild.birthday,
-          gender: parseGender(existingChild.gender),
-          guardianIP: parseGuardianIP(existingChild.guardianIP),
-          sleepProblems: normalizeSleepProblems(existingChild.sleepProblems),
-        },
-      });
+      existingChild &&
+        navigation.navigate('ChildProfile', {
+          mode: 'view',
+          source: 'parent',
+          initialData: {
+            id: existingChild.id,
+            nickname: existingChild.nickname,
+            birthday: existingChild.birthday,
+            gender: parseGender(existingChild.gender),
+            guardianIP: parseGuardianIP(existingChild.guardianIP),
+            sleepProblems: normalizeSleepProblems(existingChild.sleepProblems),
+          },
+        });
       !existingChild && navigation.navigate('ChildProfile', { mode: 'create', source: 'parent' });
     } catch (error) {
       navigation.navigate('ChildProfile', { mode: 'create', source: 'parent' });
     }
   };
 
-  const handleMenuPress = (item: typeof MENU_ITEMS[0]) => {
+  const handleMenuPress = (item: (typeof MENU_ITEMS)[0]) => {
     if (item.id === 'child') {
       handleChildProfilePress();
     } else if (item.navigateTo) {
-      navigation.navigate(item.navigateTo as 'Settings' | 'NotificationSettings' | 'PrivacySettings' | 'AboutUs' | 'ParentCheckIn' | 'ExpertBookings');
+      navigation.navigate(
+        item.navigateTo as
+          | 'Settings'
+          | 'NotificationSettings'
+          | 'PrivacySettings'
+          | 'AboutUs'
+          | 'ParentCheckIn'
+          | 'ExpertBookings',
+      );
     }
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      t('profile.logoutConfirmTitle'),
-      t('profile.logoutConfirmMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('profile.logout'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await authService.logout();
-              logout();
-              errorHandler.navigateToHome();
-            } catch (error) {
-              logger.error('Logout error', { error });
-              logout();
-              errorHandler.navigateToHome();
-            }
-          },
+    Alert.alert(t('profile.logoutConfirmTitle'), t('profile.logoutConfirmMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('profile.logout'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await authService.logout();
+            logout();
+            errorHandler.navigateToHome();
+          } catch (error) {
+            logger.error('Logout error', { error });
+            logout();
+            errorHandler.navigateToHome();
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const renderLoadingSkeleton = () => (
@@ -193,14 +212,18 @@ export default function ProfileScreen() {
         <View style={styles.skeletonChildModeContent}>
           <View style={[styles.skeletonChildModeIcon, { backgroundColor: colors.primaryLight }]} />
           <View style={styles.skeletonChildModeText}>
-            <View style={[styles.skeletonChildModeTitle, { backgroundColor: colors.primaryLight }]} />
-            <View style={[styles.skeletonChildModeDesc, { backgroundColor: colors.primaryLight }]} />
+            <View
+              style={[styles.skeletonChildModeTitle, { backgroundColor: colors.primaryLight }]}
+            />
+            <View
+              style={[styles.skeletonChildModeDesc, { backgroundColor: colors.primaryLight }]}
+            />
           </View>
         </View>
       </View>
 
       <View style={[styles.skeletonMenuSection, { backgroundColor: colors.surface }]}>
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <View key={i} style={styles.skeletonMenuItem}>
             <View style={[styles.skeletonMenuIcon, { backgroundColor: colors.border }]} />
             <View style={[styles.skeletonMenuText, { backgroundColor: colors.border }]} />
@@ -214,10 +237,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.textPrimary }]}>{t('profile.title')}</Text>
         </View>
@@ -228,7 +248,10 @@ export default function ProfileScreen() {
           <>
             <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
               <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-                <User size={responsive.moderateScaleForIcon(iconSizes.xxl)} color={commonColors.white} />
+                <User
+                  size={responsive.moderateScaleForIcon(iconSizes.xxl)}
+                  color={commonColors.white}
+                />
               </View>
               <View style={styles.profileInfo}>
                 <Text style={[styles.nickname, { color: colors.textPrimary }]}>
@@ -239,7 +262,10 @@ export default function ProfileScreen() {
                 </Text>
               </View>
               <TouchableOpacity onPress={() => {}}>
-                <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.textSecondary} />
+                <ChevronRight
+                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                  color={colors.textSecondary}
+                />
               </TouchableOpacity>
             </View>
 
@@ -248,7 +274,10 @@ export default function ProfileScreen() {
               onPress={switchToChildMode}
             >
               <View style={styles.childModeContent}>
-                <Baby size={responsive.moderateScaleForIcon(iconSizes.xl)} color={commonColors.white} />
+                <Baby
+                  size={responsive.moderateScaleForIcon(iconSizes.xl)}
+                  color={commonColors.white}
+                />
                 <View style={styles.childModeText}>
                   <Text style={[styles.childModeTitle, { color: commonColors.white }]}>
                     {t('profile.childModeTitle')}
@@ -258,7 +287,10 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
               </View>
-              <ArrowRight size={responsive.moderateScaleForIcon(iconSizes.lg)} color={commonColors.white} />
+              <ArrowRight
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                color={commonColors.white}
+              />
             </TouchableOpacity>
 
             <View style={[styles.menuSection, { backgroundColor: colors.surface }]}>
@@ -267,17 +299,31 @@ export default function ProfileScreen() {
                   key={item.id}
                   style={[
                     styles.menuItem,
-                    index < MENU_ITEMS.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                    index < MENU_ITEMS.length - 1 && {
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border,
+                    },
                   ]}
                   onPress={() => handleMenuPress(item)}
                 >
                   <View style={styles.menuLeft}>
-                    {(() => { const IconComp = profileIconMap[item.icon] || User; return <IconComp size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />; })()}
+                    {(() => {
+                      const IconComp = profileIconMap[item.icon] || User;
+                      return (
+                        <IconComp
+                          size={responsive.moderateScaleForIcon(iconSizes.md)}
+                          color={colors.textSecondary}
+                        />
+                      );
+                    })()}
                     <Text style={[styles.menuText, { color: colors.textPrimary }]}>
                       {t(item.titleKey)}
                     </Text>
                   </View>
-                  <ChevronRight size={responsive.moderateScaleForIcon(iconSizes.md)} color={colors.textSecondary} />
+                  <ChevronRight
+                    size={responsive.moderateScaleForIcon(iconSizes.md)}
+                    color={colors.textSecondary}
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -309,76 +355,64 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-    fontWeight: typography.fontWeight.bold,
-  },
-  profileCard: {
-    ...sharedStyles.rowBetween,
-    marginHorizontal: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    ...shadows.medium,
-  },
   avatar: {
-    width: responsive.moderateScale(64),
-    height: responsive.moderateScale(64),
     borderRadius: responsive.moderateScale(32),
+    height: responsive.moderateScale(64),
+    width: responsive.moderateScale(64),
     ...sharedStyles.columnCenter,
     marginRight: spacing.md,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  nickname: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
-    fontWeight: typography.fontWeight.semibold,
-    marginBottom: spacing.xs,
   },
   badge: {
     fontSize: responsive.scaledFontSize(typography.fontSize.xs),
   },
   childModeCard: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: borderRadius.xl,
+    flexDirection: 'row',
     marginHorizontal: spacing.xl,
     marginTop: spacing.lg,
     padding: spacing.lg,
-    borderRadius: borderRadius.xl,
     ...shadows.medium,
   },
   childModeContent: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     flex: 1,
     flexWrap: 'wrap',
   },
+  childModeDesc: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+    marginTop: spacing.xs,
+  },
   childModeText: {
-    marginLeft: spacing.md,
     flexShrink: 1,
+    marginLeft: spacing.md,
     maxWidth: responsive.moderateScale(200),
   },
   childModeTitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
     fontWeight: typography.fontWeight.semibold,
   },
-  childModeDesc: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-    marginTop: spacing.xs,
+  container: {
+    flex: 1,
   },
-  menuSection: {
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.xxl,
+  header: {
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  logoutButton: {
+    ...sharedStyles.rowCenter,
     borderRadius: borderRadius.xl,
+    gap: spacing.sm,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.xl,
+    padding: spacing.lg,
     ...shadows.small,
+  },
+  logoutText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.medium,
   },
   menuItem: {
     ...sharedStyles.rowBetween,
@@ -389,95 +423,89 @@ const styles = StyleSheet.create({
     ...sharedStyles.rowStart,
     gap: spacing.md,
   },
+  menuSection: {
+    borderRadius: borderRadius.xl,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.xxl,
+    ...shadows.small,
+  },
   menuText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
   },
-  logoutButton: {
-    ...sharedStyles.rowCenter,
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    gap: spacing.sm,
-    ...shadows.small,
+  nickname: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
+    marginBottom: spacing.xs,
   },
-  logoutText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-    fontWeight: typography.fontWeight.medium,
-  },
-
-  skeletonContent: {
-    flex: 1,
-  },
-  skeletonHeader: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  skeletonTitle: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(32),
-    borderRadius: borderRadius.sm,
-  },
-  skeletonProfileCard: {
+  profileCard: {
     ...sharedStyles.rowBetween,
+    borderRadius: borderRadius.xl,
     marginHorizontal: spacing.xl,
     padding: spacing.lg,
-    borderRadius: borderRadius.xl,
+    ...shadows.medium,
+  },
+  profileInfo: {
+    flex: 1,
   },
   skeletonAvatar: {
-    width: responsive.moderateScale(64),
-    height: responsive.moderateScale(64),
     borderRadius: responsive.moderateScale(32),
+    height: responsive.moderateScale(64),
     marginRight: spacing.md,
+    width: responsive.moderateScale(64),
   },
-  skeletonProfileInfo: {
-    flex: 1,
-    gap: spacing.sm,
-  },
-  skeletonNickname: {
-    width: responsive.moderateScale(100),
-    height: responsive.verticalScale(20),
-    borderRadius: responsive.moderateScale(10),
-  },
+
   skeletonBadge: {
-    width: responsive.moderateScale(70),
-    height: responsive.verticalScale(14),
     borderRadius: responsive.moderateScale(7),
+    height: responsive.verticalScale(14),
+    width: responsive.moderateScale(70),
   },
   skeletonChildModeCard: {
     ...sharedStyles.rowBetween,
+    borderRadius: borderRadius.xl,
     marginHorizontal: spacing.xl,
     marginTop: spacing.lg,
     padding: spacing.lg,
-    borderRadius: borderRadius.xl,
   },
   skeletonChildModeContent: {
     ...sharedStyles.rowStart,
   },
+  skeletonChildModeDesc: {
+    borderRadius: responsive.moderateScale(6),
+    height: responsive.verticalScale(12),
+    width: responsive.moderateScale(140),
+  },
   skeletonChildModeIcon: {
-    width: responsive.moderateScale(32),
-    height: responsive.moderateScale(32),
     borderRadius: responsive.moderateScale(16),
+    height: responsive.moderateScale(32),
+    width: responsive.moderateScale(32),
   },
   skeletonChildModeText: {
-    marginLeft: spacing.md,
     gap: spacing.xs,
+    marginLeft: spacing.md,
   },
   skeletonChildModeTitle: {
-    width: responsive.moderateScale(100),
-    height: responsive.verticalScale(16),
     borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
+    width: responsive.moderateScale(100),
   },
-  skeletonChildModeDesc: {
-    width: responsive.moderateScale(140),
-    height: responsive.verticalScale(12),
-    borderRadius: responsive.moderateScale(6),
+  skeletonContent: {
+    flex: 1,
   },
-  skeletonMenuSection: {
+  skeletonHeader: {
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+  },
+  skeletonLogoutButton: {
+    borderRadius: borderRadius.xl,
+    height: responsive.verticalScale(52),
     marginHorizontal: spacing.xl,
     marginTop: spacing.xl,
-    borderRadius: borderRadius.xl,
+  },
+  skeletonMenuIcon: {
+    borderRadius: responsive.moderateScale(11),
+    height: responsive.moderateScale(22),
+    width: responsive.moderateScale(22),
   },
   skeletonMenuItem: {
     ...sharedStyles.rowStart,
@@ -485,20 +513,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  skeletonMenuIcon: {
-    width: responsive.moderateScale(22),
-    height: responsive.moderateScale(22),
-    borderRadius: responsive.moderateScale(11),
-  },
-  skeletonMenuText: {
-    width: responsive.moderateScale(80),
-    height: responsive.verticalScale(16),
-    borderRadius: responsive.moderateScale(8),
-  },
-  skeletonLogoutButton: {
+  skeletonMenuSection: {
+    borderRadius: borderRadius.xl,
     marginHorizontal: spacing.xl,
     marginTop: spacing.xl,
-    height: responsive.verticalScale(52),
+  },
+  skeletonMenuText: {
+    borderRadius: responsive.moderateScale(8),
+    height: responsive.verticalScale(16),
+    width: responsive.moderateScale(80),
+  },
+  skeletonNickname: {
+    borderRadius: responsive.moderateScale(10),
+    height: responsive.verticalScale(20),
+    width: responsive.moderateScale(100),
+  },
+  skeletonProfileCard: {
+    ...sharedStyles.rowBetween,
     borderRadius: borderRadius.xl,
+    marginHorizontal: spacing.xl,
+    padding: spacing.lg,
+  },
+  skeletonProfileInfo: {
+    flex: 1,
+    gap: spacing.sm,
+  },
+  skeletonTitle: {
+    borderRadius: borderRadius.sm,
+    height: responsive.verticalScale(32),
+    width: responsive.moderateScale(80),
+  },
+  title: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+    fontWeight: typography.fontWeight.bold,
   },
 });

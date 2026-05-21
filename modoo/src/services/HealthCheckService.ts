@@ -5,7 +5,7 @@ import { API_CONFIG, STORAGE_KEYS } from '../config/env';
 import { logger } from '../utils/logger';
 
 const HEALTH_CHECK_INTERVAL = 5 * 60 * 1000; // 5 分钟
-const CONNECTIVITY_CHECK_INTERVAL =  30 * 1000; // 30 秒
+const CONNECTIVITY_CHECK_INTERVAL = 30 * 1000; // 30 秒
 
 export type ConnectionStatus = 'online' | 'offline' | 'checking';
 
@@ -28,7 +28,11 @@ interface HealthStore {
   clearState: () => void;
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit, timeout: number = 5000): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number = 5000,
+): Promise<Response> {
   const controller = new AbortController();
   const { signal } = controller;
 
@@ -60,14 +64,14 @@ export const useHealthStore = create<HealthStore>((set, get) => ({
 
       const apiUrl = API_CONFIG.BASE_URL;
       logger.debug(`[HealthCheck] Making request to: ${apiUrl}/health`);
-      
+
       const response = await fetchWithTimeout(`${apiUrl}/health`, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
-      
+
       logger.debug(`[HealthCheck] Response status: ${response.status}`);
 
       const latency = Date.now() - startTime;
@@ -111,8 +115,8 @@ export const useHealthStore = create<HealthStore>((set, get) => ({
         error instanceof Error && error.name === 'AbortError'
           ? i18n.t('healthCheck.timeout')
           : error instanceof Error
-          ? error.message
-          : i18n.t('healthCheck.networkError');
+            ? error.message
+            : i18n.t('healthCheck.networkError');
 
       result = {
         success: false,
@@ -135,10 +139,7 @@ export const useHealthStore = create<HealthStore>((set, get) => ({
     }
 
     try {
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.HEALTH_CHECK,
-        JSON.stringify(result)
-      );
+      await AsyncStorage.setItem(STORAGE_KEYS.HEALTH_CHECK, JSON.stringify(result));
     } catch (e) {
       logger.error('Failed to save health check result', { e });
     }
@@ -233,6 +234,7 @@ class HealthCheckService {
         await this.checkHealth();
       }
     } catch {
+      // Health check polling errors are non-critical
     }
   }
 

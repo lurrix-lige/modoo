@@ -2,7 +2,7 @@ export const formatCurrency = (
   amount: number,
   currency: string = 'CNY',
   locale: string = 'zh-CN',
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ): string => {
   const currencyMap: Record<string, string> = {
     CNY: 'CNY',
@@ -30,11 +30,18 @@ export const formatCurrency = (
   try {
     return new Intl.NumberFormat(locale, defaultOptions).format(amount);
   } catch (error) {
-    const symbol = currencyCode === 'CNY' ? '¥' : 
-                   currencyCode === 'USD' ? '$' : 
-                   currencyCode === 'EUR' ? '€' : 
-                   currencyCode === 'GBP' ? '£' : 
-                   currencyCode === 'JPY' ? '¥' : currencyCode;
+    const symbol =
+      currencyCode === 'CNY'
+        ? '¥'
+        : currencyCode === 'USD'
+          ? '$'
+          : currencyCode === 'EUR'
+            ? '€'
+            : currencyCode === 'GBP'
+              ? '£'
+              : currencyCode === 'JPY'
+                ? '¥'
+                : currencyCode;
     const formatter = new Intl.NumberFormat(locale, {
       minimumFractionDigits: currencyCode === 'JPY' ? 0 : 2,
       maximumFractionDigits: currencyCode === 'JPY' ? 0 : 2,
@@ -46,7 +53,7 @@ export const formatCurrency = (
 export const formatNumber = (
   value: number,
   locale: string = 'zh-CN',
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ): string => {
   const defaultOptions: Intl.NumberFormatOptions = {
     ...options,
@@ -63,7 +70,7 @@ export const formatPercentage = (
   value: number,
   locale: string = 'zh-CN',
   decimals: number = 0,
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ): string => {
   const defaultOptions: Intl.NumberFormatOptions = {
     style: 'percent',
@@ -82,7 +89,7 @@ export const formatPercentage = (
 export const formatCompactNumber = (
   value: number,
   locale: string = 'zh-CN',
-  style: 'decimal' | 'percent' = 'decimal'
+  style: 'decimal' | 'percent' = 'decimal',
 ): string => {
   const options: Intl.NumberFormatOptions = {
     notation: 'compact',
@@ -104,9 +111,9 @@ export const getCurrencySymbol = (currency: string = 'CNY', locale: string = 'zh
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
-    
+
     const parts = formatter.formatToParts(1);
-    const symbolPart = parts.find(part => part.type === 'currency');
+    const symbolPart = parts.find((part) => part.type === 'currency');
     return symbolPart?.value || currency;
   } catch (error) {
     const fallbackSymbols: Record<string, string> = {
@@ -132,17 +139,22 @@ export const getCurrencyName = (currency: string = 'CNY', locale: string = 'zh-C
       currency,
       minimumFractionDigits: 0,
     });
-    
+
     const parts = formatter.formatToParts(1);
-    return parts.map(part => part.type === 'currency' ? '' : part.value).join('').trim() || currency;
+    return (
+      parts
+        .map((part) => (part.type === 'currency' ? '' : part.value))
+        .join('')
+        .trim() || currency
+    );
   } catch (error) {
     const fallbackNames: Record<string, Record<string, string>> = {
-      CNY: { 'zh-CN': '人民币', 'en': 'Chinese Yuan' },
-      USD: { 'zh-CN': '美元', 'en': 'US Dollar' },
-      EUR: { 'zh-CN': '欧元', 'en': 'Euro' },
-      GBP: { 'zh-CN': '英镑', 'en': 'British Pound' },
-      JPY: { 'zh-CN': '日元', 'en': 'Japanese Yen' },
-      KRW: { 'zh-CN': '韩元', 'en': 'Korean Won' },
+      CNY: { 'zh-CN': '人民币', en: 'Chinese Yuan' },
+      USD: { 'zh-CN': '美元', en: 'US Dollar' },
+      EUR: { 'zh-CN': '欧元', en: 'Euro' },
+      GBP: { 'zh-CN': '英镑', en: 'British Pound' },
+      JPY: { 'zh-CN': '日元', en: 'Japanese Yen' },
+      KRW: { 'zh-CN': '韩元', en: 'Korean Won' },
     };
     return fallbackNames[currency]?.[locale] || fallbackNames[currency]?.['en'] || currency;
   }

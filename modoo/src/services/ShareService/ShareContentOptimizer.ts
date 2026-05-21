@@ -8,12 +8,15 @@ export interface PlatformShareOptions {
 }
 
 export class ShareContentOptimizer {
-  private static platformRules: Record<SharePlatform, {
-    maxTitleLength: number;
-    maxDescriptionLength: number;
-    useEmoji: boolean;
-    format: 'text' | 'rich';
-  }> = {
+  private static platformRules: Record<
+    SharePlatform,
+    {
+      maxTitleLength: number;
+      maxDescriptionLength: number;
+      useEmoji: boolean;
+      format: 'text' | 'rich';
+    }
+  > = {
     native: {
       maxTitleLength: 100,
       maxDescriptionLength: 500,
@@ -40,32 +43,26 @@ export class ShareContentOptimizer {
     },
   };
 
-  static optimize(
-    options: ShareOptions,
-    platform: SharePlatform
-  ): PlatformShareOptions {
+  static optimize(options: ShareOptions, platform: SharePlatform): PlatformShareOptions {
     const rules = this.platformRules[platform];
-    
+
     let title = options.title || '';
     let description = options.description || '';
     let url = options.url;
     let imageUrl = options.imageUrl;
 
     title = this.truncate(title, rules.maxTitleLength);
-    
+
     const descriptionParts: string[] = [];
     if (description) {
       descriptionParts.push(description);
     }
-    
+
     if (url && platform === 'weibo') {
       descriptionParts.push(url);
     }
-    
-    description = this.truncate(
-      descriptionParts.join('\n'),
-      rules.maxDescriptionLength
-    );
+
+    description = this.truncate(descriptionParts.join('\n'), rules.maxDescriptionLength);
 
     if (!rules.useEmoji) {
       title = this.removeEmoji(title);
@@ -80,22 +77,19 @@ export class ShareContentOptimizer {
     };
   }
 
-  static generateShareMessage(
-    options: ShareOptions,
-    platform: SharePlatform
-  ): string {
+  static generateShareMessage(options: ShareOptions, platform: SharePlatform): string {
     const optimized = this.optimize(options, platform);
     const parts: string[] = [];
 
     if (optimized.title) {
       parts.push(optimized.title);
     }
-    
+
     if (optimized.description) {
       parts.push('');
       parts.push(optimized.description);
     }
-    
+
     if (optimized.url) {
       parts.push('');
       parts.push(optimized.url);
@@ -112,7 +106,10 @@ export class ShareContentOptimizer {
   }
 
   private static removeEmoji(text: string): string {
-    return text.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+    return text.replace(
+      /[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+      '',
+    );
   }
 
   static getPlatformRules(platform: SharePlatform) {

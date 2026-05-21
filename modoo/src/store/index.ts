@@ -32,7 +32,7 @@ interface AppState {
   isAuthenticated: boolean;
   user: User | null;
   child: Child | null;
-  
+
   // 新的用户状态结构
   userState: UserState;
   isChildMode: boolean;
@@ -76,7 +76,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   isAuthenticated: false,
   user: null,
   child: null,
-  
+
   // 新的用户状态结构
   userState: { ...INITIAL_USER_STATE },
   isChildMode: true,
@@ -157,12 +157,13 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   isMiniPlayerVisible: false,
   error: null,
 
-  play: (story) => set({
-    currentStory: story,
-    isMiniPlayerVisible: true,
-    progress: 0,
-    error: null
-  }),
+  play: (story) =>
+    set({
+      currentStory: story,
+      isMiniPlayerVisible: true,
+      progress: 0,
+      error: null,
+    }),
 
   pause: () => {
     // 实际的暂停通过 AudioProvider 处理
@@ -172,13 +173,14 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     // 实际的恢复通过 AudioProvider 处理
   },
 
-  stop: () => set({
-    currentStory: null,
-    progress: 0,
-    duration: 0,
-    isMiniPlayerVisible: false,
-    error: null
-  }),
+  stop: () =>
+    set({
+      currentStory: null,
+      progress: 0,
+      duration: 0,
+      isMiniPlayerVisible: false,
+      error: null,
+    }),
 
   seekTo: (position) => {
     // 实际的跳转通过 AudioProvider 处理
@@ -186,13 +188,15 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
 
   setVolume: (volume) => set({ volume }),
 
-  next: () => set((state) => ({
-    currentTrackIndex: state.currentTrackIndex + 1
-  })),
+  next: () =>
+    set((state) => ({
+      currentTrackIndex: state.currentTrackIndex + 1,
+    })),
 
-  previous: () => set((state) => ({
-    currentTrackIndex: Math.max(0, state.currentTrackIndex - 1)
-  })),
+  previous: () =>
+    set((state) => ({
+      currentTrackIndex: Math.max(0, state.currentTrackIndex - 1),
+    })),
 
   showMiniPlayer: () => set({ isMiniPlayerVisible: true }),
 
@@ -200,13 +204,14 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
 
   updateProgress: (progress, duration) => set({ progress, duration }),
 
-  setError: (message, code) => set({
-    error: {
-      message,
-      code,
-      timestamp: Date.now()
-    }
-  }),
+  setError: (message, code) =>
+    set({
+      error: {
+        message,
+        code,
+        timestamp: Date.now(),
+      },
+    }),
 
   clearError: () => set({ error: null }),
 
@@ -216,15 +221,21 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
 
     try {
       const { apiService } = await import('../services');
-      
+
       if (currentStory.isFavorite) {
         await apiService.unfavoriteStory(currentStory.id);
-        set((state) => state.currentStory ? 
-          { ...state, currentStory: { ...state.currentStory, isFavorite: false } } : state);
+        set((state) =>
+          state.currentStory
+            ? { ...state, currentStory: { ...state.currentStory, isFavorite: false } }
+            : state,
+        );
       } else {
         await apiService.favoriteStory(currentStory.id);
-        set((state) => state.currentStory ? 
-          { ...state, currentStory: { ...state.currentStory, isFavorite: true } } : state);
+        set((state) =>
+          state.currentStory
+            ? { ...state, currentStory: { ...state.currentStory, isFavorite: true } }
+            : state,
+        );
       }
     } catch (error) {
       logger.error('Failed to toggle favorite', { error });

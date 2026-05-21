@@ -29,7 +29,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, borderRadius, typography, shadows, commonColors, sharedStyles, responsive } from '../../../theme';
+import {
+  useTheme,
+  spacing,
+  borderRadius,
+  typography,
+  shadows,
+  commonColors,
+  sharedStyles,
+  responsive,
+} from '../../../theme';
 import { useAppStore } from '../../../store';
 import { Button } from '../../../components';
 import { AuthStackParamList, RootStackParamList } from '../../../navigation/types';
@@ -69,11 +78,11 @@ export default function LoginScreen() {
 
   // 输入状态
   // 手机号输入状态
-  const [phone, setPhone] = useState('');           // 手机号输入状态
-  const [code, setCode] = useState('');             // 验证码输入状态
-  const [countdown, setCountdown] = useState(0);    // 倒计时秒数
-  const [loading, setLoading] = useState(false);     // 手机登录加载状态
-  const [appleLoading, setAppleLoading] = useState(false);   // Apple登录加载状态
+  const [phone, setPhone] = useState(''); // 手机号输入状态
+  const [code, setCode] = useState(''); // 验证码输入状态
+  const [countdown, setCountdown] = useState(0); // 倒计时秒数
+  const [loading, setLoading] = useState(false); // 手机登录加载状态
+  const [appleLoading, setAppleLoading] = useState(false); // Apple登录加载状态
   const [wechatLoading, setWechatLoading] = useState(false); // 微信登录加载状态
 
   /**
@@ -81,7 +90,7 @@ export default function LoginScreen() {
    */
   useEffect(() => {
     const timer = setTimeout(() => {
-     // phoneInputRef.current?.focus();
+      // phoneInputRef.current?.focus();
     }, 100);
 
     return () => clearTimeout(timer);
@@ -104,7 +113,7 @@ export default function LoginScreen() {
    */
   const handlePhoneChange = (text: string) => {
     setPhone(text);
-    
+
     // 当输入完1位且格式正确时，自动跳转到验证码输入框
     if (isValidPhoneNumber(text)) {
       setTimeout(() => {
@@ -177,18 +186,20 @@ export default function LoginScreen() {
 
       const user = await authService.appleLogin(
         userInfo.authorizationCode,
-        userInfo.identityToken || ''
+        userInfo.identityToken || '',
       );
 
       setAuthenticated(true, user);
       await syncChildProfile();
 
-      const parentNavigation = navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
-      parentNavigation && loginNavigationStrategyFactory.navigate(parentNavigation, {
-        fromScreen,
-        selectedPlanId,
-        childProfile: await authService.getChild(),
-      });
+      const parentNavigation =
+        navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
+      parentNavigation &&
+        loginNavigationStrategyFactory.navigate(parentNavigation, {
+          fromScreen,
+          selectedPlanId,
+          childProfile: await authService.getChild(),
+        });
     } catch (error) {
       const errorMessage = (error as any).message;
       if (errorMessage !== 'User cancelled Apple Sign In') {
@@ -218,12 +229,14 @@ export default function LoginScreen() {
 
       await syncChildProfile();
 
-      const parentNavigation = navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
-      parentNavigation && loginNavigationStrategyFactory.navigate(parentNavigation, {
-        fromScreen,
-        selectedPlanId,
-        childProfile: await authService.getChild(),
-      });
+      const parentNavigation =
+        navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
+      parentNavigation &&
+        loginNavigationStrategyFactory.navigate(parentNavigation, {
+          fromScreen,
+          selectedPlanId,
+          childProfile: await authService.getChild(),
+        });
     } catch (error: any) {
       if (error.code === 'USER_CANCELLED' || error.code === -2) {
         return;
@@ -262,7 +275,7 @@ export default function LoginScreen() {
 
       setCountdown(60);
       const timer = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             return 0;
@@ -304,13 +317,14 @@ export default function LoginScreen() {
 
       await syncChildProfile();
 
-      const parentNavigation = navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
-      parentNavigation && loginNavigationStrategyFactory.navigate(parentNavigation, {
-        fromScreen,
-        selectedPlanId,
-        childProfile: await authService.getChild(),
-      });
-
+      const parentNavigation =
+        navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
+      parentNavigation &&
+        loginNavigationStrategyFactory.navigate(parentNavigation, {
+          fromScreen,
+          selectedPlanId,
+          childProfile: await authService.getChild(),
+        });
     } catch (error) {
       Alert.alert(t('common.error'), t('auth.loginFailed'));
     } finally {
@@ -321,7 +335,7 @@ export default function LoginScreen() {
   // ==================== 页面渲染 ====================
   return (
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
-       {/* ------------------- 键盘输入区域 ------------------- */}
+      {/* ------------------- 键盘输入区域 ------------------- */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -331,9 +345,7 @@ export default function LoginScreen() {
           <View style={[styles.logoContainer, { backgroundColor: colors.primary }]}>
             <Moon size={60} color={commonColors.white} />
           </View>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>
-            {t('auth.title')}
-          </Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>{t('auth.title')}</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {t('auth.subtitle')}
           </Text>
@@ -341,7 +353,6 @@ export default function LoginScreen() {
 
         {/* ------------------- 登录表单 ------------------- */}
         <View style={styles.form}>
-
           {/* ------------------- 第三方登录按钮 ------------------- */}
           <View style={styles.socialButtons}>
             {/* Apple 登录按钮 */}
@@ -376,7 +387,6 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-
           {/* 手机号输入框 */}
           <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
             <PhoneCall size={20} color={colors.textSecondary} />
@@ -408,18 +418,28 @@ export default function LoginScreen() {
               underlineColorAndroid="transparent"
             />
             <TouchableOpacity
-              style={[styles.codeButton, { backgroundColor: countdown > 0 ? colors.disabled : colors.primary }]}
+              style={[
+                styles.codeButton,
+                { backgroundColor: countdown > 0 ? colors.disabled : colors.primary },
+              ]}
               onPress={handleGetCode}
               disabled={countdown > 0}
             >
               <Text style={[styles.codeText, { color: commonColors.white }]}>
-                {countdown > 0 ? t('auth.countdownSeconds', { count: countdown }) : t('auth.sendCode')}
+                {countdown > 0
+                  ? t('auth.countdownSeconds', { count: countdown })
+                  : t('auth.sendCode')}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* 登录按钮 */}
-          <Button title={t('auth.login')} onPress={handleLogin} loading={loading} style={styles.loginButton} />
+          <Button
+            title={t('auth.login')}
+            onPress={handleLogin}
+            loading={loading}
+            style={styles.loginButton}
+          />
 
           {/* ------------------- 分隔线 ------------------- */}
           <View style={styles.divider}>
@@ -429,8 +449,6 @@ export default function LoginScreen() {
             </Text>
             <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
           </View>
-
-          
         </View>
 
         {/* ------------------- 用户协议 ------------------- */}
@@ -440,7 +458,7 @@ export default function LoginScreen() {
           </Text>
           <TouchableOpacity>
             <Text style={[styles.linkText, { color: colors.primaryDark }]}>
-            {t('auth.userAgreement')}
+              {t('auth.userAgreement')}
             </Text>
           </TouchableOpacity>
           <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
@@ -448,7 +466,7 @@ export default function LoginScreen() {
           </Text>
           <TouchableOpacity>
             <Text style={[styles.linkText, { color: colors.primaryDark }]}>
-            {t('auth.privacyPolicy')}
+              {t('auth.privacyPolicy')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -459,58 +477,21 @@ export default function LoginScreen() {
 
 // ==================== 样式定义 ====================
 const styles = StyleSheet.create({
-  keyboardView: {
-    flex: 1,
-    padding: spacing.xl,
+  agreement: {
+    ...sharedStyles.rowCenter,
+    flexWrap: 'wrap',
   },
-  header: {
-    ...sharedStyles.columnCenter,
-    marginTop: spacing.xxxl,
-    marginBottom: spacing.xxxl,
-  },
-  logoContainer: {
-    width: responsive.moderateScale(120),
-    height: responsive.moderateScale(120),
-    borderRadius: responsive.moderateScale(60),
-    ...sharedStyles.columnCenter,
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
-    fontWeight: typography.fontWeight.bold,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
-  },
-  form: {
-    marginBottom: spacing.xl,
-  },
-  inputContainer: {
-    ...sharedStyles.rowStart,
-    borderRadius: borderRadius.md,
-    borderWidth: 0,
-    paddingHorizontal: spacing.md,
-    height: responsive.verticalScale(56),
-    marginBottom: spacing.md,
-  },
-  input: {
-    flex: 1,
-    height: '100%',
-    marginLeft: spacing.sm,
-    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+  agreementText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
   },
   codeButton: {
+    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: borderRadius.sm,
   },
   codeText: {
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
     fontWeight: typography.fontWeight.medium,
-  },
-  loginButton: {
-    marginTop: spacing.md,
   },
   divider: {
     ...sharedStyles.rowCenter,
@@ -521,34 +502,71 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    marginHorizontal: spacing.md,
     fontSize: responsive.scaledFontSize(typography.fontSize.sm),
+    marginHorizontal: spacing.md,
   },
-  socialButtons: {
-    ...sharedStyles.rowBetween,
-    marginHorizontal:0,
+  form: {
+    marginBottom: spacing.xl,
+  },
+  header: {
+    ...sharedStyles.columnCenter,
+    marginBottom: spacing.xxxl,
+    marginTop: spacing.xxxl,
+  },
+  input: {
+    flex: 1,
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    height: '100%',
+    marginLeft: spacing.sm,
+  },
+  inputContainer: {
+    ...sharedStyles.rowStart,
+    borderRadius: borderRadius.md,
+    borderWidth: 0,
+    height: responsive.verticalScale(56),
     marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  keyboardView: {
+    flex: 1,
+    padding: spacing.xl,
+  },
+  linkText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+  },
+  loginButton: {
+    marginTop: spacing.md,
+  },
+  logoContainer: {
+    borderRadius: responsive.moderateScale(60),
+    height: responsive.moderateScale(120),
+    width: responsive.moderateScale(120),
+    ...sharedStyles.columnCenter,
+    marginBottom: spacing.lg,
   },
   socialButton: {
     flex: 1,
     ...sharedStyles.rowCenter,
-    height: responsive.verticalScale(56),
     borderRadius: borderRadius.md,
+    height: responsive.verticalScale(56),
     marginHorizontal: spacing.xs,
     ...shadows.small,
   },
+  socialButtons: {
+    ...sharedStyles.rowBetween,
+    marginBottom: spacing.md,
+    marginHorizontal: 0,
+  },
   socialText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
     marginLeft: spacing.sm,
+  },
+  subtitle: {
     fontSize: responsive.scaledFontSize(typography.fontSize.md),
   },
-  agreement: {
-    ...sharedStyles.rowCenter,
-    flexWrap: 'wrap',
-  },
-  agreementText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
-  },
-  linkText: {
-    fontSize: responsive.scaledFontSize(typography.fontSize.xs),
+  title: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.xxxl),
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.xs,
   },
 });
