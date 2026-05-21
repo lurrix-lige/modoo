@@ -157,9 +157,11 @@ class StorageService {
    * 生成本地匿名用户ID（降级方案）
    */
   private generateLocalAnonymousId(): string {
-    const randomStr = Math.random().toString(36).substring(2, 15) + 
-                      Math.random().toString(36).substring(2, 15);
-    return `anonymous_${randomStr}`;
+    // 生成符合后端校验格式的匿名ID: anonymous_[a-f0-9]{32}
+    const hexStr = Array.from({ length: 32 }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+    return `anonymous_${hexStr}`;
   }
 
   /**
