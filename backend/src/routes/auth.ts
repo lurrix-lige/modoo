@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { prisma, authenticate, AuthenticatedRequest } from "../utils/database";
+import { authenticate, AuthenticatedRequest } from "../utils/database";
 import { customError } from "../utils/errors";
 import { config } from "../config";
 import { sendVerificationCode } from "../services/verificationService";
@@ -115,6 +115,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         throw customError("CONFIG_ERROR", "Apple登录配置不完整，请联系管理员", 500);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const jwt = require("jsonwebtoken");
 
       const appleIdToken = jwt.decode(identityToken, { complete: true });
@@ -164,6 +165,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         throw customError("CONFIG_ERROR", "微信登录配置不完整，请联系管理员", 500);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const axios = require("axios");
 
       const tokenResponse = await axios.get(config.wechat.oauthApi, {

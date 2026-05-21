@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { customError } from './errors';
 import { config } from '../config';
@@ -69,6 +69,7 @@ export async function getChildId(request: FastifyRequest): Promise<string | null
 
 // 生成匿名用户ID（委托给专用服务）
 export function generateAnonymousId(): string {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { AnonymousUserService } = require('../services/AnonymousUserService');
   return AnonymousUserService.generateAnonymousId();
 }

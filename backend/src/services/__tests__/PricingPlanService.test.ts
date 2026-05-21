@@ -209,7 +209,7 @@ describe('PricingPlanService', () => {
         currentPrice: 19.99,
       } as any);
 
-      const result = await updatePricingPlan('plan-1', {
+      await updatePricingPlan('plan-1', {
         currentPrice: 19.99,
         features: ['更新功能'],
       });

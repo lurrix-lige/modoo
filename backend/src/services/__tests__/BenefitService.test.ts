@@ -308,7 +308,7 @@ describe('BenefitService', () => {
       vi.mocked(prisma.productBenefit.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.productBenefit.create).mockResolvedValue(mockProductBenefit as any);
 
-      const result = await createProductBenefit({
+      await createProductBenefit({
         benefitId: 'ben-1',
         productType: 'STORY',
         productId: 'story-1',

@@ -95,7 +95,7 @@ export class AnonymousUserService {
     userId: string,
     childId?: string
   ): Promise<AnonymousMigrationResult> {
-    let migratedRecords = {
+    const migratedRecords = {
       playHistory: 0,
       favorites: 0,
       checkIns: 0,

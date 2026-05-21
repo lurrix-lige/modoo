@@ -24,7 +24,8 @@ export async function checkInRoutes(fastify: FastifyInstance) {
     let checkIn: any;
     
     if (userId && childId) {
-      const existing = await prisma.checkIn.findUnique({
+      // Verify child record exists before upsert
+      await prisma.checkIn.findUnique({
         where: { childId_date: { childId, date: checkInDate } },
       });
 

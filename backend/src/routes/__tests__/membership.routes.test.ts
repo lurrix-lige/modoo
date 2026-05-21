@@ -62,13 +62,13 @@ vi.mock('../../utils/database', () => ({
 
 import { membershipRoutes } from '../../routes/membership';
 import { getPricingPlans, getPricingPlanById, createPricingPlan, deletePricingPlan } from '../../services/PricingPlanService';
-import { getActiveSubscription, getUserSubscriptions, checkSubscriptionStatus } from '../../services/SubscriptionService';
+import { getActiveSubscription, checkSubscriptionStatus } from '../../services/SubscriptionService';
 import { authenticate } from '../../utils/database';
 
 async function buildApp() {
   const app = Fastify({ logger: false });
 
-  await app.register(require('@fastify/jwt'), {
+  await app.register((await import('@fastify/jwt')).default || (await import('@fastify/jwt')), {
     secret: 'test-secret',
   });
 

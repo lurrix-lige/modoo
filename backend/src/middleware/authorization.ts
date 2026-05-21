@@ -39,5 +39,6 @@ export async function optionalAuth(request: FastifyRequest) {
   try {
     await request.jwtVerify();
   } catch {
+    // No-op: optional auth doesn't fail on missing/invalid token
   }
 }

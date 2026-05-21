@@ -10,7 +10,6 @@ import {
   getWechatPayConfig,
 } from '../services/WechatPayService';
 import {
-  createApplePaySession,
   verifyApplePayPayment,
   formatApplePayOrder,
   getApplePayConfig,
@@ -19,7 +18,6 @@ import {
   createOrder,
   getOrderById,
   getOrderByOrderNo,
-  markOrderAsPaid,
   getUserOrders,
 } from '../services/OrderService';
 import { getPricingPlanById } from '../services/PricingPlanService';

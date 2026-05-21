@@ -59,7 +59,7 @@ import { authenticate } from '../../utils/database';
 async function buildApp() {
   const app = Fastify({ logger: false });
 
-  await app.register(require('@fastify/jwt'), {
+  await app.register((await import('@fastify/jwt')).default || (await import('@fastify/jwt')), {
     secret: 'test-secret',
   });
 

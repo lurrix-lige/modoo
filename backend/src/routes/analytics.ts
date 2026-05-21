@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { prisma, optionalAuth, authenticate, AuthenticatedRequest } from '../utils/database';
+import { prisma, authenticate, AuthenticatedRequest } from '../utils/database';
 import { customError } from '../utils/errors';
 
 async function verifyAdmin(request: AuthenticatedRequest): Promise<void> {

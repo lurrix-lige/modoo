@@ -173,7 +173,7 @@ export async function userRoutes(fastify: FastifyInstance) {
 
   fastify.post('/push-token', { preHandler: [authenticate] }, async (request, reply) => {
     const userId = (request as AuthenticatedRequest).userId!;
-    const { token, platform } = request.body as { token: string; platform: string };
+    const { platform } = request.body as { token: string; platform: string };
 
     fastify.log.info({ userId, platform }, 'Push token received');
 

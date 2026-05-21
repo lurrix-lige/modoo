@@ -25,8 +25,8 @@ export async function storyRoutes(fastify: FastifyInstance) {
       prisma.story.count({ where }),
     ]);
 
-    let userProgress: Map<string, { progress: number; completed: boolean }> = new Map();
-    let userFavorites: Set<string> = new Set();
+    const userProgress: Map<string, { progress: number; completed: boolean }> = new Map();
+    const userFavorites: Set<string> = new Set();
 
     const userId = (request as AuthenticatedRequest).userId;
     const anonymousId = (request as AuthenticatedRequest).anonymousId;

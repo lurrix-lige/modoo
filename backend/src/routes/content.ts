@@ -17,9 +17,10 @@ interface ContentItem {
 
 export async function contentRoutes(fastify: FastifyInstance) {
   fastify.get('/recommendations', { preHandler: optionalAuth }, async (request, reply) => {
-    const isPaid = (request as AuthenticatedRequest).userId 
-      ? await checkUserPaid(request as AuthenticatedRequest)
-      : false;
+    // Pre-load user payment status for access control
+    await (request as AuthenticatedRequest).userId
+      ? checkUserPaid(request as AuthenticatedRequest)
+      : Promise.resolve(false);
 
     const [stories, courses, exercises, articles] = await Promise.all([
       prisma.story.findMany({

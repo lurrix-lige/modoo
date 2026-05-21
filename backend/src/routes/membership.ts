@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { prisma, authenticate, AuthenticatedRequest } from '../utils/database';
+import { authenticate, AuthenticatedRequest } from '../utils/database';
 import { customError } from '../utils/errors';
-import { successResponse, ErrorCodes, errorResponse } from '../utils/apiResponse';
+import { successResponse, ErrorCodes } from '../utils/apiResponse';
 import {
   getBenefits,
   getBenefitById,

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { config } from '../config';
 
 const LOG_LEVEL = config.logger.level;

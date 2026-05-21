@@ -335,7 +335,7 @@ describe('OrderService', () => {
       vi.mocked(prisma.order.findUnique).mockResolvedValue(mockOrder as any);
       vi.mocked(prisma.order.update).mockResolvedValue({ ...mockOrder, status: 'PAID' } as any);
 
-      const result = await updateOrder('order-1', { status: 'PAID', paidAt: new Date() });
+      await updateOrder('order-1', { status: 'PAID', paidAt: new Date() });
 
       expect(prisma.order.update).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -452,7 +452,7 @@ describe('OrderService', () => {
     it('should create a payment transaction', async () => {
       vi.mocked(prisma.paymentTransaction.create).mockResolvedValue(mockTransaction as any);
 
-      const result = await createTransaction({
+      await createTransaction({
         orderId: 'order-1',
         userId: 'user-1',
         type: 'PAYMENT',
@@ -511,7 +511,7 @@ describe('OrderService', () => {
         gatewayResponse: JSON.stringify({ error: 'timeout' }),
       } as any);
 
-      const result = await updateTransaction('txn-1', {
+      await updateTransaction('txn-1', {
         status: 'FAILED',
         gatewayResponse: { error: 'timeout' },
       });

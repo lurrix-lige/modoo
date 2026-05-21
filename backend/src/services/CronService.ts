@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../utils/database';
 import { expireSubscription } from './SubscriptionService';
-import { expirePendingOrders } from './OrderService';
 import { logger } from '../utils/logger';
 
 export async function registerCronJobs(fastify: FastifyInstance) {
