@@ -50,6 +50,7 @@ import { loginNavigationStrategyFactory } from '../../../services/LoginNavigatio
 import { appleService } from '../../../services/AppleService';
 import { wechatAuthService } from '../../../services/WechatAuthService';
 import { normalizeSleepProblems, parseGender, parseGuardianIP } from '../../../utils/childProfile';
+import { logger } from '../../../utils/logger';
 
 /**
  * 导航类型定义
@@ -206,6 +207,7 @@ export default function LoginScreen() {
     } catch (error) {
       const errorMessage = (error as any).message;
       if (errorMessage !== 'User cancelled Apple Sign In') {
+        logger.error('Apple login failed', { error });
         Alert.alert(t('common.error'), t('auth.appleLoginFailed'));
       }
     } finally {
@@ -249,6 +251,7 @@ export default function LoginScreen() {
         Alert.alert(t('common.hint'), t('auth.wechatNotInstalled'));
         return;
       }
+      logger.error('WeChat login failed', { error: err });
       Alert.alert(t('common.error'), e.message || t('auth.wechatLoginFailed'));
     } finally {
       setWechatLoading(false);
@@ -330,6 +333,7 @@ export default function LoginScreen() {
           childProfile: await authService.getChild(),
         });
     } catch (error) {
+      logger.error('Phone login failed', { error, phone });
       Alert.alert(t('common.error'), t('auth.loginFailed'));
     } finally {
       setLoading(false);

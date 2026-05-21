@@ -96,7 +96,7 @@ export function Button({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={colors.primary} />
+        <ActivityIndicator color={variant === 'primary' ? '#fff' : colors.primary} />
       ) : (
         <View style={styles.content}>
           {icon}
