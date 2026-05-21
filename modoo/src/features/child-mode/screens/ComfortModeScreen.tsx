@@ -9,19 +9,7 @@ import {
   PanResponder,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import {
-  Music,
-  Heart,
-  Star,
-  Sun,
-  Moon,
-  CloudRain,
-  Wind,
-  Bird,
-  BookOpen,
-  Leaf,
-  Waves,
-} from 'lucide-react-native';
+import { Music, Moon, BookOpen, Leaf, Waves } from 'lucide-react-native';
 
 const comfortIconMap: Record<string, React.ComponentType<{ size: number; color: string }>> = {
   book: BookOpen,

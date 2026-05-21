@@ -268,12 +268,10 @@ export default function ProfileScreen() {
                   {t('profile.membershipBadge')}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => {}}>
-                <ChevronRight
-                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
-                  color={colors.textSecondary}
-                />
-              </TouchableOpacity>
+              <ChevronRight
+                size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                color={colors.textSecondary}
+              />
             </View>
 
             <TouchableOpacity

@@ -34,7 +34,7 @@ import {
   iconSizes,
 } from '../../../theme';
 import { useAppStore } from '../../../store';
-import { DataCard, Button, SettingsPopover, ResponsiveGrid, ErrorToast } from '../../../components';
+import { DataCard, SettingsPopover, ResponsiveGrid, ErrorToast } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, authService, type SleepStatsResponse } from '../../../services';
 import { DateLabelUtils } from '../../../utils/date';

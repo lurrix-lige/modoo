@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Gift, Book, GraduationCap, Leaf, Star } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, borderRadius, commonColors, typography, responsive } from '../theme';
 import { ContentItem } from '../services';
 
@@ -30,6 +31,7 @@ const formatDuration = (seconds: number) => {
 
 export function FreeContentSection({ content, onContentPress }: FreeContentSectionProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const thumbnailColors = [colors.primary, colors.secondary, colors.accent, colors.warning];
   const sortedContent = [...content].sort((a, b) => a.priority - b.priority);
@@ -40,7 +42,7 @@ export function FreeContentSection({ content, onContentPress }: FreeContentSecti
         <View style={[styles.iconBadge, { backgroundColor: colors.primary }]}>
           <Gift size={16} color={commonColors.white} />
         </View>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>免费体验</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('common.freeTrial')}</Text>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>

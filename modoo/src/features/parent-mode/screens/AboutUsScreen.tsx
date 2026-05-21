@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaContainer, Logo } from '../../../components';
-import { ArrowLeft, Globe, Mail, Star, ExternalLink, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Globe, Mail, Star, ChevronRight } from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';

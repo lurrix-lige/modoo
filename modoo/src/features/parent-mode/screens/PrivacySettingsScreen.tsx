@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
-import { ArrowLeft, Shield, ChevronRight, Database, Eye, Bell } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Shield,
+  ChevronRight,
+  Database,
+  Eye,
+  Bell,
+  Download,
+  Trash2,
+} from 'lucide-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +46,8 @@ const privacyIconMap: Record<string, React.ComponentType<{ size: number; color: 
   database: Database,
   'bar-chart': Eye,
   gift: Bell,
+  'download-outline': Download,
+  'trash-outline': Trash2,
 };
 
 export default function PrivacySettingsScreen() {

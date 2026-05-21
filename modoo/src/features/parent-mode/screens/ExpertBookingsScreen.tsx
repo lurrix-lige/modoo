@@ -35,7 +35,7 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { apiService, Booking, Expert } from '../../../services';
-import { LoadingState, ErrorToast } from '../../../components';
+import { LoadingState, ErrorToast, Button } from '../../../components';
 import { logger } from '../../../utils/logger';
 
 type ExpertBookingsNavigationProp = NativeStackNavigationProp<
@@ -153,6 +153,10 @@ export default function ExpertBookingsScreen() {
       setBookings(bookingsWithExpert);
     } catch (err) {
       logger.error('Failed to refresh bookings', { error: err });
+      setError({
+        visible: true,
+        message: t('expertBookings.loadError'),
+      });
     } finally {
       setRefreshing(false);
     }
@@ -381,36 +385,6 @@ export default function ExpertBookingsScreen() {
     </SafeAreaContainer>
   );
 }
-
-const Button = ({
-  title,
-  onPress,
-  style,
-}: {
-  title: string;
-  onPress: () => void;
-  style?: object;
-}) => {
-  const { colors } = useTheme();
-  return (
-    <TouchableOpacity
-      style={[
-        {
-          backgroundColor: colors.primary,
-          paddingVertical: spacing.md,
-          paddingHorizontal: spacing.xl,
-          borderRadius: borderRadius.md,
-        },
-        style,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={{ color: commonColors.white, fontWeight: typography.fontWeight.medium }}>
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-};
 
 const styles = StyleSheet.create({
   backButton: {
