@@ -205,11 +205,16 @@ export default function LoginScreen() {
           childProfile: await authService.getChild(),
         });
     } catch (error) {
-      const errorMessage = (error as any).message;
-      if (errorMessage !== 'User cancelled Apple Sign In') {
-        logger.error('Apple login failed', { error });
-        Alert.alert(t('common.error'), t('auth.appleLoginFailed'));
+      const errorMessage = (error as any).message || '';
+      if (
+        errorMessage.includes('cancel') ||
+        errorMessage.includes('canceled') ||
+        errorMessage.includes('cancelled')
+      ) {
+        return;
       }
+      logger.error('Apple login failed', { error });
+      Alert.alert(t('common.error'), t('auth.appleLoginFailed'));
     } finally {
       setAppleLoading(false);
     }
