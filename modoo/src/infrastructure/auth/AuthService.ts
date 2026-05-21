@@ -57,13 +57,29 @@ class AuthService {
 
   async initialize(): Promise<boolean> {
     try {
+      // 使用 safeGetItem 包装每个存储读取，防止单个失败导致整体初始化崩溃
+      const safeSecureGet = async (key: string): Promise<string | null> => {
+        try {
+          return await SecureStore.getItemAsync(key);
+        } catch {
+          return null;
+        }
+      };
+      const safeAsyncGet = async (key: string): Promise<string | null> => {
+        try {
+          return await AsyncStorage.getItem(key);
+        } catch {
+          return null;
+        }
+      };
+
       const [accessToken, refreshToken, expiresAtStr, lastActivityStr, isPaidStr, user] = await Promise.all([
-        SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
-        SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
-        SecureStore.getItemAsync(STORAGE_KEYS.TOKEN_EXPIRES_AT),
-        AsyncStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY_AT),
-        AsyncStorage.getItem(STORAGE_KEYS.IS_PAID),
-        storageService.getUser(),
+        safeSecureGet(STORAGE_KEYS.ACCESS_TOKEN),
+        safeSecureGet(STORAGE_KEYS.REFRESH_TOKEN),
+        safeSecureGet(STORAGE_KEYS.TOKEN_EXPIRES_AT),
+        safeAsyncGet(STORAGE_KEYS.LAST_ACTIVITY_AT),
+        safeAsyncGet(STORAGE_KEYS.IS_PAID),
+        storageService.getUser().catch(() => null),
       ]);
 
       if (accessToken && expiresAtStr) {
