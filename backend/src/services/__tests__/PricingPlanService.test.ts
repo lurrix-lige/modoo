@@ -161,7 +161,14 @@ describe('PricingPlanService', () => {
 
     it('should create a new pricing plan', async () => {
       vi.mocked(prisma.pricingPlan.findUnique).mockResolvedValue(null);
-      vi.mocked(prisma.pricingPlan.create).mockResolvedValue(mockPlan as any);
+      vi.mocked(prisma.pricingPlan.create).mockResolvedValue({
+        ...mockPlan,
+        planKey: 'yearly',
+        nameKey: 'plan.yearly.name',
+        originalPrice: 399,
+        currentPrice: 299,
+        durationDays: 365,
+      } as any);
 
       const result = await createPricingPlan({
         planKey: 'yearly',
@@ -182,7 +189,7 @@ describe('PricingPlanService', () => {
           }),
         })
       );
-      expect(result.planKey).toBe('monthly');
+      expect(result.planKey).toBe('yearly');
     });
   });
 
