@@ -10,7 +10,7 @@ import {
   GestureResponderEvent,
   LayoutChangeEvent,
 } from 'react-native';
-import { SafeAreaContainer } from '../../../components';
+import { SafeAreaContainer, PermissionGate } from '../../../components';
 import {
   Play,
   Pause,
@@ -371,200 +371,205 @@ export default function CourseLearningScreen() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!currentLesson) {
-    return (
-      <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <ArrowLeft size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-            {t('common.loading')}
-          </Text>
-          <View style={styles.headerRight}>
-            <Sun size={24} color={colors.textPrimary} />
-          </View>
-        </View>
-        <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-            {t('common.loading')}
-          </Text>
-        </View>
-      </SafeAreaContainer>
-    );
-  }
-
   return (
-    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <ArrowLeft size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-          {currentLesson.name || currentLesson.title}
-        </Text>
-        <View style={styles.headerRight}>
-          <Sun size={24} color={colors.textPrimary} />
-        </View>
-      </View>
+    <PermissionGate
+      requiredLevel={1}
+      mode="modal"
+      authTitle={t('auth.unlockContent')}
+      authMessage={t('auth.loginToExperience')}
+    >
+      {!currentLesson ? (
+        <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <ArrowLeft size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+              {t('common.loading')}
+            </Text>
+            <View style={styles.headerRight}>
+              <Sun size={24} color={colors.textPrimary} />
+            </View>
+          </View>
+          <View style={styles.loadingContainer}>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+              {t('common.loading')}
+            </Text>
+          </View>
+        </SafeAreaContainer>
+      ) : (
+        <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <ArrowLeft size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+              {currentLesson.name || currentLesson.title}
+            </Text>
+            <View style={styles.headerRight}>
+              <Sun size={24} color={colors.textPrimary} />
+            </View>
+          </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.visualGuideContainer}>
-          <View style={[styles.visualGuide, { backgroundColor: colors.primary }]}>
-            <View style={styles.breatheCircle}>
-              <Text style={[styles.breatheText, { color: commonColors.white }]}>
-                {isPlaying ? t('course.breatheIn') : t('course.getReady')}
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <View style={styles.visualGuideContainer}>
+              <View style={[styles.visualGuide, { backgroundColor: colors.primary }]}>
+                <View style={styles.breatheCircle}>
+                  <Text style={[styles.breatheText, { color: commonColors.white }]}>
+                    {isPlaying ? t('course.breatheIn') : t('course.getReady')}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* D2: Added backgroundColor to progress bar container */}
+            <View style={[styles.progressSection, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.progressLabel, { color: colors.textPrimary }]}>
+                {formatTime(progress)} / {formatTime(duration)}
+              </Text>
+              <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    {
+                      width: `${duration > 0 ? (progress / duration) * 100 : 0}%`,
+                      backgroundColor: colors.primary,
+                    },
+                  ]}
+                />
+              </View>
+            </View>
+
+            <View style={[styles.controlsSection, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                {t('course.controls')}
+              </Text>
+              <View style={styles.controlsRow}>
+                <TouchableOpacity
+                  style={[styles.controlButton, { backgroundColor: colors.background }]}
+                  onPress={handleSkipBack}
+                >
+                  <SkipBack size={24} color={colors.textPrimary} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.playButton, { backgroundColor: colors.primary }]}
+                  onPress={handlePlayPause}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Text
+                      style={{
+                        color: commonColors.white,
+                        fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
+                      }}
+                    >
+                      ...
+                    </Text>
+                  ) : isPlaying ? (
+                    <Pause size={32} color={commonColors.white} />
+                  ) : (
+                    <Play size={32} color={commonColors.white} />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.controlButton, { backgroundColor: colors.background }]}
+                  onPress={handleSkipForward}
+                >
+                  <SkipForward size={24} color={colors.textPrimary} />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* D1+D2: Volume controls with drag sliders and bar backgrounds */}
+            <View style={[styles.volumeSection, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                {t('course.volumeSettings')}
+              </Text>
+
+              {/* Background music volume slider */}
+              <View style={styles.volumeRow}>
+                <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
+                  <Music size={20} color={colors.primary} />
+                </View>
+                <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
+                  {t('course.backgroundMusic')}
+                </Text>
+                <View
+                  style={[styles.sliderTrack, { backgroundColor: colors.border }]}
+                  onLayout={handleBgBarLayout}
+                  {...bgPanResponder.panHandlers}
+                >
+                  <Animated.View
+                    style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.sliderThumb,
+                      {
+                        backgroundColor: colors.primary,
+                        transform: [{ translateX: bgThumbTranslate }],
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
+                  {Math.round(backgroundVolume * 100)}%
+                </Text>
+              </View>
+
+              {/* Voice guide volume slider */}
+              <View style={styles.volumeRow}>
+                <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
+                  <Volume2 size={20} color={colors.primary} />
+                </View>
+                <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
+                  {t('course.voiceGuide')}
+                </Text>
+                <View
+                  style={[styles.sliderTrack, { backgroundColor: colors.border }]}
+                  onLayout={handleVoiceBarLayout}
+                  {...voicePanResponder.panHandlers}
+                >
+                  <Animated.View
+                    style={[
+                      styles.sliderFill,
+                      { backgroundColor: colors.primary, width: voiceFillWidth },
+                    ]}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.sliderThumb,
+                      {
+                        backgroundColor: colors.primary,
+                        transform: [{ translateX: voiceThumbTranslate }],
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
+                  {Math.round(voiceVolume * 100)}%
+                </Text>
+              </View>
+            </View>
+
+            {error && (
+              <View style={[styles.errorMessage, { backgroundColor: colors.errorLight }]}>
+                <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              </View>
+            )}
+
+            <View style={[styles.guideSection, { backgroundColor: colors.surface }]}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                {t('course.guide')}
+              </Text>
+              <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                {currentLesson.description || t('course.followGuide')}
               </Text>
             </View>
-          </View>
-        </View>
-
-        {/* D2: Added backgroundColor to progress bar container */}
-        <View style={[styles.progressSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.progressLabel, { color: colors.textPrimary }]}>
-            {formatTime(progress)} / {formatTime(duration)}
-          </Text>
-          <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
-            <View
-              style={[
-                styles.progressBar,
-                {
-                  width: `${duration > 0 ? (progress / duration) * 100 : 0}%`,
-                  backgroundColor: colors.primary,
-                },
-              ]}
-            />
-          </View>
-        </View>
-
-        <View style={[styles.controlsSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('course.controls')}
-          </Text>
-          <View style={styles.controlsRow}>
-            <TouchableOpacity
-              style={[styles.controlButton, { backgroundColor: colors.background }]}
-              onPress={handleSkipBack}
-            >
-              <SkipBack size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.playButton, { backgroundColor: colors.primary }]}
-              onPress={handlePlayPause}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Text
-                  style={{
-                    color: commonColors.white,
-                    fontSize: responsive.scaledFontSize(typography.fontSize.xxl),
-                  }}
-                >
-                  ...
-                </Text>
-              ) : isPlaying ? (
-                <Pause size={32} color={commonColors.white} />
-              ) : (
-                <Play size={32} color={commonColors.white} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.controlButton, { backgroundColor: colors.background }]}
-              onPress={handleSkipForward}
-            >
-              <SkipForward size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* D1+D2: Volume controls with drag sliders and bar backgrounds */}
-        <View style={[styles.volumeSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('course.volumeSettings')}
-          </Text>
-
-          {/* Background music volume slider */}
-          <View style={styles.volumeRow}>
-            <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
-              <Music size={20} color={colors.primary} />
-            </View>
-            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
-              {t('course.backgroundMusic')}
-            </Text>
-            <View
-              style={[styles.sliderTrack, { backgroundColor: colors.border }]}
-              onLayout={handleBgBarLayout}
-              {...bgPanResponder.panHandlers}
-            >
-              <Animated.View
-                style={[styles.sliderFill, { backgroundColor: colors.primary, width: bgFillWidth }]}
-              />
-              <Animated.View
-                style={[
-                  styles.sliderThumb,
-                  {
-                    backgroundColor: colors.primary,
-                    transform: [{ translateX: bgThumbTranslate }],
-                  },
-                ]}
-              />
-            </View>
-            <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
-              {Math.round(backgroundVolume * 100)}%
-            </Text>
-          </View>
-
-          {/* Voice guide volume slider */}
-          <View style={styles.volumeRow}>
-            <View style={[styles.volumeIconContainer, { backgroundColor: colors.primaryLight }]}>
-              <Volume2 size={20} color={colors.primary} />
-            </View>
-            <Text style={[styles.volumeLabel, { color: colors.textSecondary }]}>
-              {t('course.voiceGuide')}
-            </Text>
-            <View
-              style={[styles.sliderTrack, { backgroundColor: colors.border }]}
-              onLayout={handleVoiceBarLayout}
-              {...voicePanResponder.panHandlers}
-            >
-              <Animated.View
-                style={[
-                  styles.sliderFill,
-                  { backgroundColor: colors.primary, width: voiceFillWidth },
-                ]}
-              />
-              <Animated.View
-                style={[
-                  styles.sliderThumb,
-                  {
-                    backgroundColor: colors.primary,
-                    transform: [{ translateX: voiceThumbTranslate }],
-                  },
-                ]}
-              />
-            </View>
-            <Text style={[styles.volumeValue, { color: colors.textSecondary }]}>
-              {Math.round(voiceVolume * 100)}%
-            </Text>
-          </View>
-        </View>
-
-        {error && (
-          <View style={[styles.errorMessage, { backgroundColor: colors.errorLight }]}>
-            <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
-          </View>
-        )}
-
-        <View style={[styles.guideSection, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('course.guide')}
-          </Text>
-          <Text style={[styles.guideText, { color: colors.textSecondary }]}>
-            {currentLesson.description || t('course.followGuide')}
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaContainer>
+          </ScrollView>
+        </SafeAreaContainer>
+      )}
+    </PermissionGate>
   );
 }
 

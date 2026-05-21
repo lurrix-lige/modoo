@@ -18,6 +18,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { ErrorToast, SafeAreaContainer, TimerModal } from '../../../components';
+import { AuthModal } from '../../../features/auth/components/AuthModal';
 import { usePictureInPicture } from '../../../hooks/usePictureInPicture';
 import { logger } from '../../../utils/logger';
 import { StoryInfo } from '../components/StoryInfo';
@@ -57,7 +58,8 @@ export default function StoryPlayerScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
-  const { child } = useAppStore();
+  const { child, userState } = useAppStore();
+  const { isAuthenticated } = userState;
 
   const { shareNative, isLoading: isSharing } = useShare();
 
@@ -72,6 +74,8 @@ export default function StoryPlayerScreen() {
     isLoading,
     story,
     error: playerError,
+    blocked,
+    blockReason,
     resume,
     pause,
     stop,
@@ -80,8 +84,17 @@ export default function StoryPlayerScreen() {
     skipBackward,
     toggleFavorite,
     clearError,
+    clearBlocked,
+    retryAfterAuth,
   } = usePlayer(route.params?.storyId);
   const { isNightMode, toggleBrightness } = useBrightness();
+
+  // 登录后自动重试付费故事播放
+  useEffect(() => {
+    if (isAuthenticated && blocked && blockReason === 'not_authenticated') {
+      retryAfterAuth();
+    }
+  }, [isAuthenticated, blocked, blockReason, retryAfterAuth]);
 
   const handleSleepTimerExpire = useCallback(() => {
     stop();
@@ -377,6 +390,29 @@ export default function StoryPlayerScreen() {
       />
 
       {playerError && <ErrorToast visible={true} message={playerError} onDismiss={clearError} />}
+
+      <AuthModal
+        visible={blocked}
+        onLogin={() => {
+          const parentNav = navigation.getParent();
+          if (blockReason === 'no_membership') {
+            parentNav?.navigate('Membership' as never);
+          } else {
+            parentNav?.navigate('Auth' as never);
+          }
+        }}
+        onDismiss={() => navigation.goBack()}
+        title={
+          blockReason === 'no_membership'
+            ? t('storyPlayer.premiumMembershipRequired')
+            : t('auth.unlockContent')
+        }
+        message={
+          blockReason === 'no_membership'
+            ? t('storyPlayer.premiumMembershipMessage')
+            : t('auth.loginToExperience')
+        }
+      />
     </SafeAreaContainer>
   );
 }

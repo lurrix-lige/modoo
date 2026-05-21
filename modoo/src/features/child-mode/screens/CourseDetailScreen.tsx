@@ -8,7 +8,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaContainer } from '../../../components';
+import { SafeAreaContainer, PermissionGate } from '../../../components';
 import {
   Play,
   Check,
@@ -105,167 +105,172 @@ export default function CourseDetailScreen() {
     }
   };
 
-  if (isLoading || !course) {
-    return (
-      <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <ArrowLeft size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-            {t('course.courseDetail')}
-          </Text>
-          <View style={styles.headerRight}>
-            <Sun size={24} color={colors.textPrimary} />
-          </View>
-        </View>
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={[styles.skeletonHero, { backgroundColor: colors.surface }]}>
-            <View style={[styles.skeletonCircle, { backgroundColor: colors.border }]} />
-            <View style={[styles.skeletonTextLg, { backgroundColor: colors.border }]} />
-            <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
-            <View style={styles.skeletonStatsRow}>
-              {[1, 2, 3].map((i) => (
-                <View key={i} style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
-              ))}
+  return (
+    <PermissionGate
+      requiredLevel={1}
+      mode="modal"
+      authTitle={t('auth.unlockContent')}
+      authMessage={t('auth.loginToExperience')}
+    >
+      {isLoading || !course ? (
+        <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+              <ArrowLeft size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+              {t('course.courseDetail')}
+            </Text>
+            <View style={styles.headerRight}>
+              <Sun size={24} color={colors.textPrimary} />
             </View>
           </View>
-          <View style={[styles.skeletonTitle, { backgroundColor: colors.border }]} />
-          {[1, 2, 3, 4].map((i) => (
-            <View key={i} style={[styles.skeletonLessonCard, { backgroundColor: colors.surface }]}>
-              <View style={[styles.skeletonLessonNum, { backgroundColor: colors.border }]} />
-              <View style={styles.skeletonLessonInfo}>
-                <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
-                <View style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <View style={[styles.skeletonHero, { backgroundColor: colors.surface }]}>
+              <View style={[styles.skeletonCircle, { backgroundColor: colors.border }]} />
+              <View style={[styles.skeletonTextLg, { backgroundColor: colors.border }]} />
+              <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
+              <View style={styles.skeletonStatsRow}>
+                {[1, 2, 3].map((i) => (
+                  <View key={i} style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
+                ))}
               </View>
             </View>
-          ))}
-        </ScrollView>
-      </SafeAreaContainer>
-    );
-  }
-
-  return (
-    <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <ArrowLeft size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-          {t('course.courseDetail')}
-        </Text>
-        <View style={styles.headerRight}>
-          <Sun size={24} color={colors.textPrimary} />
-        </View>
-      </View>
-
-      <ScrollView
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
-          />
-        }
-      >
-        <View style={[styles.courseHeader, { backgroundColor: colors.surface }]}>
-          <View style={[styles.courseImage, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.courseLevel, { color: commonColors.white }]}>
-              Level {course.level}
+            <View style={[styles.skeletonTitle, { backgroundColor: colors.border }]} />
+            {[1, 2, 3, 4].map((i) => (
+              <View key={i} style={[styles.skeletonLessonCard, { backgroundColor: colors.surface }]}>
+                <View style={[styles.skeletonLessonNum, { backgroundColor: colors.border }]} />
+                <View style={styles.skeletonLessonInfo}>
+                  <View style={[styles.skeletonTextMd, { backgroundColor: colors.border }]} />
+                  <View style={[styles.skeletonTextSm, { backgroundColor: colors.border }]} />
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaContainer>
+      ) : (
+        <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+              <ArrowLeft size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+              {t('course.courseDetail')}
             </Text>
-          </View>
-          <Text style={[styles.courseName, { color: colors.textPrimary }]}>
-            {getCourseName(course)}
-          </Text>
-          <Text style={[styles.courseDesc, { color: colors.textSecondary }]}>
-            {getCourseDescription(course)}
-          </Text>
-
-          <View style={styles.courseStats}>
-            <View style={styles.statItem}>
-              <BookOpen size={20} color={colors.primary} />
-              <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {course.totalLessons}
-                {t('course.lessons')}
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <Clock size={20} color={colors.primary} />
-              <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {lessons.reduce((acc, lesson) => acc + lesson.duration, 0)}
-                {t('course.minutes')}
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <Trophy size={20} color={colors.warning} />
-              <Text style={[styles.statText, { color: colors.textPrimary }]}>
-                {Math.floor(((course.completedLessons || 0) / (course.totalLessons || 1)) * 100)}%
-              </Text>
+            <View style={styles.headerRight}>
+              <Sun size={24} color={colors.textPrimary} />
             </View>
           </View>
-        </View>
 
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-          {t('course.courseContent')}
-        </Text>
-
-        {lessons.map((lesson, index) => (
-          <TouchableOpacity
-            key={lesson.id}
-            style={[styles.lessonCard, { backgroundColor: colors.surface }]}
-            onPress={() => handleLessonPress(lesson)}
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor={colors.primary}
+                colors={[colors.primary]}
+              />
+            }
           >
-            <View
-              style={[
-                styles.lessonNumber,
-                { backgroundColor: lesson.isCompleted ? colors.success : colors.primary },
-              ]}
-            >
-              {lesson.isCompleted ? (
-                <Check size={16} color={commonColors.white} />
-              ) : (
-                <Text style={[styles.lessonNumberText, { color: commonColors.white }]}>
-                  {index + 1}
+            <View style={[styles.courseHeader, { backgroundColor: colors.surface }]}>
+              <View style={[styles.courseImage, { backgroundColor: colors.primary }]}>
+                <Text style={[styles.courseLevel, { color: commonColors.white }]}>
+                  Level {course.level}
                 </Text>
-              )}
+              </View>
+              <Text style={[styles.courseName, { color: colors.textPrimary }]}>
+                {getCourseName(course)}
+              </Text>
+              <Text style={[styles.courseDesc, { color: colors.textSecondary }]}>
+                {getCourseDescription(course)}
+              </Text>
+
+              <View style={styles.courseStats}>
+                <View style={styles.statItem}>
+                  <BookOpen size={20} color={colors.primary} />
+                  <Text style={[styles.statText, { color: colors.textPrimary }]}>
+                    {course.totalLessons}
+                    {t('course.lessons')}
+                  </Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Clock size={20} color={colors.primary} />
+                  <Text style={[styles.statText, { color: colors.textPrimary }]}>
+                    {lessons.reduce((acc, lesson) => acc + lesson.duration, 0)}
+                    {t('course.minutes')}
+                  </Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Trophy size={20} color={colors.warning} />
+                  <Text style={[styles.statText, { color: colors.textPrimary }]}>
+                    {Math.floor(((course.completedLessons || 0) / (course.totalLessons || 1)) * 100)}%
+                  </Text>
+                </View>
+              </View>
             </View>
 
-            <View style={styles.lessonInfo}>
-              <Text style={[styles.lessonName, { color: colors.textPrimary }]}>
-                {getLessonTitle(lesson)}
-              </Text>
-              <Text style={[styles.lessonDuration, { color: colors.textSecondary }]}>
-                {lesson.duration}
-                {t('course.minutes')}
-              </Text>
-            </View>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {t('course.courseContent')}
+            </Text>
 
-            {lesson.isCompleted ? (
-              <CheckCircle size={28} color={colors.success} />
-            ) : (
-              <PlayCircle size={28} color={colors.primary} />
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            {lessons.map((lesson, index) => (
+              <TouchableOpacity
+                key={lesson.id}
+                style={[styles.lessonCard, { backgroundColor: colors.surface }]}
+                onPress={() => handleLessonPress(lesson)}
+              >
+                <View
+                  style={[
+                    styles.lessonNumber,
+                    { backgroundColor: lesson.isCompleted ? colors.success : colors.primary },
+                  ]}
+                >
+                  {lesson.isCompleted ? (
+                    <Check size={16} color={commonColors.white} />
+                  ) : (
+                    <Text style={[styles.lessonNumberText, { color: commonColors.white }]}>
+                      {index + 1}
+                    </Text>
+                  )}
+                </View>
 
-      <View style={[styles.footer, { backgroundColor: colors.surface }]}>
-        <TouchableOpacity
-          style={[styles.continueButton, { backgroundColor: colors.primary }]}
-          onPress={handleContinueLearning}
-        >
-          <Play size={24} color={commonColors.white} />
-          <Text style={[styles.continueButtonText, { color: commonColors.white }]}>
-            {course.completedLessons && course.completedLessons > 0
-              ? t('course.continueLearning')
-              : t('course.startLearning')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaContainer>
+                <View style={styles.lessonInfo}>
+                  <Text style={[styles.lessonName, { color: colors.textPrimary }]}>
+                    {getLessonTitle(lesson)}
+                  </Text>
+                  <Text style={[styles.lessonDuration, { color: colors.textSecondary }]}>
+                    {lesson.duration}
+                    {t('course.minutes')}
+                  </Text>
+                </View>
+
+                {lesson.isCompleted ? (
+                  <CheckCircle size={28} color={colors.success} />
+                ) : (
+                  <PlayCircle size={28} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <View style={[styles.footer, { backgroundColor: colors.surface }]}>
+            <TouchableOpacity
+              style={[styles.continueButton, { backgroundColor: colors.primary }]}
+              onPress={handleContinueLearning}
+            >
+              <Play size={24} color={commonColors.white} />
+              <Text style={[styles.continueButtonText, { color: commonColors.white }]}>
+                {course.completedLessons && course.completedLessons > 0
+                  ? t('course.continueLearning')
+                  : t('course.startLearning')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaContainer>
+      )}
+    </PermissionGate>
   );
 }
 

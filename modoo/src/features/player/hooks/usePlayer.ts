@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '../../../utils/logger';
 import { apiService } from '../../../services';
-import { usePlayerStore } from '../../../store';
+import { usePlayerStore, useAppStore } from '../../../store';
 import { useAudio } from '../../../providers/AudioProvider';
 import { Story } from '../../../types';
 
@@ -14,6 +14,10 @@ export interface UsePlayerReturn {
   story: (Story & { isFavorite?: boolean }) | null;
   savedProgress: number | null;
   error: string | null;
+  /** Premium content blocked — screen should show AuthModal */
+  blocked: boolean;
+  /** Why playback is blocked */
+  blockReason: 'not_authenticated' | 'no_membership' | null;
   play: (url: string) => Promise<boolean>;
   pause: () => void;
   resume: () => void;
@@ -24,6 +28,10 @@ export interface UsePlayerReturn {
   saveProgress: () => void;
   toggleFavorite: () => void;
   clearError: () => void;
+  /** Called after login to re-check permission and resume */
+  clearBlocked: () => void;
+  /** Called after auth state changes to retry premium playback */
+  retryAfterAuth: () => Promise<void>;
 }
 
 export function usePlayer(storyId: string | undefined): UsePlayerReturn {
@@ -32,6 +40,11 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
   const [savedProgress, setSavedProgress] = useState<number | null>(null);
   const [lastProgressSave, setLastProgressSave] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState(false);
+  const [blockReason, setBlockReason] = useState<'not_authenticated' | 'no_membership' | null>(null);
+
+  const { userState } = useAppStore();
+  const { isAuthenticated, isPaid } = userState;
 
   const {
     currentStory,
@@ -141,6 +154,22 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       return;
     }
 
+    // 检查付费故事权限：匿名用户或未付费用户无法播放付费故事
+    if (story.isPremium) {
+      if (!isAuthenticated) {
+        logger.info('Premium story blocked: user not authenticated', { storyId: story.id });
+        setBlocked(true);
+        setBlockReason('not_authenticated');
+        return;
+      }
+      if (!isPaid) {
+        logger.info('Premium story blocked: user not paid', { storyId: story.id });
+        setBlocked(true);
+        setBlockReason('no_membership');
+        return;
+      }
+    }
+
     // 检测当前故事是否已经在播放中，避免重复加载
     if (currentStory?.id === story.id && isPlaying) {
       logger.info('Story already playing, skipping auto-play', { storyId: story.id });
@@ -229,6 +258,30 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     setError(null);
   }, []);
 
+  const clearBlocked = useCallback(() => {
+    setBlocked(false);
+    setBlockReason(null);
+  }, []);
+
+  const retryAfterAuth = useCallback(async () => {
+    setBlocked(false);
+    setBlockReason(null);
+    // Re-trigger the auto-play check with current auth state
+    if (story?.audioUrl) {
+      logger.info('Re-attempting playback after auth', { storyId: story.id });
+      storePlay(story);
+      const success = await audioPlay(story.audioUrl);
+      if (!success) {
+        setError('Failed to start audio playback');
+      }
+      if (savedProgress && savedProgress > 0) {
+        setTimeout(() => {
+          audioSeekTo(savedProgress);
+        }, 500);
+      }
+    }
+  }, [story, audioPlay, storePlay, savedProgress, audioSeekTo]);
+
   return {
     isPlaying,
     isBuffering: audioBuffering,
@@ -238,6 +291,8 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     story,
     savedProgress,
     error,
+    blocked,
+    blockReason,
     play: audioPlay,
     pause: audioPause,
     resume: audioResume,
@@ -248,5 +303,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
     saveProgress,
     toggleFavorite,
     clearError,
+    clearBlocked,
+    retryAfterAuth,
   };
 }

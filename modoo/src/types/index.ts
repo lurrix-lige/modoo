@@ -8,4 +8,5 @@ export interface Story {
   category: string;
   description?: string;
   isFavorite?: boolean;
+  isPremium?: boolean;
 }
