@@ -54,8 +54,6 @@ const mockBenefit = {
   type: 'FEATURE',
   scope: 'SUBSCRIBERS_ONLY',
   value: JSON.stringify({ maxViews: 100, features: ['无损音质'] }),
-  validFrom: new Date('2025-01-01'),
-  validTo: null,
   isStackable: true,
   isActive: true,
   sortOrder: 1,

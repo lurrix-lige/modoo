@@ -94,7 +94,7 @@ describe('Auth Routes Integration', () => {
   describe('POST /auth/send-code', () => {
     it('should send verification code successfully', async () => {
       vi.mocked(sendVerificationCode).mockResolvedValue({ code: '123456', expiresAt: new Date() });
-      vi.mocked(validateAccount).mockResolvedValue(undefined);
+      vi.mocked(validateAccount).mockResolvedValue(true);
 
       const res = await app.inject({
         method: 'POST',

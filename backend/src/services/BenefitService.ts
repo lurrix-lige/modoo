@@ -88,8 +88,6 @@ export async function createBenefit(data: {
   type: BenefitType;
   scope?: AccessScope;
   value?: BenefitValue;
-  validFrom?: Date;
-  validTo?: Date;
   isStackable?: boolean;
   sortOrder?: number;
 }): Promise<any> {
@@ -109,8 +107,6 @@ export async function createBenefit(data: {
       type: data.type,
       scope: data.scope || 'ALL_USERS',
       value: data.value ? JSON.stringify(data.value) : undefined,
-      validFrom: data.validFrom,
-      validTo: data.validTo,
       isStackable: data.isStackable || false,
       sortOrder: data.sortOrder || 0,
     },
@@ -128,8 +124,6 @@ export async function updateBenefit(benefitId: string, data: Partial<{
   type: BenefitType;
   scope: AccessScope;
   value: BenefitValue;
-  validFrom: Date;
-  validTo: Date;
   isStackable: boolean;
   sortOrder: number;
   isActive: boolean;
