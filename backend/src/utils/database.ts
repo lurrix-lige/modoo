@@ -46,10 +46,14 @@ export const optionalAuth = async (
   } catch {
     // Ignore error for optional auth
   }
-  // 检查是否有匿名用户ID
+  // 检查是否有匿名用户ID，验证格式后设置
   const anonymousId = request.headers['x-anonymous-id'] as string;
   if (anonymousId) {
-    (request as AuthenticatedRequest).anonymousId = anonymousId;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { AnonymousUserService } = require('../services/AnonymousUserService');
+    if (AnonymousUserService.validateAnonymousId(anonymousId)) {
+      (request as AuthenticatedRequest).anonymousId = anonymousId;
+    }
   }
 };
 

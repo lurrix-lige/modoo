@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AnonymousUserService } from '../AnonymousUserService';
 
-vi.mock('../../utils/database', () => ({
-  prisma: {
+const { mockPrisma } = vi.hoisted(() => {
+  const prisma: any = {
+    $transaction: vi.fn(),
     playHistory: {
       updateMany: vi.fn(),
       count: vi.fn(),
@@ -27,7 +28,15 @@ vi.mock('../../utils/database', () => ({
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
     },
-  },
+  };
+  prisma.$transaction.mockImplementation(
+    (callback: any) => callback(prisma)
+  );
+  return { mockPrisma: prisma };
+});
+
+vi.mock('../../utils/database', () => ({
+  prisma: mockPrisma,
 }));
 
 import { prisma } from '../../utils/database';
@@ -104,18 +113,13 @@ describe('AnonymousUserService', () => {
       expect(AnonymousUserService.isAnonymousIdValid('bad-id')).toBe(false);
     });
 
-    it('should return true for ID with valid timestamp', () => {
-      // isAnonymousIdValid reads chars 10-18 as hex timestamp (seconds * 1000 → Date)
-      const nowMs = Date.now();
-      const tsHex = Math.floor(nowMs / 1000).toString(16).padStart(8, '0');
-      const id = `anonymous_${tsHex}aaaaaaaaaaaaaaaaaaaaaaaa`;
+    it('should return true for valid format anonymous ID', () => {
+      const id = AnonymousUserService.generateAnonymousId();
       expect(AnonymousUserService.isAnonymousIdValid(id)).toBe(true);
     });
 
-    it('should return false for ID with expired timestamp', () => {
-      const oldMs = Date.now() - 2 * 365 * 24 * 3600 * 1000;
-      const tsHex = Math.floor(oldMs / 1000).toString(16).padStart(8, '0');
-      const id = `anonymous_${tsHex}aaaaaaaaaaaaaaaaaaaaaaaa`;
+    it('should return false for ID without prefix', () => {
+      const id = 'a'.repeat(32);
       expect(AnonymousUserService.isAnonymousIdValid(id)).toBe(false);
     });
   });

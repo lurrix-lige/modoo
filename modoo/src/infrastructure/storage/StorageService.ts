@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Crypto from 'expo-crypto';
 import { Story } from '../../types';
 import { logger } from '../../utils/logger';
 
@@ -157,11 +158,9 @@ class StorageService {
    * 生成本地匿名用户ID（降级方案）
    */
   private generateLocalAnonymousId(): string {
-    // 生成符合后端校验格式的匿名ID: anonymous_[a-f0-9]{32}
-    const hexStr = Array.from({ length: 32 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('');
-    return `anonymous_${hexStr}`;
+    // 使用 expo-crypto 的 randomUUID 生成密码学安全的匿名ID
+    const uuid = Crypto.randomUUID().replace(/-/g, '');
+    return `anonymous_${uuid}`;
   }
 
   /**
@@ -503,9 +502,12 @@ class StorageService {
       // 清除敏感数据
       await secureStorage.deleteItem(SECURE_KEYS.AUTH_TOKEN);
       await secureStorage.deleteItem(SECURE_KEYS.USER);
-      
-      // 清除普通数据
-      await AsyncStorage.multiRemove(Object.values(STORAGE_KEYS));
+
+      // 清除普通数据，但保留匿名ID以支持重新登录后数据迁移
+      const keysToRemove = Object.values(STORAGE_KEYS).filter(
+        key => key !== STORAGE_KEYS.ANONYMOUS_ID
+      );
+      await AsyncStorage.multiRemove(keysToRemove);
     } catch (error) {
       logger.error('Failed to clear storage', { error });
     }

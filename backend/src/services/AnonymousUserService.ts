@@ -66,22 +66,12 @@ export class AnonymousUserService {
   }
 
   /**
-   * 检查匿名用户ID是否过期
-   * 由于我们不持久化匿名用户，这里简化处理
+   * 检查匿名用户ID是否有效
+   * 由于匿名ID基于UUID v4（无内嵌时间戳），仅校验格式
+   * 过期清理由 cleanupExpiredAnonymousData() 基于数据 createdAt 处理
    */
   static isAnonymousIdValid(anonymousId: string): boolean {
-    if (!this.validateAnonymousId(anonymousId)) {
-      return false;
-    }
-    
-    // 检查ID是否在有效期内（从ID创建时间推算）
-    // 匿名ID格式：anonymous_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    // 前8位是时间戳的十六进制表示
-    const timestampHex = anonymousId.slice(10, 18);
-    const createdAt = parseInt(timestampHex, 16) * 1000;
-    const expiresAt = createdAt + 30 * 24 * 60 * 60 * 1000; // 30天
-    
-    return Date.now() < expiresAt;
+    return this.validateAnonymousId(anonymousId);
   }
 
   /**
@@ -104,40 +94,37 @@ export class AnonymousUserService {
     };
 
     try {
-      // 迁移播放历史
-      const playHistoryCount = await prisma.playHistory.updateMany({
-        where: { anonymousId },
-        data: { userId, childId, anonymousId: null },
-      });
-      migratedRecords.playHistory = playHistoryCount.count;
+      await prisma.$transaction(async (tx) => {
+        const playHistoryCount = await tx.playHistory.updateMany({
+          where: { anonymousId },
+          data: { userId, childId, anonymousId: null },
+        });
+        migratedRecords.playHistory = playHistoryCount.count;
 
-      // 迁移收藏
-      const favoritesCount = await prisma.favorite.updateMany({
-        where: { anonymousId },
-        data: { userId, childId, anonymousId: null },
-      });
-      migratedRecords.favorites = favoritesCount.count;
+        const favoritesCount = await tx.favorite.updateMany({
+          where: { anonymousId },
+          data: { userId, childId, anonymousId: null },
+        });
+        migratedRecords.favorites = favoritesCount.count;
 
-      // 迁移打卡记录
-      const checkInsCount = await prisma.checkIn.updateMany({
-        where: { anonymousId },
-        data: { userId, childId, anonymousId: null },
-      });
-      migratedRecords.checkIns = checkInsCount.count;
+        const checkInsCount = await tx.checkIn.updateMany({
+          where: { anonymousId },
+          data: { userId, childId, anonymousId: null },
+        });
+        migratedRecords.checkIns = checkInsCount.count;
 
-      // 迁移课程进度
-      const lessonProgressCount = await prisma.lessonProgress.updateMany({
-        where: { anonymousId },
-        data: { userId, childId, anonymousId: null },
-      });
-      migratedRecords.lessonProgress = lessonProgressCount.count;
+        const lessonProgressCount = await tx.lessonProgress.updateMany({
+          where: { anonymousId },
+          data: { userId, childId, anonymousId: null },
+        });
+        migratedRecords.lessonProgress = lessonProgressCount.count;
 
-      // 迁移分享记录
-      const sharesCount = await prisma.share.updateMany({
-        where: { anonymousId },
-        data: { userId, childId, anonymousId: null },
+        const sharesCount = await tx.share.updateMany({
+          where: { anonymousId },
+          data: { userId, childId, anonymousId: null },
+        });
+        migratedRecords.shares = sharesCount.count;
       });
-      migratedRecords.shares = sharesCount.count;
 
       return {
         success: true,

@@ -189,6 +189,7 @@ model CheckIn {
   child     Child?    @relation(fields: [childId], references: [id], onDelete: Cascade)
 
   @@unique([childId, date])
+  @@unique([anonymousId, date])
   @@index([userId, date])
   @@index([userId])
   @@index([childId])
