@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -111,6 +111,11 @@ export default function MembershipScreen() {
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const selectedPlanData = useMemo(
+    () => plans.find((p) => p.id === selectedPlan),
+    [plans, selectedPlan],
+  );
+
   useEffect(() => {
     loadPlans();
 
@@ -146,7 +151,6 @@ export default function MembershipScreen() {
       return;
     }
 
-    const selectedPlanData = plans.find((p) => p.id === selectedPlan);
     if (!selectedPlanData) {
       Alert.alert(t('common.error'), t('membership.planNotSelected'));
       return;
@@ -378,9 +382,7 @@ export default function MembershipScreen() {
             <View style={styles.footerPrice}>
               <Text style={[styles.footerValue, { color: colors.textPrimary }]}>
                 {formatCurrency(
-                  plans.find((p) => p.id === selectedPlan)?.currentPrice ||
-                    plans.find((p) => p.id === selectedPlan)?.price ||
-                    0,
+                  selectedPlanData?.currentPrice || selectedPlanData?.price || 0,
                   'CNY',
                   i18n.language,
                 )}
@@ -391,7 +393,7 @@ export default function MembershipScreen() {
             title={t('membership.subscribeNow')}
             onPress={handleSubscribe}
             loading={isProcessing}
-            disabled={!plans.find((p) => p.id === selectedPlan)}
+            disabled={!selectedPlanData}
             style={styles.subscribeButton}
           />
         </View>

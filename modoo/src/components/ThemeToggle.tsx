@@ -54,9 +54,7 @@ export function ThemeToggle({ size = 24 }: ThemeToggleProps) {
       style={styles.container}
       activeOpacity={0.7}
       accessibilityLabel={`${t('settings.themeMode')}: ${themeMode === 'light' ? t('common.lightMode') : themeMode === 'dark' ? t('common.darkMode') : t('common.systemMode')}`}
-      accessibilityHint={
-        t('themeToggle.accessibilityHint') || '点击可在日间模式、夜间模式和跟随系统之间循环切换'
-      }
+      accessibilityHint={t('themeToggle.accessibilityHint')}
     >
       {(() => {
         const IconComp = iconMap[getIconName()] || Sun;

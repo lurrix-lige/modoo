@@ -57,15 +57,7 @@
     "fireflyGuardianDesc": "Shining Firefly, dispelling fears with light",
     "starGuardian": "Star Guardian",
     "starGuardianDesc": "Dazzling Star Spirit, illuminating children's sweet dreams",
-    "weekdays": [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
-    ],
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "themeToggle": {
       "accessibilityHint": "Tap to cycle between light mode, dark mode, and system"
     },
@@ -413,7 +405,9 @@
     "upgradeNow": "Upgrade Now",
     "later": "Later",
     "timerTitle": "Set Sleep Timer",
-    "cancelTimer": "Cancel Timer"
+    "cancelTimer": "Cancel Timer",
+    "prevStory": "Previous Story",
+    "nextStory": "Next Story"
   },
   "membership": {
     "center": "Membership Center",
@@ -891,15 +885,7 @@
   "checkIn": {
     "dateFormat": "{{month}}/{{day}} {{weekDay}}",
     "noHistory": "No check-in records",
-    "weekdays": [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
-    ],
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "history": "Check-in History",
     "title": "Sleep Check-in",
     "subtitle": "Keep checking in, build good habits",
@@ -944,19 +930,11 @@
       "liDoctor": "Dr. Li",
       "liTitle": "Child Psychology Counselor",
       "liHospital": "Child Mental Health Center",
-      "liSpecialties": [
-        "Separation Anxiety",
-        "Sleep Problems",
-        "Behavior Correction"
-      ],
+      "liSpecialties": ["Separation Anxiety", "Sleep Problems", "Behavior Correction"],
       "wangProfessor": "Prof. Wang",
       "wangTitle": "Developmental Psychology Expert",
       "wangHospital": "Psychology Research Institute",
-      "wangSpecialties": [
-        "Cognitive Development",
-        "Emotional Management",
-        "Family Education"
-      ],
+      "wangSpecialties": ["Cognitive Development", "Emotional Management", "Family Education"],
       "zhangTeacher": "Teacher Zhang",
       "zhangTitle": "Senior Psychological Counselor",
       "zhangHospital": "Family Education Guidance Center",

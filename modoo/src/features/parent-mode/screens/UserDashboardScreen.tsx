@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaContainer, ErrorToast } from '../../../components';
 import { BookOpen, Leaf, GraduationCap, FileText, Star } from 'lucide-react-native';
@@ -52,8 +52,14 @@ function ContentCard({ item, onPress }: { item: ContentItem; onPress: () => void
   };
 
   // 使用国际化 key 进行翻译，如果没有则使用直接值
-  const title = item.titleKey ? t(item.titleKey) : item.title || '';
-  const description = item.descriptionKey ? t(item.descriptionKey) : item.description || '';
+  const title = useMemo(
+    () => (item.titleKey ? t(item.titleKey) : item.title || ''),
+    [item.titleKey, item.title, t],
+  );
+  const description = useMemo(
+    () => (item.descriptionKey ? t(item.descriptionKey) : item.description || ''),
+    [item.descriptionKey, item.description, t],
+  );
 
   return (
     <Card style={styles.contentCard} onPress={onPress} variant="glass" elevated>

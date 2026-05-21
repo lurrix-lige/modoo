@@ -58,15 +58,7 @@
     "fireflyGuardianDesc": "闪亮的小萤火虫，用光芒驱散恐惧",
     "starGuardian": "星星精灵",
     "starGuardianDesc": "闪耀的星星精灵，点亮孩子的美梦",
-    "weekdays": [
-      "日",
-      "一",
-      "二",
-      "三",
-      "四",
-      "五",
-      "六"
-    ],
+    "weekdays": ["日", "一", "二", "三", "四", "五", "六"],
     "themeToggle": {
       "accessibilityHint": "点击可在日间模式、夜间模式和跟随系统之间循环切换"
     },
@@ -421,7 +413,9 @@
     "upgradeNow": "开通会员",
     "later": "稍后再说",
     "timerTitle": "设置睡眠定时器",
-    "cancelTimer": "取消定时器"
+    "cancelTimer": "取消定时器",
+    "prevStory": "上一个故事",
+    "nextStory": "下一个故事"
   },
   "benefit": {
     "all_stories": "全部故事",
@@ -735,15 +729,7 @@
   "checkIn": {
     "dateFormat": "{{month}}月{{day}}日 {{weekDay}}",
     "noHistory": "暂无打卡记录",
-    "weekdays": [
-      "周日",
-      "周一",
-      "周二",
-      "周三",
-      "周四",
-      "周五",
-      "周六"
-    ],
+    "weekdays": ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     "history": "历史打卡记录",
     "title": "睡眠打卡",
     "subtitle": "坚持打卡，养成好习惯",
@@ -788,27 +774,15 @@
       "liDoctor": "李医生",
       "liTitle": "儿童心理咨询师",
       "liHospital": "儿童心理健康中心",
-      "liSpecialties": [
-        "分离焦虑",
-        "睡眠问题",
-        "行为矫正"
-      ],
+      "liSpecialties": ["分离焦虑", "睡眠问题", "行为矫正"],
       "wangProfessor": "王教授",
       "wangTitle": "发展心理学专家",
       "wangHospital": "心理学研究院",
-      "wangSpecialties": [
-        "认知发展",
-        "情绪管理",
-        "家庭教育"
-      ],
+      "wangSpecialties": ["认知发展", "情绪管理", "家庭教育"],
       "zhangTeacher": "张老师",
       "zhangTitle": "资深心理咨询师",
       "zhangHospital": "家庭教育指导中心",
-      "zhangSpecialties": [
-        "亲子沟通",
-        "习惯培养",
-        "心理辅导"
-      ]
+      "zhangSpecialties": ["亲子沟通", "习惯培养", "心理辅导"]
     }
   },
   "expertBookings": {

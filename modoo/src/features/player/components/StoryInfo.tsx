@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, responsive, iconSizes, typography, borderRadius } from '../../../theme';
 import { Story } from '../../../types';
 import GuardianSpirit, { GuardianIconType } from '../../../components/GuardianSpirit';
@@ -23,6 +24,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
   hasNextStory = true,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
@@ -81,7 +83,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
             disabled={!hasPrevStory}
             activeOpacity={0.8}
             accessible={true}
-            accessibilityLabel="上一个故事"
+            accessibilityLabel={t('storyPlayer.prevStory')}
             accessibilityRole="button"
             accessibilityState={{ disabled: !hasPrevStory }}
           >
@@ -103,7 +105,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
             disabled={!hasNextStory}
             activeOpacity={0.8}
             accessible={true}
-            accessibilityLabel="下一个故事"
+            accessibilityLabel={t('storyPlayer.nextStory')}
             accessibilityRole="button"
             accessibilityState={{ disabled: !hasNextStory }}
           >

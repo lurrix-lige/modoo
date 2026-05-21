@@ -95,28 +95,31 @@ export default function ExpertBookingsScreen() {
     loadBookings();
   }, []);
 
+  const fetchBookingsWithExperts = async (): Promise<BookingWithExpert[]> => {
+    const response = await apiService.getBookings();
+    const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
+    const expertMap = new Map<string, Expert>();
+    await Promise.all(
+      uniqueExpertIds.map(async (expertId) => {
+        try {
+          const expertResponse = await apiService.getExpert(expertId);
+          expertMap.set(expertId, expertResponse);
+        } catch {
+          expertMap.set(expertId, undefined as unknown as Expert);
+        }
+      }),
+    );
+    return response.bookings.map((booking: Booking) => ({
+      ...booking,
+      expert: expertMap.get(booking.expertId),
+    }));
+  };
+
   const loadBookings = async () => {
     setIsLoading(true);
     setError({ visible: false, message: '' });
     try {
-      const response = await apiService.getBookings();
-      // 收集唯一的专家ID，避免 N+1 查询
-      const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
-      const expertMap = new Map<string, any>();
-      await Promise.all(
-        uniqueExpertIds.map(async (expertId) => {
-          try {
-            const expertResponse = await apiService.getExpert(expertId);
-            expertMap.set(expertId, expertResponse);
-          } catch {
-            expertMap.set(expertId, undefined);
-          }
-        }),
-      );
-      const bookingsWithExpert = response.bookings.map((booking: Booking) => ({
-        ...booking,
-        expert: expertMap.get(booking.expertId),
-      }));
+      const bookingsWithExpert = await fetchBookingsWithExperts();
       setBookings(bookingsWithExpert);
     } catch (err: unknown) {
       logger.error('Failed to load bookings', { error: err });
@@ -137,23 +140,7 @@ export default function ExpertBookingsScreen() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      const response = await apiService.getBookings();
-      const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
-      const expertMap = new Map<string, any>();
-      await Promise.all(
-        uniqueExpertIds.map(async (expertId) => {
-          try {
-            const expertResponse = await apiService.getExpert(expertId);
-            expertMap.set(expertId, expertResponse);
-          } catch {
-            expertMap.set(expertId, undefined);
-          }
-        }),
-      );
-      const bookingsWithExpert = response.bookings.map((booking: Booking) => ({
-        ...booking,
-        expert: expertMap.get(booking.expertId),
-      }));
+      const bookingsWithExpert = await fetchBookingsWithExperts();
       setBookings(bookingsWithExpert);
     } catch (err) {
       logger.error('Failed to refresh bookings', { error: err });

@@ -30,7 +30,7 @@ export function CheckInStatsCard({ streak, thisWeekCount, colors }: CheckInStats
           <Text style={[styles.statValue, { color: colors.accent }]}>{streak}</Text>
         </View>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-          {t('checkIn.streak') || '连续打卡'}
+          {t('checkIn.streak')}
         </Text>
       </View>
 
@@ -44,7 +44,7 @@ export function CheckInStatsCard({ streak, thisWeekCount, colors }: CheckInStats
           <Text style={[styles.statValue, { color: colors.accent }]}>{thisWeekCount}</Text>
         </View>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-          {t('checkIn.thisWeek') || '本周打卡'}
+          {t('checkIn.thisWeek')}
         </Text>
       </View>
     </View>
