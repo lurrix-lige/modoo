@@ -9,6 +9,8 @@ import {
   Alert,
   Platform,
   Dimensions,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import {
@@ -599,32 +601,41 @@ export default function ChildProfileScreen() {
 
   return (
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.8}
-        >
-          <ArrowLeft size={componentIconSizes.childProfile.backButton} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('childProfile.title')}</Text>
-        {viewMode === 'view' && (
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit} activeOpacity={0.8}>
-            <Plus size={componentIconSizes.childProfile.editButton} color={colors.primary} />
-            <Text style={[styles.editButtonText, { color: colors.primary }]}>
-              {t('common.edit')}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+              activeOpacity={0.8}
+            >
+              <ArrowLeft
+                size={componentIconSizes.childProfile.backButton}
+                color={colors.textPrimary}
+              />
+            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>
+              {t('childProfile.title')}
             </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+            {viewMode === 'view' && (
+              <TouchableOpacity style={styles.editButton} onPress={handleEdit} activeOpacity={0.8}>
+                <Plus size={componentIconSizes.childProfile.editButton} color={colors.primary} />
+                <Text style={[styles.editButtonText, { color: colors.primary }]}>
+                  {t('common.edit')}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
-      {viewMode === 'view' ? renderViewMode() : renderEditMode()}
+          {viewMode === 'view' ? renderViewMode() : renderEditMode()}
 
-      {viewMode === 'edit' && (
-        <View style={styles.footer}>
-          <Button title={t('childProfile.complete')} onPress={handleSave} loading={loading} />
+          {viewMode === 'edit' && (
+            <View style={styles.footer}>
+              <Button title={t('childProfile.complete')} onPress={handleSave} loading={loading} />
+            </View>
+          )}
         </View>
-      )}
+      </TouchableWithoutFeedback>
 
       <DatePickerModal
         visible={showDatePicker}

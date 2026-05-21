@@ -240,15 +240,16 @@ export default function LoginScreen() {
           selectedPlanId,
           childProfile: await authService.getChild(),
         });
-    } catch (error: any) {
-      if (error.code === 'USER_CANCELLED' || error.code === -2) {
+    } catch (err: unknown) {
+      const e = err as { code?: string | number; message?: string };
+      if (e.code === 'USER_CANCELLED' || e.code === -2) {
         return;
       }
-      if (error.code === 'NOT_INSTALLED') {
+      if (e.code === 'NOT_INSTALLED') {
         Alert.alert(t('common.hint'), t('auth.wechatNotInstalled'));
         return;
       }
-      Alert.alert(t('common.error'), error.message || t('auth.wechatLoginFailed'));
+      Alert.alert(t('common.error'), e.message || t('auth.wechatLoginFailed'));
     } finally {
       setWechatLoading(false);
     }

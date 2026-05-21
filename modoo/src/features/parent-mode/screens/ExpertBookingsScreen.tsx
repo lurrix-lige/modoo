@@ -118,12 +118,16 @@ export default function ExpertBookingsScreen() {
         expert: expertMap.get(booking.expertId),
       }));
       setBookings(bookingsWithExpert);
-    } catch (error: any) {
-      logger.error('Failed to load bookings', { error });
+    } catch (err: unknown) {
+      logger.error('Failed to load bookings', { error: err });
+      const code =
+        typeof err === 'object' && err !== null && 'code' in err
+          ? String((err as Record<string, unknown>).code)
+          : undefined;
       setError({
         visible: true,
         message: t('expertBookings.loadError'),
-        code: error?.code,
+        code,
       });
     } finally {
       setIsLoading(false);

@@ -95,9 +95,10 @@ export default function ParentHomeScreen() {
       setSleepStats(sleepStatsResponse);
       chartCache.current[chartTab] = sleepStatsResponse;
       lastFetchTime.current[chartTab] = Date.now();
-    } catch (error: any) {
-      logger.error('Failed to load data', { error });
-      if (error?.code === 'UNAUTHORIZED' || error?.statusCode === 401) {
+    } catch (err: unknown) {
+      logger.error('Failed to load data', { error: err });
+      const e = err as { code?: string; statusCode?: number };
+      if (e?.code === 'UNAUTHORIZED' || e?.statusCode === 401) {
         navigation.getParent()?.navigate('Auth', { fromScreen: 'ParentHome' });
         return;
       }
@@ -119,8 +120,8 @@ export default function ParentHomeScreen() {
       setSleepStats(sleepStatsResponse);
       chartCache.current[chartTab] = sleepStatsResponse;
       lastFetchTime.current[chartTab] = Date.now();
-    } catch (error: any) {
-      logger.error('Failed to refresh data', { error });
+    } catch (err: unknown) {
+      logger.error('Failed to refresh data', { error: err });
     } finally {
       setRefreshing(false);
     }
@@ -148,8 +149,8 @@ export default function ParentHomeScreen() {
       lastFetchTime.current[chartTab] = Date.now();
 
       setSleepStats(sleepStatsResponse);
-    } catch (error: any) {
-      logger.error('Failed to load chart data', { error });
+    } catch (err: unknown) {
+      logger.error('Failed to load chart data', { error: err });
 
       if (cachedData) {
         setSleepStats(cachedData);

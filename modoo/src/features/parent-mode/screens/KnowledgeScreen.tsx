@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import { Search, FileText, Eye, Clock, MessageSquare, Heart } from 'lucide-react-native';
@@ -121,165 +123,176 @@ export default function KnowledgeScreen() {
 
   return (
     <SafeAreaContainer style={[sharedStyles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{t('knowledge.title')}</Text>
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>
+              {t('knowledge.title')}
+            </Text>
+          </View>
 
-      <View style={styles.searchContainer}>
-        <View style={[styles.searchInput, { backgroundColor: colors.surface }]}>
-          <Search
-            size={responsive.moderateScaleForIcon(iconSizes.md)}
-            color={colors.textSecondary}
-          />
-          <TextInput
-            style={[styles.searchText, { color: colors.textPrimary }]}
-            placeholder={t('knowledge.searchPlaceholder')}
-            placeholderTextColor={colors.textPlaceholder}
-            value={searchKeyword}
-            onChangeText={setSearchKeyword}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-      </View>
-
-      <View style={styles.categoryContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              key={cat.id}
-              style={[
-                styles.categoryButton,
-                {
-                  backgroundColor: selectedCategory === cat.id ? colors.secondary : colors.surface,
-                },
-              ]}
-              onPress={() => setSelectedCategory(cat.id)}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  {
-                    color: selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
-                  },
-                ]}
-              >
-                {t(cat.labelKey)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      <ScrollView
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        {isLoading ? (
-          renderLoadingSkeleton()
-        ) : (
-          <>
-            {filteredArticles.map((article) => (
-              <TouchableOpacity
-                key={article.id}
-                style={[styles.articleCard, { backgroundColor: colors.surface }]}
-                onPress={() => navigation.navigate('ArticleDetail', { articleId: article.id })}
-              >
-                <View style={[styles.articleCover, { backgroundColor: colors.secondary }]}>
-                  {article.coverUrl ? (
-                    <Image
-                      source={{ uri: article.coverUrl }}
-                      style={styles.articleCoverImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <FileText
-                      size={responsive.moderateScaleForIcon(iconSizes.xxl)}
-                      color={commonColors.white}
-                    />
-                  )}
-                </View>
-                <View style={styles.articleInfo}>
-                  <View style={styles.tagsRow}>
-                    <View style={styles.articleTags}>
-                      <View style={[styles.tag, { backgroundColor: colors.primary + '20' }]}>
-                        <Text style={[styles.tagText, { color: colors.primary }]}>
-                          {t(`knowledge.categories.${article.category}`) || article.category}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.articleMeta}>
-                      <View style={styles.metaItem}>
-                        <Eye
-                          size={responsive.moderateScaleForIcon(iconSizes.sm)}
-                          color={colors.textSecondary}
-                        />
-                        <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                          {article.views}
-                        </Text>
-                      </View>
-                      <View style={styles.metaItem}>
-                        <Clock
-                          size={responsive.moderateScaleForIcon(iconSizes.sm)}
-                          color={colors.textSecondary}
-                        />
-                        <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                          {article.readTime}
-                          {t('knowledge.minutes')}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <Text
-                    style={[styles.articleTitle, { color: colors.textPrimary }]}
-                    numberOfLines={2}
-                  >
-                    {article.titleKey
-                      ? t(article.titleKey) !== article.titleKey
-                        ? t(article.titleKey)
-                        : article.title
-                      : article.title}
-                  </Text>
-                  <Text
-                    style={[styles.articleSummary, { color: colors.textSecondary }]}
-                    numberOfLines={2}
-                  >
-                    {article.summaryKey
-                      ? t(article.summaryKey) !== article.summaryKey
-                        ? t(article.summaryKey)
-                        : article.summary
-                      : article.summary}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-
-            <View style={styles.quickAccess}>
-              <TouchableOpacity
-                style={[styles.quickButton, { backgroundColor: colors.surface }]}
-                onPress={() => navigation.navigate('Dialogue')}
-              >
-                <MessageSquare
-                  size={responsive.moderateScaleForIcon(iconSizes.lg)}
-                  color={colors.warning}
-                />
-                <Text style={[styles.quickText, { color: colors.textPrimary }]}>
-                  {t('knowledge.dialogue')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.quickButton, { backgroundColor: colors.surface }]}
-                onPress={() => navigation.navigate('Favorites')}
-              >
-                <Heart size={responsive.moderateScaleForIcon(iconSizes.lg)} color={colors.error} />
-                <Text style={[styles.quickText, { color: colors.textPrimary }]}>
-                  {t('knowledge.favorites')}
-                </Text>
-              </TouchableOpacity>
+          <View style={styles.searchContainer}>
+            <View style={[styles.searchInput, { backgroundColor: colors.surface }]}>
+              <Search
+                size={responsive.moderateScaleForIcon(iconSizes.md)}
+                color={colors.textSecondary}
+              />
+              <TextInput
+                style={[styles.searchText, { color: colors.textPrimary }]}
+                placeholder={t('knowledge.searchPlaceholder')}
+                placeholderTextColor={colors.textPlaceholder}
+                value={searchKeyword}
+                onChangeText={setSearchKeyword}
+                underlineColorAndroid="transparent"
+              />
             </View>
-          </>
-        )}
-      </ScrollView>
+          </View>
+
+          <View style={styles.categoryContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {CATEGORIES.map((cat) => (
+                <TouchableOpacity
+                  key={cat.id}
+                  style={[
+                    styles.categoryButton,
+                    {
+                      backgroundColor:
+                        selectedCategory === cat.id ? colors.secondary : colors.surface,
+                    },
+                  ]}
+                  onPress={() => setSelectedCategory(cat.id)}
+                >
+                  <Text
+                    style={[
+                      styles.categoryText,
+                      {
+                        color:
+                          selectedCategory === cat.id ? commonColors.white : colors.textPrimary,
+                      },
+                    ]}
+                  >
+                    {t(cat.labelKey)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {isLoading ? (
+              renderLoadingSkeleton()
+            ) : (
+              <>
+                {filteredArticles.map((article) => (
+                  <TouchableOpacity
+                    key={article.id}
+                    style={[styles.articleCard, { backgroundColor: colors.surface }]}
+                    onPress={() => navigation.navigate('ArticleDetail', { articleId: article.id })}
+                  >
+                    <View style={[styles.articleCover, { backgroundColor: colors.secondary }]}>
+                      {article.coverUrl ? (
+                        <Image
+                          source={{ uri: article.coverUrl }}
+                          style={styles.articleCoverImage}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <FileText
+                          size={responsive.moderateScaleForIcon(iconSizes.xxl)}
+                          color={commonColors.white}
+                        />
+                      )}
+                    </View>
+                    <View style={styles.articleInfo}>
+                      <View style={styles.tagsRow}>
+                        <View style={styles.articleTags}>
+                          <View style={[styles.tag, { backgroundColor: colors.primary + '20' }]}>
+                            <Text style={[styles.tagText, { color: colors.primary }]}>
+                              {t(`knowledge.categories.${article.category}`) || article.category}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.articleMeta}>
+                          <View style={styles.metaItem}>
+                            <Eye
+                              size={responsive.moderateScaleForIcon(iconSizes.sm)}
+                              color={colors.textSecondary}
+                            />
+                            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                              {article.views}
+                            </Text>
+                          </View>
+                          <View style={styles.metaItem}>
+                            <Clock
+                              size={responsive.moderateScaleForIcon(iconSizes.sm)}
+                              color={colors.textSecondary}
+                            />
+                            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                              {article.readTime}
+                              {t('knowledge.minutes')}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <Text
+                        style={[styles.articleTitle, { color: colors.textPrimary }]}
+                        numberOfLines={2}
+                      >
+                        {article.titleKey
+                          ? t(article.titleKey) !== article.titleKey
+                            ? t(article.titleKey)
+                            : article.title
+                          : article.title}
+                      </Text>
+                      <Text
+                        style={[styles.articleSummary, { color: colors.textSecondary }]}
+                        numberOfLines={2}
+                      >
+                        {article.summaryKey
+                          ? t(article.summaryKey) !== article.summaryKey
+                            ? t(article.summaryKey)
+                            : article.summary
+                          : article.summary}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+
+                <View style={styles.quickAccess}>
+                  <TouchableOpacity
+                    style={[styles.quickButton, { backgroundColor: colors.surface }]}
+                    onPress={() => navigation.navigate('Dialogue')}
+                  >
+                    <MessageSquare
+                      size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                      color={colors.warning}
+                    />
+                    <Text style={[styles.quickText, { color: colors.textPrimary }]}>
+                      {t('knowledge.dialogue')}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.quickButton, { backgroundColor: colors.surface }]}
+                    onPress={() => navigation.navigate('Favorites')}
+                  >
+                    <Heart
+                      size={responsive.moderateScaleForIcon(iconSizes.lg)}
+                      color={colors.error}
+                    />
+                    <Text style={[styles.quickText, { color: colors.textPrimary }]}>
+                      {t('knowledge.favorites')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </TouchableWithoutFeedback>
 
       <ErrorToast
         visible={error.visible}
