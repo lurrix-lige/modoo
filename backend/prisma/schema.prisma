@@ -254,7 +254,7 @@ model Benefit {
   descriptionKey String?
   type           String
   scope          String    @default("ALL_USERS")
-  value          String?c
+  value          String?
   isStackable    Boolean   @default(false)
   sortOrder      Int       @default(0)
   isActive       Boolean   @default(true)
