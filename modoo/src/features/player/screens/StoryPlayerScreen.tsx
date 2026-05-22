@@ -31,7 +31,6 @@ import {
   responsive,
   iconSizes,
   shadows,
-  commonColors,
 } from '../../../theme';
 import { usePlayer } from '../hooks/usePlayer';
 import { useSleepTimer } from '../hooks/useSleepTimer';
@@ -59,7 +58,7 @@ export default function StoryPlayerScreen() {
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
   const { child, userState } = useAppStore();
-  const { isAuthenticated } = userState;
+  const { isAuthenticated, isPaid } = userState;
 
   const { shareNative, isLoading: isSharing } = useShare();
 
@@ -95,6 +94,13 @@ export default function StoryPlayerScreen() {
       retryAfterAuth();
     }
   }, [isAuthenticated, blocked, blockReason, retryAfterAuth]);
+
+  // 开通会员后自动重试付费故事播放
+  useEffect(() => {
+    if (isPaid && blocked && blockReason === 'no_membership') {
+      retryAfterAuth();
+    }
+  }, [isPaid, blocked, blockReason, retryAfterAuth]);
 
   const handleSleepTimerExpire = useCallback(() => {
     stop();

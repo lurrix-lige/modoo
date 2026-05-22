@@ -324,19 +324,33 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
+      logger.info('Login started', { phone });
       const user = await authService.login(phone, code);
+      logger.info('Login API success', { userId: user.id });
+
       setAuthenticated(true, user);
+      logger.info('Auth state set');
 
       await syncChildProfile();
+      logger.info('Child profile synced');
 
       const parentNavigation =
         navigation.getParent() as NavigationContainerRef<RootStackParamList> | null;
-      parentNavigation &&
+      logger.info('Navigation parent', { hasParent: !!parentNavigation });
+
+      const childProfile = await authService.getChild();
+      logger.info('Got child profile for navigation', { hasChild: !!childProfile });
+
+      if (parentNavigation) {
         loginNavigationStrategyFactory.navigate(parentNavigation, {
           fromScreen,
           selectedPlanId,
-          childProfile: await authService.getChild(),
+          childProfile,
         });
+        logger.info('Navigation executed');
+      } else {
+        logger.error('No parent navigation - cannot navigate after login');
+      }
     } catch (error) {
       logger.error('Phone login failed', { error, phone });
       Alert.alert(t('common.error'), t('auth.loginFailed'));

@@ -74,16 +74,21 @@ interface PayConfigResponse {
 class WechatPayService {
   private static instance: WechatPayService;
   private wechatModule: any = null;
+  private initialized = false;
 
-  private constructor() {
-    this.initWechat();
-  }
+  private constructor() {}
 
   static getInstance(): WechatPayService {
     if (!WechatPayService.instance) {
       WechatPayService.instance = new WechatPayService();
     }
     return WechatPayService.instance;
+  }
+
+  private ensureInitialized() {
+    if (this.initialized) return;
+    this.initialized = true;
+    this.initWechat();
   }
 
   private initWechat() {
@@ -97,6 +102,7 @@ class WechatPayService {
   }
 
   isInstalled(): boolean {
+    this.ensureInitialized();
     if (!this.wechatModule) return false;
     try {
       return this.wechatModule.isWXAppInstalled();
@@ -106,6 +112,7 @@ class WechatPayService {
   }
 
   async requestPayment(params: WechatPayParams): Promise<PayResult> {
+    this.ensureInitialized();
     if (!this.isInstalled()) {
       return {
         success: false,

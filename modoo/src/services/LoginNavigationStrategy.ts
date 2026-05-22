@@ -1,6 +1,7 @@
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import { findNavigationRule, NavigationRule } from '../config/loginNavigationRules';
+import { logger } from '../utils/logger';
 
 export interface ChildProfile {
   id: string;
@@ -24,6 +25,7 @@ class ConfigurableNavigationStrategy {
     params: LoginNavigationParams,
   ): void {
     const { fromScreen, childProfile, selectedPlanId } = params;
+    logger.info('Navigation strategy', { fromScreen, hasChild: !!childProfile, selectedPlanId });
 
     if (childProfile) {
       this.navigateWithProfile(navigation, fromScreen, selectedPlanId);
@@ -31,6 +33,7 @@ class ConfigurableNavigationStrategy {
     }
 
     const rule = findNavigationRule(fromScreen);
+    logger.info('Navigation rule found', { rule });
     this.navigateWithoutProfile(navigation, rule, selectedPlanId);
   }
 
@@ -60,6 +63,7 @@ class ConfigurableNavigationStrategy {
       onSuccess: this.createOnSuccessCallback(navigation, rule),
     };
 
+    logger.info('Navigating to', { screen: rule.navigateTo, params });
     navigation.navigate(rule.navigateTo as any, params);
   }
 

@@ -14,12 +14,12 @@ import {
   GentleInvitation,
   ContentSkeleton,
   SettingsPopover,
-  Card,
 } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
 import { useVisitTracker, useFadeIn, useParallax, useResponsive } from '../../../hooks';
 import { apiService, ContentItem } from '../../../services';
 import { useAppStore } from '../../../store';
+import { logger } from '../../../utils/logger';
 
 type WelcomeHomeNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -72,6 +72,11 @@ export default function WelcomeHomeScreen() {
   const loadFreeContent = async () => {
     try {
       const recommendations = await apiService.getContentRecommendations();
+      if (!recommendations?.featuredContent || !recommendations?.categoryContent) {
+        logger.warn('Content recommendations returned invalid data', { recommendations });
+        setFreeContent([]);
+        return;
+      }
       const freeItems = [
         ...recommendations.featuredContent,
         ...Object.values(recommendations.categoryContent).flat(),
@@ -79,7 +84,8 @@ export default function WelcomeHomeScreen() {
         .filter((item) => !item.isPremium)
         .slice(0, getContentLimit());
       setFreeContent(freeItems);
-    } catch {
+    } catch (error) {
+      logger.error('Failed to load free content', { error });
       setFreeContent([]);
     } finally {
       setLoading(false);

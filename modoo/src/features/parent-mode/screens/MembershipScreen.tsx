@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import {
@@ -110,6 +112,7 @@ export default function MembershipScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const selectedPlanData = useMemo(
     () => plans.find((p) => p.id === selectedPlan),
@@ -156,6 +159,11 @@ export default function MembershipScreen() {
       return;
     }
 
+    // 弹出支付方式选择对话框
+    setShowPaymentModal(true);
+  };
+
+  const handleConfirmPayment = async () => {
     if (selectedPaymentMethod === 'wechat' && !isWechatInstalled) {
       Alert.alert(t('common.hint'), t('membership.wechatNotInstalled'));
       return;
@@ -166,11 +174,12 @@ export default function MembershipScreen() {
       return;
     }
 
+    setShowPaymentModal(false);
     setIsProcessing(true);
     try {
       const purchaseFn =
         selectedPaymentMethod === 'wechat' ? purchaseWithWechat : purchaseWithApple;
-      const result = await purchaseFn(selectedPlan, selectedPlanData.nameKey);
+      const result = await purchaseFn(selectedPlan, selectedPlanData!.nameKey);
 
       if (result.success) {
         const { setPaidStatus } = useAppStore.getState();
@@ -295,82 +304,6 @@ export default function MembershipScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.paymentSection}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('membership.selectPayment')}
-          </Text>
-          <View style={styles.paymentOptions}>
-            <TouchableOpacity
-              style={[
-                styles.paymentOption,
-                {
-                  backgroundColor:
-                    selectedPaymentMethod === 'wechat' ? colors.primary + '10' : colors.surface,
-                },
-                {
-                  borderColor: selectedPaymentMethod === 'wechat' ? colors.primary : colors.border,
-                },
-              ]}
-              onPress={() => isWechatInstalled && setSelectedPaymentMethod('wechat')}
-              disabled={!isWechatInstalled}
-            >
-              <WechatIcon
-                size={24}
-                color={selectedPaymentMethod === 'wechat' ? colors.primary : colors.textSecondary}
-              />
-              <Text
-                style={[
-                  styles.paymentOptionText,
-                  {
-                    color: selectedPaymentMethod === 'wechat' ? colors.primary : colors.textPrimary,
-                  },
-                ]}
-              >
-                {t('membership.wechatPay')}
-              </Text>
-              {selectedPaymentMethod === 'wechat' && (
-                <CheckCircle size={20} color={colors.primary} />
-              )}
-            </TouchableOpacity>
-
-            {Platform.OS === 'ios' && (
-              <TouchableOpacity
-                style={[
-                  styles.paymentOption,
-                  {
-                    backgroundColor:
-                      selectedPaymentMethod === 'apple' ? colors.primary + '10' : colors.surface,
-                  },
-                  {
-                    borderColor: selectedPaymentMethod === 'apple' ? colors.primary : colors.border,
-                  },
-                ]}
-                onPress={() => isApplePayAvailable && setSelectedPaymentMethod('apple')}
-                disabled={!isApplePayAvailable}
-              >
-                <AppleIcon
-                  size={24}
-                  color={selectedPaymentMethod === 'apple' ? colors.primary : colors.textSecondary}
-                />
-                <Text
-                  style={[
-                    styles.paymentOptionText,
-                    {
-                      color:
-                        selectedPaymentMethod === 'apple' ? colors.primary : colors.textPrimary,
-                    },
-                  ]}
-                >
-                  {t('membership.applePay')}
-                </Text>
-                {selectedPaymentMethod === 'apple' && (
-                  <CheckCircle size={20} color={colors.primary} />
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
       </ScrollView>
 
       {!isLoading && plans.length > 0 && (
@@ -398,6 +331,115 @@ export default function MembershipScreen() {
           />
         </View>
       )}
+
+      <Modal
+        visible={showPaymentModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPaymentModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowPaymentModal(false)}
+        >
+          <Pressable
+            style={[styles.modalContent, { backgroundColor: colors.surface }]}
+          >
+            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
+              {t('membership.selectPayment')}
+            </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.paymentOption,
+                {
+                  backgroundColor:
+                    selectedPaymentMethod === 'wechat' ? colors.primary + '10' : colors.background,
+                  borderColor:
+                    selectedPaymentMethod === 'wechat' ? colors.primary : colors.border,
+                },
+              ]}
+              onPress={() => setSelectedPaymentMethod('wechat')}
+              disabled={!isWechatInstalled}
+            >
+              <WechatIcon
+                size={24}
+                color={selectedPaymentMethod === 'wechat' ? colors.primary : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.paymentOptionText,
+                  {
+                    color:
+                      selectedPaymentMethod === 'wechat' ? colors.primary : colors.textPrimary,
+                  },
+                ]}
+              >
+                {t('membership.wechatPay')}
+              </Text>
+              {selectedPaymentMethod === 'wechat' && (
+                <CheckCircle size={20} color={colors.primary} />
+              )}
+            </TouchableOpacity>
+
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                style={[
+                  styles.paymentOption,
+                  {
+                    backgroundColor:
+                      selectedPaymentMethod === 'apple'
+                        ? colors.primary + '10'
+                        : colors.background,
+                    borderColor:
+                      selectedPaymentMethod === 'apple' ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => setSelectedPaymentMethod('apple')}
+                disabled={!isApplePayAvailable}
+              >
+                <AppleIcon
+                  size={24}
+                  color={selectedPaymentMethod === 'apple' ? colors.primary : colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.paymentOptionText,
+                    {
+                      color:
+                        selectedPaymentMethod === 'apple' ? colors.primary : colors.textPrimary,
+                    },
+                  ]}
+                >
+                  {t('membership.applePay')}
+                </Text>
+                {selectedPaymentMethod === 'apple' && (
+                  <CheckCircle size={20} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalCancelBtn, { borderColor: colors.border }]}
+                onPress={() => setShowPaymentModal(false)}
+              >
+                <Text style={[styles.modalCancelText, { color: colors.textSecondary }]}>
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
+                onPress={handleConfirmPayment}
+              >
+                <Text style={[styles.modalConfirmText, { color: commonColors.white }]}>
+                  {t('membership.subscribeNow')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaContainer>
   );
 }
@@ -611,6 +653,49 @@ const styles = StyleSheet.create({
   },
   subscribeButton: {
     width: responsive.moderateScale(160),
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  modalContent: {
+    borderRadius: borderRadius.xl,
+    gap: spacing.lg,
+    padding: spacing.xl,
+    ...shadows.large,
+  },
+  modalTitle: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.lg),
+    fontWeight: typography.fontWeight.semibold,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.sm,
+  },
+  modalCancelBtn: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: spacing.md,
+  },
+  modalCancelText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.medium,
+  },
+  modalConfirmBtn: {
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
+    flex: 1,
+    paddingVertical: spacing.md,
+  },
+  modalConfirmText: {
+    fontSize: responsive.scaledFontSize(typography.fontSize.md),
+    fontWeight: typography.fontWeight.semibold,
   },
   title: {
     flex: 1,

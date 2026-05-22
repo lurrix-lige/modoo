@@ -21,16 +21,21 @@ export class WechatAuthError extends Error {
 class WechatAuthService {
   private static instance: WechatAuthService;
   private wechatModule: any = null;
+  private initialized = false;
 
-  private constructor() {
-    this.initWechat();
-  }
+  private constructor() {}
 
   static getInstance(): WechatAuthService {
     if (!WechatAuthService.instance) {
       WechatAuthService.instance = new WechatAuthService();
     }
     return WechatAuthService.instance;
+  }
+
+  private ensureInitialized() {
+    if (this.initialized) return;
+    this.initialized = true;
+    this.initWechat();
   }
 
   private initWechat() {
@@ -44,6 +49,7 @@ class WechatAuthService {
   }
 
   isInstalled(): boolean {
+    this.ensureInitialized();
     if (!this.wechatModule) return false;
     try {
       return this.wechatModule.isWXAppInstalled();
@@ -53,6 +59,7 @@ class WechatAuthService {
   }
 
   async checkAvailability(): Promise<boolean> {
+    this.ensureInitialized();
     if (!this.isInstalled()) {
       return false;
     }
@@ -70,6 +77,7 @@ class WechatAuthService {
   }
 
   async login(): Promise<WechatAuthResult> {
+    this.ensureInitialized();
     if (!this.isInstalled()) {
       throw new WechatAuthError('未安装微信', 'NOT_INSTALLED');
     }
@@ -110,6 +118,7 @@ class WechatAuthService {
     avatar: string;
     unionid?: string;
   }> {
+    this.ensureInitialized();
     if (!this.wechatModule) {
       throw new WechatAuthError('微信SDK未安装', 'SDK_NOT_FOUND');
     }
@@ -131,6 +140,7 @@ class WechatAuthService {
   }
 
   registerApp(): boolean {
+    this.ensureInitialized();
     if (!this.wechatModule) {
       return false;
     }

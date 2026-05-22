@@ -2,7 +2,7 @@ import i18n from '../../i18n';
 import { authService } from '../auth/AuthService';
 import { storageService } from '../storage/StorageService';
 import { errorHandler, ApiError } from '../../services/ErrorHandler';
-import { ApiResponse, ErrorCodes } from '../../types/api';
+import {  ErrorCodes } from '../../types/api';
 import { API_CONFIG } from '../../config/env';
 import { logger } from '../../utils/logger';
 
@@ -95,8 +95,12 @@ class ApiService {
       return { headers, shouldProceed: false };
     }
 
-    // 2. 检查是否需要刷新 Token
-    if (authService.isAuthenticated() && authService.isTokenExpiringSoon()) {
+    // 2. 检查是否需要刷新 Token（刷新请求本身除外，防止死锁）
+    if (
+      authService.isAuthenticated() &&
+      endpoint !== '/auth/refresh' &&
+      authService.isTokenExpiringSoon()
+    ) {
       const newToken = await this.tryRefreshToken();
       if (newToken) {
         headers['Authorization'] = `Bearer ${newToken}`;
