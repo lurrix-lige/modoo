@@ -1,28 +1,29 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { Story } from '../../types';
 import { logger } from '../../utils/logger';
 
 // 🔐 密钥分类 - 区分敏感和非敏感数据
 const SECURE_KEYS = {
-  AUTH_TOKEN: '@dozoo_token',
-  USER: '@dozoo_user',
+  AUTH_TOKEN: 'dozoo_token',
+  USER: 'dozoo_user',
 } as const;
 
 const STORAGE_KEYS = {
   ...SECURE_KEYS,
-  CHILD: '@dozoo_child',
-  THEME_MODE: '@dozoo_theme_mode',
-  PLAY_HISTORY: '@dozoo_play_history',
-  CHECK_IN_RECORD: '@dozoo_check_in',
-  COURSE_PROGRESS: '@dozoo_course_progress',
-  COURSE_CACHE: '@dozoo_course_cache',
-  COURSE_VOLUME_SETTINGS: '@dozoo_course_volume',
-  COURSE_PLAYBACK_PROGRESS: '@dozoo_course_playback',
-  CACHE: '@dozoo_cache',
-  CACHE_STORIES: '@dozoo_cache_stories',
-  CACHE_ARTICLES: '@dozoo_cache_articles',
-  ANONYMOUS_ID: '@dozoo_anonymous_id',
+  CHILD: 'dozoo_child',
+  THEME_MODE: 'dozoo_theme_mode',
+  PLAY_HISTORY: 'dozoo_play_history',
+  CHECK_IN_RECORD: 'dozoo_check_in',
+  COURSE_PROGRESS: 'dozoo_course_progress',
+  COURSE_CACHE: 'dozoo_course_cache',
+  COURSE_VOLUME_SETTINGS: 'dozoo_course_volume',
+  COURSE_PLAYBACK_PROGRESS: 'dozoo_course_playback',
+  CACHE: 'dozoo_cache',
+  CACHE_STORIES: 'dozoo_cache_stories',
+  CACHE_ARTICLES: 'dozoo_cache_articles',
+  ANONYMOUS_ID: 'dozoo_anonymous_id',
 };
 
 const CACHE_TTL = {
@@ -58,27 +59,15 @@ interface CheckInRecord {
  */
 const secureStorage = {
   async setItem(key: string, value: string): Promise<void> {
-    // TODO: 安装expo-secure-store后替换下面的代码
-    // import * as SecureStore from 'expo-secure-store';
-    // await SecureStore.setItemAsync(key, value);
-
-    // 🚨 临时降级方案（不安全！）
-    logger.warn('Using AsyncStorage for sensitive data - install expo-secure-store');
-    await AsyncStorage.setItem(key, value);
+    await SecureStore.setItemAsync(key, value);
   },
 
   async getItem(key: string): Promise<string | null> {
-    // TODO: 安装expo-secure-store后替换
-    // return await SecureStore.getItemAsync(key);
-
-    return await AsyncStorage.getItem(key);
+    return await SecureStore.getItemAsync(key);
   },
 
   async deleteItem(key: string): Promise<void> {
-    // TODO: 安装expo-secure-store后替换
-    // return await SecureStore.deleteItemAsync(key);
-
-    return await AsyncStorage.removeItem(key);
+    await SecureStore.deleteItemAsync(key);
   },
 };
 
@@ -560,7 +549,7 @@ class StorageService {
     try {
       const keys = Object.values(STORAGE_KEYS);
       for (const key of keys) {
-        if (key.startsWith('@dozoo_cache')) {
+        if (key.startsWith('dozoo_cache')) {
           const data = await AsyncStorage.getItem(key);
           if (data) {
             try {
