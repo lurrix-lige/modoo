@@ -20,10 +20,10 @@ modoo/.expo/
 # 环境配置文件
 # ===========================================
 #.env
-.env.local
-.env.*.local
+#.env.local
+#.env.*.local
 *.pem
-#backend/.env
+#backend/.envS
 
 # ===========================================
 # 编译输出
