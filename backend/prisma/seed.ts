@@ -252,8 +252,8 @@ const PRICING_PLANS = [
 async function seedI18n() {
   console.log('Seeding i18n resources...');
 
-  const zhCNPath = path.resolve(__dirname, '../../dozoo/src/i18n/locales/zh-CN.json');
-  const enPath = path.resolve(__dirname, '../../dozoo/src/i18n/locales/en.json');
+  const zhCNPath = path.resolve(__dirname, '../../modoo/src/i18n/locales/zh-CN.json');
+  const enPath = path.resolve(__dirname, '../../modoo/src/i18n/locales/en.json');
 
   if (!fs.existsSync(zhCNPath) || !fs.existsSync(enPath)) {
     console.error('i18n files not found!');

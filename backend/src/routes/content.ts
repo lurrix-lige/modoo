@@ -24,10 +24,12 @@ export async function contentRoutes(fastify: FastifyInstance) {
 
     const [stories, courses, exercises, articles] = await Promise.all([
       prisma.story.findMany({
+        where: { deletedAt: null },
         take: 10,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.course.findMany({
+        where: { deletedAt: null },
         take: 10,
         orderBy: { level: 'asc' },
       }),
@@ -36,6 +38,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         orderBy: { createdAt: 'desc' },
       }),
       prisma.article.findMany({
+        where: { deletedAt: null },
         take: 10,
         orderBy: { views: 'desc' },
       }),
@@ -52,7 +55,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         description: story.description || '温馨睡前童话',
         descriptionKey: story.descriptionKey,
         duration: story.duration,
-        isPremium: false,
+        isPremium: story.isPremium,
         priority: index + 1,
         coverUrl: story.coverUrl,
         icon: 'book',
@@ -68,7 +71,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         description: course.description,
         descriptionKey: course.descriptionKey,
         duration: course.totalLessons * 300,
-        isPremium: false,
+        isPremium: course.isPremium,
         priority: 100 + index + 1,
         coverUrl: course.imageUrl,
         icon: 'school',
@@ -106,7 +109,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         description: article.summary,
         descriptionKey: article.summaryKey,
         duration: article.readTime * 60,
-        isPremium: false,
+        isPremium: article.isPremium,
         priority: 300 + index + 1,
         coverUrl: article.coverUrl || undefined,
         icon: 'document-text',
@@ -142,10 +145,12 @@ export async function contentRoutes(fastify: FastifyInstance) {
   fastify.get('/free', async (request, reply) => {
     const [stories, courses, exercises, articles] = await Promise.all([
       prisma.story.findMany({
+        where: { deletedAt: null },
         take: 5,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.course.findMany({
+        where: { deletedAt: null },
         take: 5,
         orderBy: { level: 'asc' },
       }),
@@ -154,6 +159,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
         orderBy: { createdAt: 'desc' },
       }),
       prisma.article.findMany({
+        where: { deletedAt: null },
         take: 5,
         orderBy: { views: 'desc' },
       }),

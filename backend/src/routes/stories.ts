@@ -13,7 +13,8 @@ export async function storyRoutes(fastify: FastifyInstance) {
     };
 
     const skip = (page - 1) * limit;
-    const where = category ? { category } : {};
+    const where: Record<string, any> = { deletedAt: null };
+    if (category) where.category = category;
 
     const [stories, total] = await Promise.all([
       prisma.story.findMany({

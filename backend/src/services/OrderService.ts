@@ -296,6 +296,9 @@ export async function markOrderAsPaid(orderId: string, transactionId: string, pa
     data: {
       status: 'COMPLETED',
       subscriptionId: subscription.id,
+      transactionId,
+      paymentMethod,
+      paidAt: now,
       completedAt: now,
     },
   });
@@ -437,7 +440,7 @@ export async function createTransaction(options: CreateTransactionOptions): Prom
       subscriptionId,
       userId,
       type,
-      status: type === 'REFUND' ? 'SUCCESS' : 'PENDING',
+      status: gatewayResponse?.status === 'SUCCESS' ? 'SUCCESS' : type === 'REFUND' ? 'SUCCESS' : 'PENDING',
       amount,
       currency,
       paymentMethod,
