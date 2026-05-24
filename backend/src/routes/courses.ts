@@ -85,8 +85,8 @@ export async function courseRoutes(fastify: FastifyInstance) {
   fastify.get('/:id', { preHandler: optionalAuth }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const course = await prisma.course.findUnique({
-      where: { id },
+    const course = await prisma.course.findFirst({
+      where: { id, deletedAt: null },
       include: {
         lessons: {
           orderBy: { order: 'asc' },

@@ -42,8 +42,8 @@ export async function expertRoutes(fastify: FastifyInstance) {
   fastify.get('/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const expert = await prisma.expert.findUnique({
-      where: { id },
+    const expert = await prisma.expert.findFirst({
+      where: { id, deletedAt: null },
     });
 
     if (!expert) {

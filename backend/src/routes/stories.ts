@@ -98,7 +98,7 @@ export async function storyRoutes(fastify: FastifyInstance) {
   fastify.get('/:id', { preHandler: optionalAuth }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const story = await prisma.story.findUnique({ where: { id } });
+    const story = await prisma.story.findFirst({ where: { id, deletedAt: null } });
 
     if (!story) {
       throw customError('NOT_FOUND', '故事不存在', 404);
@@ -163,7 +163,7 @@ export async function storyRoutes(fastify: FastifyInstance) {
     const anonymousId = (request as AuthenticatedRequest).anonymousId;
     const childId = await getChildId(request);
 
-    const story = await prisma.story.findUnique({ where: { id } });
+    const story = await prisma.story.findFirst({ where: { id, deletedAt: null } });
     if (!story) {
       throw customError('NOT_FOUND', '故事不存在', 404);
     }
@@ -217,7 +217,7 @@ export async function storyRoutes(fastify: FastifyInstance) {
   fastify.get('/:id/audio', { preHandler: requireMembership }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const story = await prisma.story.findUnique({ where: { id } });
+    const story = await prisma.story.findFirst({ where: { id, deletedAt: null } });
 
     if (!story) {
       throw customError('NOT_FOUND', '故事不存在', 404);
@@ -242,7 +242,7 @@ export async function storyRoutes(fastify: FastifyInstance) {
     const anonymousId = (request as AuthenticatedRequest).anonymousId;
     const childId = await getChildId(request);
 
-    const story = await prisma.story.findUnique({ where: { id } });
+    const story = await prisma.story.findFirst({ where: { id, deletedAt: null } });
     if (!story) {
       throw customError('NOT_FOUND', '故事不存在', 404);
     }
@@ -319,7 +319,7 @@ export async function storyRoutes(fastify: FastifyInstance) {
     const anonymousId = (request as AuthenticatedRequest).anonymousId;
     const childId = await getChildId(request);
 
-    const story = await prisma.story.findUnique({ where: { id } });
+    const story = await prisma.story.findFirst({ where: { id, deletedAt: null } });
     if (!story) {
       throw customError('NOT_FOUND', '故事不存在', 404);
     }

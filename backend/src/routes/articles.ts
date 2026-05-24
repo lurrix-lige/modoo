@@ -55,7 +55,7 @@ export async function articleRoutes(fastify: FastifyInstance) {
   fastify.get('/:id', { preHandler: optionalAuth }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
-    const article = await prisma.article.findUnique({ where: { id } });
+    const article = await prisma.article.findFirst({ where: { id, deletedAt: null } });
 
     if (!article) {
       throw customError('NOT_FOUND', '文章不存在', 404);
@@ -126,7 +126,7 @@ export async function articleRoutes(fastify: FastifyInstance) {
     const anonymousId = (request as AuthenticatedRequest).anonymousId;
     const childId = await getChildId(request);
 
-    const article = await prisma.article.findUnique({ where: { id } });
+    const article = await prisma.article.findFirst({ where: { id, deletedAt: null } });
     if (!article) {
       throw customError('NOT_FOUND', '文章不存在', 404);
     }
@@ -201,7 +201,7 @@ export async function articleRoutes(fastify: FastifyInstance) {
     const anonymousId = (request as AuthenticatedRequest).anonymousId;
     const childId = await getChildId(request);
 
-    const article = await prisma.article.findUnique({ where: { id } });
+    const article = await prisma.article.findFirst({ where: { id, deletedAt: null } });
     if (!article) {
       throw customError('NOT_FOUND', '文章不存在', 404);
     }
