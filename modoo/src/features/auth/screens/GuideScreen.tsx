@@ -30,6 +30,7 @@ export default function GuideScreen() {
   const { colors, isDark } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef<any>(null);
 
   /**
    * 处理下一步按钮点击
@@ -38,11 +39,11 @@ export default function GuideScreen() {
     if (currentStep < GUIDE_STEPS.length - 1) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
-      Animated.timing(scrollX, {
-        toValue: nextStep * width,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
+      scrollRef.current?.scrollTo({
+        x: nextStep * width,
+        y: 0,
+        animated: true,
+      });
     } else {
       navigation.navigate('Home');
     }
@@ -115,6 +116,7 @@ export default function GuideScreen() {
 
       {/* 引导步骤滚动区域 */}
       <Animated.ScrollView
+        ref={scrollRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
