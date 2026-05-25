@@ -271,6 +271,10 @@
     "starNight": {
       "title": "星空下的故事",
       "desc": "关于星空的美丽故事"
+    },
+    "aopeNight": {
+      "title": "奥普之夜",
+      "desc": "奥普守护精灵的奇妙夜晚"
     }
   },
   "settings": {

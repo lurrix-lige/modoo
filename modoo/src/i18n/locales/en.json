@@ -270,6 +270,10 @@
     "starNight": {
       "title": "Story Under the Stars",
       "desc": "A beautiful story about the starry sky"
+    },
+    "aopeNight": {
+      "title": "Aope Night",
+      "desc": "A magical night with the Aope guardian spirit"
     }
   },
   "settings": {
