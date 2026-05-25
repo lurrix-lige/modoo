@@ -41,8 +41,8 @@ describe('Theme Mode Color Switching', () => {
     });
 
     test('moon spirit colors should be correct', () => {
-      expect(GUARDIAN_SPIRIT_COLORS.moon.light).toBe('#7EAEC4');
-      expect(GUARDIAN_SPIRIT_COLORS.moon.dark).toBe('#5A9BB8');
+      expect(GUARDIAN_SPIRIT_COLORS.moon.light).toBe('#F28B6B');
+      expect(GUARDIAN_SPIRIT_COLORS.moon.dark).toBe('#C96B4B');
     });
 
     test('firefly spirit colors should be correct', () => {
@@ -51,34 +51,34 @@ describe('Theme Mode Color Switching', () => {
     });
 
     test('star spirit colors should be correct', () => {
-      expect(GUARDIAN_SPIRIT_COLORS.star.light).toBe('#B4A7D6');
-      expect(GUARDIAN_SPIRIT_COLORS.star.dark).toBe('#9B7BB8');
+      expect(GUARDIAN_SPIRIT_COLORS.star.light).toBe('#7EAEC4');
+      expect(GUARDIAN_SPIRIT_COLORS.star.dark).toBe('#5A9BB8');
     });
   });
 
   describe('getGuardianSpiritColor', () => {
     test('should return light mode color when isDark is false', () => {
-      expect(getGuardianSpiritColor('moon', false)).toBe('#7EAEC4');
+      expect(getGuardianSpiritColor('moon', false)).toBe('#F28B6B');
       expect(getGuardianSpiritColor('firefly', false)).toBe('#E8C547');
-      expect(getGuardianSpiritColor('star', false)).toBe('#B4A7D6');
+      expect(getGuardianSpiritColor('star', false)).toBe('#7EAEC4');
     });
 
     test('should return dark mode color when isDark is true', () => {
-      expect(getGuardianSpiritColor('moon', true)).toBe('#5A9BB8');
+      expect(getGuardianSpiritColor('moon', true)).toBe('#C96B4B');
       expect(getGuardianSpiritColor('firefly', true)).toBe('#D4AF37');
-      expect(getGuardianSpiritColor('star', true)).toBe('#9B7BB8');
+      expect(getGuardianSpiritColor('star', true)).toBe('#5A9BB8');
     });
 
     test('should handle string id parameter correctly', () => {
       const moonStringId = 'moon' as string;
-      expect(getGuardianSpiritColor(moonStringId, false)).toBe('#7EAEC4');
-      expect(getGuardianSpiritColor(moonStringId, true)).toBe('#5A9BB8');
+      expect(getGuardianSpiritColor(moonStringId, false)).toBe('#F28B6B');
+      expect(getGuardianSpiritColor(moonStringId, true)).toBe('#C96B4B');
     });
 
     test('should return fallback color for unknown spirit id', () => {
       const unknownId = 'unknown' as GuardianSpiritId;
-      expect(getGuardianSpiritColor(unknownId, false)).toBe('#7EAEC4'); // moon light
-      expect(getGuardianSpiritColor(unknownId, true)).toBe('#5A9BB8'); // moon dark
+      expect(getGuardianSpiritColor(unknownId, false)).toBe('#F28B6B'); // moon light
+      expect(getGuardianSpiritColor(unknownId, true)).toBe('#C96B4B'); // moon dark
     });
   });
 
@@ -87,15 +87,15 @@ describe('Theme Mode Color Switching', () => {
       const moon = getGuardianSpiritById('moon');
       expect(moon).toBeDefined();
       expect(moon?.id).toBe('moon');
-      expect(moon?.colors.light).toBe('#7EAEC4');
-      expect(moon?.colors.dark).toBe('#5A9BB8');
+      expect(moon?.colors.light).toBe('#F28B6B');
+      expect(moon?.colors.dark).toBe('#C96B4B');
     });
 
     test('should return moon spirit config in dark mode', () => {
       const moon = getGuardianSpiritById('moon', 'dark');
       expect(moon).toBeDefined();
       expect(moon?.id).toBe('moon');
-      expect(moon?.colors.dark).toBe('#5A9BB8');
+      expect(moon?.colors.dark).toBe('#C96B4B');
     });
 
     test('should return undefined for unknown spirit id', () => {
@@ -109,8 +109,8 @@ describe('Theme Mode Color Switching', () => {
       const lightMoon = getGuardianSpiritByIdWithMode('moon', false);
       const darkMoon = getGuardianSpiritByIdWithMode('moon', true);
       
-      expect(lightMoon?.colors.light).toBe('#7EAEC4');
-      expect(darkMoon?.colors.dark).toBe('#5A9BB8');
+      expect(lightMoon?.colors.light).toBe('#F28B6B');
+      expect(darkMoon?.colors.dark).toBe('#C96B4B');
     });
   });
 
@@ -148,7 +148,7 @@ describe('Theme Mode Color Switching', () => {
     test('should return moon spirit as default', () => {
       const defaultSpirit = getDefaultGuardianSpirit();
       expect(defaultSpirit.id).toBe('moon');
-      expect(defaultSpirit.colors.light).toBe('#7EAEC4');
+      expect(defaultSpirit.colors.light).toBe('#F28B6B');
     });
 
     test('should return correct default spirit based on mode', () => {
@@ -157,8 +157,8 @@ describe('Theme Mode Color Switching', () => {
       
       expect(lightDefault.id).toBe('moon');
       expect(darkDefault.id).toBe('moon');
-      expect(lightDefault.colors.light).toBe('#7EAEC4');
-      expect(darkDefault.colors.dark).toBe('#5A9BB8');
+      expect(lightDefault.colors.light).toBe('#F28B6B');
+      expect(darkDefault.colors.dark).toBe('#C96B4B');
     });
   });
 
@@ -166,16 +166,16 @@ describe('Theme Mode Color Switching', () => {
     test('should return guide steps with light mode colors', () => {
       const steps = getGuideSteps(false);
       expect(steps.length).toBe(3);
-      expect(steps[0].color).toBe('#7EAEC4'); // moon light
-      expect(steps[1].color).toBe('#B4A7D6'); // star light
+      expect(steps[0].color).toBe('#F28B6B'); // moon light
+      expect(steps[1].color).toBe('#7EAEC4'); // star light
       expect(steps[2].color).toBe('#E8C547'); // firefly light
     });
 
     test('should return guide steps with dark mode colors', () => {
       const steps = getGuideSteps(true);
       expect(steps.length).toBe(3);
-      expect(steps[0].color).toBe('#5A9BB8'); // moon dark
-      expect(steps[1].color).toBe('#9B7BB8'); // star dark
+      expect(steps[0].color).toBe('#C96B4B'); // moon dark
+      expect(steps[1].color).toBe('#5A9BB8'); // star dark
       expect(steps[2].color).toBe('#D4AF37'); // firefly dark
     });
 
@@ -217,12 +217,12 @@ describe('Backward Compatibility', () => {
     const { GUARDIAN_SPIRIT_CONFIG } = require('../guardianSpirits');
     expect(GUARDIAN_SPIRIT_CONFIG.length).toBe(3);
     expect(GUARDIAN_SPIRIT_CONFIG[0].id).toBe('moon');
-    expect(GUARDIAN_SPIRIT_CONFIG[0].colors.light).toBe('#7EAEC4');
+    expect(GUARDIAN_SPIRIT_CONFIG[0].colors.light).toBe('#F28B6B');
   });
 
   test('GUIDE_STEPS should export light mode steps', () => {
     const { GUIDE_STEPS } = require('../guardianSpirits');
     expect(GUIDE_STEPS.length).toBe(3);
-    expect(GUIDE_STEPS[0].color).toBe('#7EAEC4');
+    expect(GUIDE_STEPS[0].color).toBe('#F28B6B');
   });
 });

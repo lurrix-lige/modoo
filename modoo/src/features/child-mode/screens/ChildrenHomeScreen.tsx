@@ -313,7 +313,7 @@ export default function ChildrenHomeScreen() {
             <GuardianSpirit
               icon={guardianIcon}
               size="xl"
-              color={currentSpirit ? getGuardianSpiritColor(currentSpirit.id, isDark) : colors.primary}
+              color={getGuardianSpiritColor(currentSpirit?.id || 'moon', isDark)}
               animationType="breathe"
               animationDuration={2000}
             />

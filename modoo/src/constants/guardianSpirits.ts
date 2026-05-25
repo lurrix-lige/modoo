@@ -35,16 +35,16 @@ export interface GuardianSpiritConfig {
  */
 export const GUARDIAN_SPIRIT_COLORS: Record<GuardianSpiritId, GuardianSpiritColors> = {
   moon: {
-    light: '#7EAEC4',
-    dark: '#5A9BB8',
+    light: '#F28B6B',
+    dark: '#C96B4B',
   },
   firefly: {
     light: '#E8C547',
     dark: '#D4AF37',
   },
   star: {
-    light: '#B4A7D6',
-    dark: '#9B7BB8',
+    light: '#0e20dcff',
+    dark: '#0f20dcff',
   },
 };
 
