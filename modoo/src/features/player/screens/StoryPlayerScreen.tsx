@@ -400,6 +400,7 @@ export default function StoryPlayerScreen() {
       <AuthModal
         visible={blocked}
         onLogin={() => {
+          clearBlocked(); // 先关闭 AuthModal
           const parentNav = navigation.getParent();
           if (blockReason === 'no_membership') {
             parentNav?.navigate('Membership' as never);
