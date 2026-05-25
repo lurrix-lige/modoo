@@ -132,6 +132,7 @@ interface StoryCardProps {
   onPress: () => void;
   isPremium?: boolean;
   isAuthenticated?: boolean;
+  isSubscribed?: boolean;
 }
 
 export function StoryCard({
@@ -145,6 +146,7 @@ export function StoryCard({
   onPress,
   isPremium = false,
   isAuthenticated = false,
+  isSubscribed = false,
 }: StoryCardProps) {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -194,10 +196,10 @@ export function StoryCard({
             color={colors.textPrimary}
           />
         )}
-        {isPremium && (
+        {isPremium && !isSubscribed && (
           <View style={[styles.premiumBadge, { backgroundColor: colors.success }]}>
             <Text style={[styles.premiumBadgeText, { color: commonColors.white }]}>
-              {isAuthenticated ? t('story.memberOnly') : t('story.freePreview')}
+              {isAuthenticated ? t('story.openMembership') : t('story.loginToListen')}
             </Text>
           </View>
         )}

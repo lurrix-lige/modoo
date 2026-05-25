@@ -103,8 +103,9 @@ export default function ChildrenHomeScreen() {
   // 主题颜色和深色模式状态
   const { colors, isDark } = useTheme();
 
-  // 从全局状态获取儿童信息和认证状态
-  const { child, isAuthenticated } = useAppStore();
+  // 从全局状态获取儿童信息、认证状态和订阅状态
+  const { child, isAuthenticated, userState } = useAppStore();
+  const { isPaid } = userState;
 
   // 当前选中的分类
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -428,6 +429,7 @@ export default function ChildrenHomeScreen() {
                     onPress={() => navigation.navigate('StoryPlayer', { storyId: story.id })}
                     isPremium={story.isPremium}
                     isAuthenticated={isAuthenticated}
+                    isSubscribed={isPaid}
                   />
                 ))}
               </ResponsiveGrid>
@@ -446,6 +448,7 @@ export default function ChildrenHomeScreen() {
                     onPress={() => navigation.navigate('StoryPlayer', { storyId: story.id })}
                     isPremium={story.isPremium}
                     isAuthenticated={isAuthenticated}
+                    isSubscribed={isPaid}
                   />
                 ))}
               </ScrollView>
