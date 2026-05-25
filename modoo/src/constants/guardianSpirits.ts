@@ -74,12 +74,12 @@ export const GUIDE_STEPS: GuideStepConfig[] = [
   },
   {
     icon: 'star',
-    color: '#E8C547',
+    color: '#B4A7D6',
     animationType: 'pulse',
   },
   {
-    icon: 'shield-checkmark',
-    color: '#6BBF7A',
+    icon: 'zap',
+    color: '#E8C547',
     animationType: 'float',
   },
 ];

@@ -227,7 +227,7 @@
     "fireflyGuardian": "萤火虫卫士",
     "starGuardian": "星星精灵",
     "guardianSpeech": "我是{{guardianName}}，陪你入睡哦~",
-    "guardianHint": "点我，有睡前魔法",
+    "guardianHint": "按压我，开启睡前魔法",
     "storyList": "故事列表",
     "parentHint": "家长您好，点击右上角小人图标切换到家长模式",
     "parentLock": "家长锁",
@@ -235,7 +235,7 @@
     "braveCategory": "勇敢",
     "dreamCategory": "美梦",
     "recommendedCategory": "推荐",
-    "noStories": "还没有故事，快来探索吧"
+    "noStories": "还没有故事，敬请期待"
   },
   "story": {
     "play": "播放",
@@ -341,7 +341,7 @@
     "rateAppDesc": "您的反馈是我们进步的动力",
     "company": "公司信息",
     "companyName": "公司名称",
-    "companyNameValue": "Dozoo科技有限公司",
+    "companyNameValue": "梦兜(Modoo)科技有限公司",
     "businessLicense": "营业执照",
     "businessLicenseValue": "91310120MA1XXXXXX",
     "allRightsReserved": "保留所有权利"
