@@ -43,8 +43,8 @@ export const GUARDIAN_SPIRIT_COLORS: Record<GuardianSpiritId, GuardianSpiritColo
     dark: '#D4AF37',
   },
   star: {
-    light: '#0e20dcff',
-    dark: '#0f20dcff',
+    light: '#ac7ec4ff',
+    dark: '#5A9BB8',
   },
 };
 
