@@ -28,22 +28,15 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
-  // 计算尺寸：竖屏 180x180，横屏 120x120
-  const avatarSize = responsive.moderateScale(isLandscape ? 120 : 180);
-  // 内层尺寸 比例 50/180 = 0.833，00/120 = 0.833
-  const innerSizeRatio = 0.833;
-  // 图标尺寸
-  const iconSize = responsive.moderateScaleForIcon(iconSizes.hero);
+  // 使用统一的尺寸预设：竖屏使用 lg (180)，横屏使用 md (140)
+  const spiritSize = isLandscape ? 'md' : 'lg';
 
   return (
     <View style={[styles.playerSection, isLandscape && styles.landscapePlayerSection]}>
       <GuardianSpirit
         icon={guardianIcon}
-        size={avatarSize}
+        size={spiritSize}
         color={colors.primary}
-        innerColor={colors.primaryDark}
-        innerSizeRatio={innerSizeRatio}
-        iconSize={iconSize}
         animated={true}
         animationType="breathe"
         style={[styles.avatarContainer, isLandscape && styles.landscapeAvatarContainer]}

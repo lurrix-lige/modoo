@@ -1,29 +1,60 @@
 /**
- * 守护精灵展示组件
- *
- * 提供可复用的守护精灵动画展示功能，支持多种动画效果和配置选项。
- * 支持双层圆形设计，与 ChildrenHomeScreen 保持视觉一致性。
- * 支持显示精灵名称，自动处理断行和对齐。
- *
- * @component
- * @example
- * // 双层圆形设计（与 ChildrenHomeScreen 一致）
- * <GuardianSpirit
- *   icon="zap"
- *   size={200}
- *   color="#FF8A65"           // 外层颜色
- *   innerColor="#E67A5A"      // 内层颜色
- *   iconColor="#FFFFFF"       // 图标颜色
- * />
- *
- * @example
- * // 单层圆形设计（简洁模式）
+ * GuardianSpirit 守护精灵组件
+ * 
+ * 统一的守护精灵展示组件，提供一致的视觉规范和交互体验。
+ * 
+ * ## 设计规范
+ * 
+ * ### 固定比例关系（不可变更）
+ * | 比例项 | 值 | 说明 |
+ * |--------|-----|------|
+ * | 内圈/外圈比例 | 0.7 | 内层圆形直径 = 外层圆形直径 × 0.7 |
+ * | 图标/外圈比例 | 0.4 | 图标大小 = 外圈直径 × 0.4 |
+ * | 圆角比例 | 0.5 | 始终为圆形 |
+ * 
+ * ### 尺寸预设（可配置）
+ * | 预设名称 | 外圈尺寸 | 内圈尺寸 | 图标尺寸 | 适用场景 |
+ * |----------|---------|---------|---------|---------|
+ * | xs | 60 | 42 | 24 | 列表项、小型展示 |
+ * | sm | 100 | 70 | 40 | 卡片、中等展示 |
+ * | md | 140 | 98 | 56 | 默认、标准展示 |
+ * | lg | 180 | 126 | 72 | 播放器、突出展示 |
+ * | xl | 220 | 154 | 88 | 首页、主视觉区域 |
+ * | custom | 自定义 | 自动计算 | 自动计算 | 特殊需求 |
+ * 
+ * ### 颜色规范
+ * - 外圈颜色：主题主色或精灵特定颜色
+ * - 内圈颜色：外圈颜色的深色版本（自动计算或指定）
+ * - 图标颜色：白色（#FFFFFF）
+ * 
+ * ## 使用示例
+ * 
+ * ```tsx
+ * // 基础用法 - 使用尺寸预设
  * <GuardianSpirit
  *   icon="moon"
- *   size={150}
+ *   size="md"
  *   color="#7EAEC4"
- *   showInnerCircle={false}
  * />
+ * 
+ * // 自定义尺寸
+ * <GuardianSpirit
+ *   icon="star"
+ *   size={200}
+ *   color="#E8C547"
+ *   animated={true}
+ *   animationType="breathe"
+ * />
+ * 
+ * // 带名称和交互
+ * <GuardianSpirit
+ *   icon="zap"
+ *   size="lg"
+ *   color="#B4A7D6"
+ *   name="小星星"
+ *   onPress={() => console.log('clicked')}
+ * />
+ * ```
  */
 import React, { useRef, useEffect } from 'react';
 import {
@@ -36,14 +67,15 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Moon, Star, ShieldCheck, Zap } from 'lucide-react-native';
-import { iconSizes, commonColors } from '../theme';
 
 /**
- * 支持的图标类型 */
+ * 支持的图标类型
+ */
 export type GuardianIconType = 'moon' | 'star' | 'shield-checkmark' | 'zap';
 
 /**
- * 支持的动画类型 */
+ * 支持的动画类型
+ */
 export type AnimationType = 'breathe' | 'pulse' | 'float' | 'scale' | 'none';
 
 /**
@@ -52,7 +84,33 @@ export type AnimationType = 'breathe' | 'pulse' | 'float' | 'scale' | 'none';
 export type TriggerType = 'auto' | 'manual';
 
 /**
- * 组件属性接口 */
+ * 尺寸预设类型
+ */
+export type SizePreset = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+/**
+ * 尺寸预设值映射
+ */
+const SIZE_PRESETS: Record<SizePreset, number> = {
+  xs: 60,
+  sm: 100,
+  md: 140,
+  lg: 180,
+  xl: 220,
+};
+
+/**
+ * 固定比例常量
+ */
+export const GUARDIAN_SPIRIT_CONSTANTS = {
+  INNER_SIZE_RATIO: 0.7,      // 内圈/外圈比例
+  ICON_SIZE_RATIO: 0.4,       // 图标/外圈比例
+  BORDER_RADIUS_RATIO: 0.5,   // 圆角比例（圆形）
+};
+
+/**
+ * 组件属性接口
+ */
 export interface GuardianSpiritProps {
   /**
    * 精灵图标类型
@@ -60,33 +118,26 @@ export interface GuardianSpiritProps {
   icon: GuardianIconType;
 
   /**
-   * 精灵容器尺寸（外层圆形宽高）
-   * @default 200
+   * 尺寸配置：可以是预设值或自定义数值
+   * @default 'md'
    */
-  size?: number;
+  size?: SizePreset | number;
 
   /**
-   * 外层圆形背景颜色
+   * 外圈颜色
    */
   color: string;
 
   /**
-   * 内层圆形背景颜色（双层设计时使用）
-   * @default color 的深色版本
+   * 内圈颜色（默认自动计算为外圈颜色的深色版本）
    */
   innerColor?: string;
 
   /**
-   * 是否显示内层圆形（双层设计）
+   * 是否显示内圈
    * @default true
    */
   showInnerCircle?: boolean;
-
-  /**
-   * 内层圆形相对于外层的尺寸比例
-   * @default 0.7 (140/200)
-   */
-  innerSizeRatio?: number;
 
   /**
    * 动画类型
@@ -107,14 +158,8 @@ export interface GuardianSpiritProps {
   triggerType?: TriggerType;
 
   /**
-   * 图标大小
-   * @default 80
-   */
-  iconSize?: number;
-
-  /**
    * 图标颜色
-   * @default commonColors.white
+   * @default '#FFFFFF'
    */
   iconColor?: string;
 
@@ -131,7 +176,7 @@ export interface GuardianSpiritProps {
 
   /**
    * 名称文字颜色
-   * @default commonColors.black
+   * @default '#4A3B32'
    */
   nameColor?: string;
 
@@ -146,12 +191,6 @@ export interface GuardianSpiritProps {
    * @default 80
    */
   nameMaxWidth?: number;
-
-  /**
-   * 圆角半径（相对于尺寸的比例）
-   * @default 0.5（圆形）
-   */
-  borderRadiusRatio?: number;
 
   /**
    * 点击回调
@@ -169,13 +208,14 @@ export interface GuardianSpiritProps {
   style?: StyleProp<ViewStyle>;
 
   /**
-   * 自定义内层样式（应用于内层圆形）
+   * 自定义内圈样式
    */
   innerStyle?: StyleProp<ViewStyle>;
 }
 
 /**
- * 图标映射表 */
+ * 图标映射表
+ */
 const iconMap: Record<GuardianIconType, any> = {
   moon: Moon,
   star: Star,
@@ -186,37 +226,43 @@ const iconMap: Record<GuardianIconType, any> = {
 /**
  * 默认配置
  */
-const DEFAULT_SIZE = 200;
+const DEFAULT_SIZE: SizePreset = 'md';
 const DEFAULT_ANIMATION_TYPE: AnimationType = 'breathe';
 const DEFAULT_ANIMATION_DURATION = 2000;
 const DEFAULT_TRIGGER_TYPE: TriggerType = 'auto';
-const DEFAULT_ICON_SIZE = 80;
-const DEFAULT_ICON_COLOR = commonColors.white;
+const DEFAULT_ICON_COLOR = '#FFFFFF';
 const DEFAULT_ANIMATED = true;
-const DEFAULT_BORDER_RADIUS_RATIO = 0.5;
 const DEFAULT_SHOW_INNER_CIRCLE = true;
-const DEFAULT_NAME_COLOR = commonColors.black;
+const DEFAULT_NAME_COLOR = '#4A3B32';
 const DEFAULT_NAME_SIZE = 14;
 const DEFAULT_NAME_MAX_WIDTH = 80;
-const DEFAULT_INNER_SIZE_RATIO = 0.7;
+
+/**
+ * 计算颜色变暗
+ */
+const darkenColor = (hex: string, percent: number): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max((num >> 16) - amt, 0);
+  const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
+  const B = Math.max((num & 0x0000FF) - amt, 0);
+  return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+};
 
 /**
  * 守护精灵组件
  */
 export default function GuardianSpirit({
   icon,
-  size = DEFAULT_SIZE,
+  size: sizeProp = DEFAULT_SIZE,
   color,
-  innerColor,
+  innerColor: innerColorProp,
   showInnerCircle = DEFAULT_SHOW_INNER_CIRCLE,
-  innerSizeRatio = DEFAULT_INNER_SIZE_RATIO,
   animationType = DEFAULT_ANIMATION_TYPE,
   animationDuration = DEFAULT_ANIMATION_DURATION,
   triggerType = DEFAULT_TRIGGER_TYPE,
-  iconSize = DEFAULT_ICON_SIZE,
   iconColor = DEFAULT_ICON_COLOR,
   animated = DEFAULT_ANIMATED,
-  borderRadiusRatio = DEFAULT_BORDER_RADIUS_RATIO,
   name,
   nameColor = DEFAULT_NAME_COLOR,
   nameSize = DEFAULT_NAME_SIZE,
@@ -231,13 +277,35 @@ export default function GuardianSpirit({
   const translateYAnim = useRef(new Animated.Value(0)).current;
 
   /**
+   * 解析尺寸值
+   */
+  const outerSize = typeof sizeProp === 'string' 
+    ? SIZE_PRESETS[sizeProp] 
+    : sizeProp;
+
+  /**
+   * 计算内圈尺寸（固定比例）
+   */
+  const innerSize = outerSize * GUARDIAN_SPIRIT_CONSTANTS.INNER_SIZE_RATIO;
+
+  /**
+   * 计算图标尺寸（固定比例）
+   */
+  const iconSize = outerSize * GUARDIAN_SPIRIT_CONSTANTS.ICON_SIZE_RATIO;
+
+  /**
+   * 自动计算内圈颜色（比外圈颜色深30%）
+   */
+  const computedInnerColor = innerColorProp || darkenColor(color, 30);
+
+  /**
    * 创建呼吸动画
    */
   const createBreatheAnimation = () => {
     return Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
-          toValue: 1.1,
+          toValue: 1.08,
           duration: animationDuration,
           useNativeDriver: false,
         }),
@@ -258,7 +326,7 @@ export default function GuardianSpirit({
     return Animated.loop(
       Animated.sequence([
         Animated.timing(opacityAnim, {
-          toValue: 0.6,
+          toValue: 0.7,
           duration,
           useNativeDriver: false,
         }),
@@ -278,7 +346,7 @@ export default function GuardianSpirit({
     return Animated.loop(
       Animated.sequence([
         Animated.timing(translateYAnim, {
-          toValue: -10,
+          toValue: -8,
           duration: animationDuration,
           useNativeDriver: false,
         }),
@@ -299,12 +367,12 @@ export default function GuardianSpirit({
     return Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
-          toValue: 1.2,
+          toValue: 1.15,
           duration,
           useNativeDriver: false,
         }),
         Animated.timing(scaleAnim, {
-          toValue: 0.9,
+          toValue: 0.95,
           duration,
           useNativeDriver: false,
         }),
@@ -362,9 +430,6 @@ export default function GuardianSpirit({
   // 获取图标组件
   const IconComp = iconMap[icon] || Moon;
 
-  // 计算内层圆形尺寸
-  const innerSize = size * innerSizeRatio;
-
   // 是否需要可触摸
   const isTouchable = onPress || onLongPress;
 
@@ -374,9 +439,9 @@ export default function GuardianSpirit({
       style={[
         styles.iconContainer,
         {
-          width: size,
-          height: size,
-          borderRadius: size * borderRadiusRatio,
+          width: outerSize,
+          height: outerSize,
+          borderRadius: outerSize * GUARDIAN_SPIRIT_CONSTANTS.BORDER_RADIUS_RATIO,
           backgroundColor: color,
           opacity: opacityAnim,
           transform: getTransformStyle(),
@@ -392,8 +457,8 @@ export default function GuardianSpirit({
             {
               width: innerSize,
               height: innerSize,
-              borderRadius: innerSize * borderRadiusRatio,
-              backgroundColor: innerColor || color,
+              borderRadius: innerSize * GUARDIAN_SPIRIT_CONSTANTS.BORDER_RADIUS_RATIO,
+              backgroundColor: computedInnerColor,
             },
             innerStyle,
           ]}

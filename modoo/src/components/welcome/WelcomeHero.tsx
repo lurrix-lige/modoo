@@ -1,13 +1,13 @@
 /**
  * 欢迎页面英雄区域组件
  *
- * 展示应用 Logo 和欢迎信息，使用 GuardianSpirit 组件实现动画效果�? *
+ * 展示应用 Logo 和欢迎信息，使用 GuardianSpirit 组件实现动画效果。
  * @component
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useTheme, spacing, typography, shadows, commonColors } from '../../theme';
+import { useTheme, spacing, typography, shadows } from '../../theme';
 import { useVisitTracker } from '../../hooks';
 import GuardianSpirit from '../GuardianSpirit';
 
@@ -23,9 +23,6 @@ export function WelcomeHero() {
         icon="moon"
         size={120}
         color={colors.primary}
-        innerColor={colors.primaryDark}
-        iconSize={64}
-        iconColor={commonColors.white}
         animationType="breathe"
         animationDuration={3000}
         style={styles.logo}

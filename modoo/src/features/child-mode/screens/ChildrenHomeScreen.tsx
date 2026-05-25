@@ -312,11 +312,8 @@ export default function ChildrenHomeScreen() {
           >
             <GuardianSpirit
               icon={guardianIcon}
-              size={skeleton.moonSize}
+              size="xl"
               color={currentSpirit?.color || colors.primary}
-              innerColor={colors.primaryDark}
-              iconSize={iconSizes.hero}
-              iconColor={commonColors.white}
               animationType="breathe"
               animationDuration={2000}
             />
