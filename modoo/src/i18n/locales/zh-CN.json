@@ -250,12 +250,50 @@
     "openMembership": "开通会员",
     "loginToListen": "登录收听",
     "playing": "故事播放中",
-    "story1Title": "星空下的故事",
-    "story1Desc": "星空下的美丽故事",
-    "story2Title": "勇气冒险",
-    "story2Desc": "勇气的冒险故事",
-    "story3Title": "美好的梦",
-    "story3Desc": "关于美丽梦境的故事",
+    "starNightForest": {
+      "title": "晚安小森林",
+      "desc": "关于森林的美丽故事"
+    },
+    "braveAdventure": {
+      "title": "勇气的冒险",
+      "desc": "勇气与冒险的故事"
+    },
+    "pillowMagic": {
+      "title": "小枕头的魔法",
+      "desc": "小枕头克服恐惧的故事"
+    },
+    "moonBirthday": {
+      "title": "月亮，生日快乐",
+      "desc": "关于月亮生日的故事"
+    },
+    "goodNightGorilla": {
+      "title": "晚安大猩猩",
+      "desc": "一个勇敢的大猩猩的故事"
+    },
+    "runawayRabbit": {
+      "title": "逃家小兔",
+      "desc": "逃家小兔的故事"
+    },
+    "cloudSheep": {
+      "title": "云朵小绵羊",
+      "desc": "云朵小绵羊的故事"
+    },
+    "moonWhisper": {
+      "title": "月亮的悄悄话",
+      "desc": "一个月亮的悄悄话的故事"
+    },
+    "loveYou": {
+      "title": "猜猜我有多爱你",
+      "desc": "一个猜猜我有多爱你的故事"
+    },
+    "starCompanion": {
+      "title": "小星星陪我",
+      "desc": "一个小星星陪我的故事"
+    },
+    "rabbitAfraidDark": {
+      "title": "小兔子很怕黑",
+      "desc": "一个小兔子很怕黑的故事"
+    },
     "braveRabbit": {
       "title": "勇敢的小兔子",
       "desc": "一只小兔子克服恐惧的故事"
@@ -263,18 +301,6 @@
     "sweetDream": {
       "title": "甜蜜的梦",
       "desc": "关于美好梦境的故事"
-    },
-    "braveAdventure": {
-      "title": "勇敢的冒险",
-      "desc": "勇气与冒险的故事"
-    },
-    "starNight": {
-      "title": "星空下的故事",
-      "desc": "关于星空的美丽故事"
-    },
-    "aopeNight": {
-      "title": "奥普之夜",
-      "desc": "奥普守护精灵的奇妙夜晚"
     }
   },
   "settings": {

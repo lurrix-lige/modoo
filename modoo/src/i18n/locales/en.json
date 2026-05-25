@@ -249,12 +249,50 @@
     "openMembership": "Subscribe Now",
     "loginToListen": "Login to Listen",
     "playing": "Story Playing",
-    "story1Title": "Story Under the Stars",
-    "story1Desc": "A beautiful story about the starry sky",
-    "story2Title": "Brave Adventure",
-    "story2Desc": "A story of courage and adventure",
-    "story3Title": "Sweet Dreams",
-    "story3Desc": "A story about beautiful dreams",
+    "starNightForest": {
+      "title": "Good Night Little Forest",
+      "desc": "A beautiful story about the forest"
+    },
+    "braveAdventure": {
+      "title": "Brave Adventure",
+      "desc": "A story of courage and adventure"
+    },
+    "pillowMagic": {
+      "title": "Magic of the Little Pillow",
+      "desc": "A story of a little pillow overcoming fear"
+    },
+    "moonBirthday": {
+      "title": "Happy Birthday Moon",
+      "desc": "A story about the moon's birthday"
+    },
+    "goodNightGorilla": {
+      "title": "Good Night Gorilla",
+      "desc": "A brave gorilla's story"
+    },
+    "runawayRabbit": {
+      "title": "The Runaway Bunny",
+      "desc": "The story of a runaway bunny"
+    },
+    "cloudSheep": {
+      "title": "Cloud Little Sheep",
+      "desc": "A story about a cloud sheep"
+    },
+    "moonWhisper": {
+      "title": "Moon's Whisper",
+      "desc": "A story about the moon's whisper"
+    },
+    "loveYou": {
+      "title": "Guess How Much I Love You",
+      "desc": "A story about how much I love you"
+    },
+    "starCompanion": {
+      "title": "Little Star Companions",
+      "desc": "A story of little stars accompanying me"
+    },
+    "rabbitAfraidDark": {
+      "title": "Little Rabbit is Afraid of Dark",
+      "desc": "A story of a little rabbit afraid of the dark"
+    },
     "braveRabbit": {
       "title": "The Brave Little Rabbit",
       "desc": "A story of a little rabbit overcoming fear"
@@ -262,18 +300,6 @@
     "sweetDream": {
       "title": "Sweet Dreams",
       "desc": "A story about beautiful dreams"
-    },
-    "braveAdventure": {
-      "title": "Brave Adventure",
-      "desc": "A story of courage and adventure"
-    },
-    "starNight": {
-      "title": "Story Under the Stars",
-      "desc": "A beautiful story about the starry sky"
-    },
-    "aopeNight": {
-      "title": "Aope Night",
-      "desc": "A magical night with the Aope guardian spirit"
     }
   },
   "settings": {
