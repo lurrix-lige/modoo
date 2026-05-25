@@ -63,7 +63,6 @@ export const getDefaultGuardianSpirit = (): GuardianSpiritConfig => {
 export interface GuideStepConfig {
   icon: GuardianIconType;
   color: string;
-  innerColor: string;
   animationType: 'breathe' | 'pulse' | 'float' | 'scale' | 'none';
 }
 
@@ -71,19 +70,16 @@ export const GUIDE_STEPS: GuideStepConfig[] = [
   {
     icon: 'moon',
     color: '#7EAEC4',
-    innerColor: '#5A9BB8',
     animationType: 'breathe',
   },
   {
     icon: 'star',
     color: '#E8C547',
-    innerColor: '#D4AF37',
     animationType: 'pulse',
   },
   {
     icon: 'shield-checkmark',
     color: '#6BBF7A',
-    innerColor: '#55A064',
     animationType: 'float',
   },
 ];

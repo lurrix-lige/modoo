@@ -1,8 +1,8 @@
 /**
  * 引导页面组件
  *
- * 应用首次启动时展示的引导页面，通过滑动切换展示应用核心功能介绍�?
- * 使用独立�?GuardianSpirit 组件实现精灵动画效果�?
+ * 应用首次启动时展示的引导页面，通过滑动切换展示应用核心功能介绍 ?
+ * 使用独立的GuardianSpirit 组件实现精灵动画效果
  *
  * @component
  */
@@ -32,7 +32,7 @@ export default function GuideScreen() {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   /**
-   * 处理下一步按钮点�?
+   * 处理下一步按钮点击
    */
   const handleNext = () => {
     if (currentStep < GUIDE_STEPS.length - 1) {
@@ -73,12 +73,11 @@ export default function GuideScreen() {
         key={index}
         style={[styles.stepContainer, { opacity, transform: [{ scale }] }]}
       >
-        {/* 使用独立�?GuardianSpirit 组件 - 双层圆形设计 */}
+        {/* 使用独立的GuardianSpirit 组件 - 双层圆形设计 */}
         <GuardianSpirit
           icon={step.icon}
           size={200}
           color={step.color}
-          innerColor={step.innerColor}
           animationType={step.animationType}
           animationDuration={2000}
         />
@@ -113,7 +112,7 @@ export default function GuideScreen() {
         {GUIDE_STEPS.map((step, index) => renderStep(step, index))}
       </Animated.ScrollView>
 
-      {/* 分页指示�?*/}
+      {/* 分页指示器 */}
       <View style={styles.pagination}>
         {GUIDE_STEPS.map((_, index) => {
           const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
@@ -142,7 +141,7 @@ export default function GuideScreen() {
         })}
       </View>
 
-      {/* 下一�?开始按�?*/}
+      {/* 下一步按钮 */}
       <View style={styles.buttonContainer}>
         <Button
           title={currentStep === GUIDE_STEPS.length - 1 ? t('guide.start') : t('guide.next')}
