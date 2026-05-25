@@ -36,10 +36,24 @@ export default function GuideScreen() {
    */
   const handleNext = () => {
     if (currentStep < GUIDE_STEPS.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      Animated.timing(scrollX, {
+        toValue: nextStep * width,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
     } else {
       navigation.navigate('Home');
     }
+  };
+
+  /**
+   * 处理滚动结束
+   */
+  const handleScrollEnd = (e: any) => {
+    const newStep = Math.round(e.nativeEvent.contentOffset.x / width);
+    setCurrentStep(newStep);
   };
 
   /**
@@ -108,6 +122,7 @@ export default function GuideScreen() {
           useNativeDriver: false,
         })}
         scrollEventThrottle={16}
+        onMomentumScrollEnd={handleScrollEnd}
       >
         {getGuideSteps(isDark).map((step, index) => renderStep(step, index))}
       </Animated.ScrollView>
