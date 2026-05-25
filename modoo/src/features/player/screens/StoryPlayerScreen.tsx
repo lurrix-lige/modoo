@@ -93,14 +93,14 @@ export default function StoryPlayerScreen() {
     if (isAuthenticated && blocked && blockReason === 'not_authenticated') {
       retryAfterAuth();
     }
-  }, [isAuthenticated, blocked, blockReason, retryAfterAuth]);
+  }, [isAuthenticated, retryAfterAuth]);
 
   // 开通会员后自动重试付费故事播放
   useEffect(() => {
     if (isPaid && blocked && blockReason === 'no_membership') {
       retryAfterAuth();
     }
-  }, [isPaid, blocked, blockReason, retryAfterAuth]);
+  }, [isPaid, retryAfterAuth]);
 
   const handleSleepTimerExpire = useCallback(() => {
     stop();
