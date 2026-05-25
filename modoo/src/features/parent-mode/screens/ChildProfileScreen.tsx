@@ -58,7 +58,7 @@ import {
   parseGuardianSpiritId,
 } from '../../../utils/childProfile';
 import { logger } from '../../../utils/logger';
-import { GUARDIAN_SPIRIT_CONFIG } from '../../../constants/guardianSpirits';
+import { GUARDIAN_SPIRIT_CONFIG, getGuardianSpiritColor } from '../../../constants/guardianSpirits';
 
 const guardianSpirits = GUARDIAN_SPIRIT_CONFIG;
 
@@ -121,7 +121,7 @@ export default function ChildProfileScreen() {
   const navigation = useNavigation<ChildProfileScreenNavigationProp>();
   const route = useRoute<ChildProfileScreenRouteProp>();
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { setChild, setAuthenticated } = useAppStore();
   const { triggerCallback } = useNavigationCallback();
 
@@ -357,7 +357,7 @@ export default function ChildProfileScreen() {
               <GuardianSpirit
                 icon={guardianSpirit.icon}
                 size={responsive.isLargeScreen ? 64 : 56}
-                color={guardianSpirit.color}
+                color={getGuardianSpiritColor(guardianSpirit.id, isDark)}
                 animationType="none"
                 animated={false}
               />
@@ -531,7 +531,7 @@ export default function ChildProfileScreen() {
                   styles.ipButton,
                   {
                     backgroundColor: colors.surface,
-                    borderColor: selectedSpirit === spirit.id ? spirit.color : colors.border,
+                    borderColor: selectedSpirit === spirit.id ? getGuardianSpiritColor(spirit.id, isDark) : colors.border,
                     borderWidth: selectedSpirit === spirit.id ? 3 : 2,
                   },
                 ]}
@@ -541,7 +541,7 @@ export default function ChildProfileScreen() {
                 <GuardianSpirit
                   icon={spirit.icon}
                   size={responsive.isLargeScreen ? 64 : 56}
-                  color={spirit.color}
+                  color={getGuardianSpiritColor(spirit.id, isDark)}
                   animationType="none"
                   animated={false}
                   name={t(spirit.nameKey)}

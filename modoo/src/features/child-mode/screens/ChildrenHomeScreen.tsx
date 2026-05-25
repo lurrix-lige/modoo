@@ -72,7 +72,7 @@ import {
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { apiService, Story } from '../../../services';
 import { logger } from '../../../utils/logger';
-import { GUARDIAN_SPIRIT_CONFIG, getGuardianSpiritById } from '../../../constants/guardianSpirits';
+import { GUARDIAN_SPIRIT_CONFIG, getGuardianSpiritById, getGuardianSpiritColor } from '../../../constants/guardianSpirits';
 
 type ChildrenHomeNavigationProp = NativeStackNavigationProp<ChildrenStackParamList, 'ChildrenTab'>;
 
@@ -313,7 +313,7 @@ export default function ChildrenHomeScreen() {
             <GuardianSpirit
               icon={guardianIcon}
               size="xl"
-              color={currentSpirit?.color || colors.primary}
+              color={currentSpirit ? getGuardianSpiritColor(currentSpirit.id, isDark) : colors.primary}
               animationType="breathe"
               animationDuration={2000}
             />

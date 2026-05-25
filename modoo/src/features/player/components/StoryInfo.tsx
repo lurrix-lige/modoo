@@ -9,6 +9,7 @@ import GuardianSpirit, { GuardianIconType } from '../../../components/GuardianSp
 interface StoryInfoProps {
   story: Story & { isFavorite?: boolean };
   guardianIcon: GuardianIconType;
+  guardianColor: string;
   onPrevStory?: () => void;
   onNextStory?: () => void;
   hasPrevStory?: boolean;
@@ -18,6 +19,7 @@ interface StoryInfoProps {
 export const StoryInfo: React.FC<StoryInfoProps> = ({
   story,
   guardianIcon,
+  guardianColor,
   onPrevStory,
   onNextStory,
   hasPrevStory = true,
@@ -36,7 +38,7 @@ export const StoryInfo: React.FC<StoryInfoProps> = ({
       <GuardianSpirit
         icon={guardianIcon}
         size={spiritSize}
-        color={colors.primary}
+        color={guardianColor}
         animated={true}
         animationType="breathe"
         style={[styles.avatarContainer, isLandscape && styles.landscapeAvatarContainer]}

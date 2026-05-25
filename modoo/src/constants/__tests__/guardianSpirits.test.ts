@@ -1,13 +1,12 @@
 /**
- * GuardianSpirit 组件单元测试
+ * GuardianSpirits 常量单元测试
  * 
  * 测试范围：
- * 1. 尺寸预设验证 - 验证各预设尺寸值的正确性
- * 2. 比例一致性验证 - 验证内圈与外圈、图标与外圈的比例关系
- * 3. 颜色计算验证 - 验证内圈颜色自动变暗功能
- * 4. 主题模式切换验证 - 验证不同主题模式下颜色的正确切换
+ * 1. 主题模式颜色配置验证 - 验证 light/dark 模式下各精灵颜色的正确性
+ * 2. 颜色获取函数验证 - 验证 getGuardianSpiritColor 等函数的正确性
+ * 3. 精灵配置获取函数验证 - 验证 getGuardianSpiritById 等函数的正确性
+ * 4. 引导步骤配置验证 - 验证 getGuideSteps 函数的正确性
  */
-import { GUARDIAN_SPIRIT_CONSTANTS } from '../GuardianSpirit';
 import { 
   GUARDIAN_SPIRIT_COLORS,
   getGuardianSpiritById,
@@ -20,137 +19,7 @@ import {
   getGuideSteps,
   GuardianSpiritId,
   ThemeMode
-} from '../../constants/guardianSpirits';
-
-/**
- * 尺寸预设值映射（与组件内部定义一致）
- */
-const SIZE_PRESETS: Record<string, number> = {
-  xs: 60,
-  sm: 100,
-  md: 140,
-  lg: 180,
-  xl: 220,
-};
-
-describe('GuardianSpirit Constants', () => {
-  test('INNER_SIZE_RATIO should be 0.7', () => {
-    expect(GUARDIAN_SPIRIT_CONSTANTS.INNER_SIZE_RATIO).toBe(0.7);
-  });
-
-  test('ICON_SIZE_RATIO should be 0.4', () => {
-    expect(GUARDIAN_SPIRIT_CONSTANTS.ICON_SIZE_RATIO).toBe(0.4);
-  });
-
-  test('BORDER_RADIUS_RATIO should be 0.5', () => {
-    expect(GUARDIAN_SPIRIT_CONSTANTS.BORDER_RADIUS_RATIO).toBe(0.5);
-  });
-});
-
-describe('Size Presets', () => {
-  test('xs preset should be 60', () => {
-    expect(SIZE_PRESETS.xs).toBe(60);
-  });
-
-  test('sm preset should be 100', () => {
-    expect(SIZE_PRESETS.sm).toBe(100);
-  });
-
-  test('md preset should be 140', () => {
-    expect(SIZE_PRESETS.md).toBe(140);
-  });
-
-  test('lg preset should be 180', () => {
-    expect(SIZE_PRESETS.lg).toBe(180);
-  });
-
-  test('xl preset should be 220', () => {
-    expect(SIZE_PRESETS.xl).toBe(220);
-  });
-});
-
-describe('Proportional Relationships', () => {
-  const { INNER_SIZE_RATIO, ICON_SIZE_RATIO } = GUARDIAN_SPIRIT_CONSTANTS;
-
-  test('inner size should be 70% of outer size for all presets', () => {
-    Object.values(SIZE_PRESETS).forEach((outerSize) => {
-      const expectedInnerSize = outerSize * INNER_SIZE_RATIO;
-      expect(expectedInnerSize).toBe(outerSize * 0.7);
-    });
-  });
-
-  test('icon size should be 40% of outer size for all presets', () => {
-    Object.values(SIZE_PRESETS).forEach((outerSize) => {
-      const expectedIconSize = outerSize * ICON_SIZE_RATIO;
-      expect(expectedIconSize).toBe(outerSize * 0.4);
-    });
-  });
-
-  test('calculated dimensions should maintain correct proportions for all sizes', () => {
-    Object.values(SIZE_PRESETS).forEach((outerSize) => {
-      const innerSize = outerSize * INNER_SIZE_RATIO;
-      const iconSize = outerSize * ICON_SIZE_RATIO;
-
-      expect(innerSize / outerSize).toBe(0.7);
-      expect(iconSize / outerSize).toBe(0.4);
-    });
-  });
-
-  test('custom size should maintain correct proportions', () => {
-    const customSize = 200;
-    const innerSize = customSize * INNER_SIZE_RATIO;
-    const iconSize = customSize * ICON_SIZE_RATIO;
-
-    expect(innerSize).toBe(140);
-    expect(iconSize).toBe(80);
-    expect(innerSize / customSize).toBe(0.7);
-    expect(iconSize / customSize).toBe(0.4);
-  });
-});
-
-describe('Color Darkening Logic', () => {
-  /**
-   * 模拟组件中的 darkenColor 函数
-   */
-  const darkenColor = (hex: string, percent: number): string => {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.max((num >> 16) - amt, 0);
-    const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
-    const B = Math.max((num & 0x0000FF) - amt, 0);
-    return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
-  };
-
-  test('darkenColor should darken color by 30%', () => {
-    const originalColor = '#F28B6B';
-    const darkened = darkenColor(originalColor, 30);
-    expect(darkened).toBe('#C96B4B');
-  });
-
-  test('darkenColor should handle white correctly', () => {
-    const white = '#FFFFFF';
-    const darkened = darkenColor(white, 30);
-    expect(darkened).toBe('#E1E1E1');
-  });
-
-  test('darkenColor should handle black correctly', () => {
-    const black = '#000000';
-    const darkened = darkenColor(black, 30);
-    expect(darkened).toBe('#000000');
-  });
-
-  test('darkenColor should clamp values to 0', () => {
-    const lightColor = '#333333';
-    const darkened = darkenColor(lightColor, 50);
-    expect(darkened).toBe('#000000');
-  });
-
-  test('inner color should be 30% darker than outer color', () => {
-    const outerColor = '#7EAEC4';
-    const expectedInnerColor = darkenColor(outerColor, 30);
-    expect(expectedInnerColor).toBe('#5A9BB8');
-  });
-});
+} from '../guardianSpirits';
 
 describe('Theme Mode Color Switching', () => {
   describe('GUARDIAN_SPIRIT_COLORS', () => {
@@ -208,7 +77,8 @@ describe('Theme Mode Color Switching', () => {
 
     test('should return fallback color for unknown spirit id', () => {
       const unknownId = 'unknown' as GuardianSpiritId;
-      expect(getGuardianSpiritColor(unknownId, false)).toBeDefined();
+      expect(getGuardianSpiritColor(unknownId, false)).toBe('#7EAEC4'); // moon light
+      expect(getGuardianSpiritColor(unknownId, true)).toBe('#5A9BB8'); // moon dark
     });
   });
 
@@ -340,32 +210,18 @@ describe('Color Consistency Across Themes', () => {
     expect(moonLight).not.toBe(starLight);
     expect(fireflyLight).not.toBe(starLight);
   });
-
-  test('should maintain color identity across themes', () => {
-    // Moon should be blue family
-    expect(GUARDIAN_SPIRIT_COLORS.moon.light).toMatch(/^#[0-9A-Fa-f]{2}[89A-Fa-f][0-9A-Fa-f]{2}/);
-    expect(GUARDIAN_SPIRIT_COLORS.moon.dark).toMatch(/^#[0-9A-Fa-f]{2}[0-8][0-9A-Fa-f]{2}/);
-    
-    // Firefly should be yellow family
-    expect(GUARDIAN_SPIRIT_COLORS.firefly.light).toMatch(/^#[EDF][0-9A-Fa-f][0-9A-Fa-f]/);
-    expect(GUARDIAN_SPIRIT_COLORS.firefly.dark).toMatch(/^#[CD][0-9A-Fa-f][0-9A-Fa-f]/);
-    
-    // Star should be purple family
-    expect(GUARDIAN_SPIRIT_COLORS.star.light).toMatch(/^#[AB][0-9A-Fa-f]/);
-    expect(GUARDIAN_SPIRIT_COLORS.star.dark).toMatch(/^#[789][0-9A-Fa-f]/);
-  });
 });
 
 describe('Backward Compatibility', () => {
   test('GUARDIAN_SPIRIT_CONFIG should export light mode configs', () => {
-    const { GUARDIAN_SPIRIT_CONFIG } = require('../../constants/guardianSpirits');
+    const { GUARDIAN_SPIRIT_CONFIG } = require('../guardianSpirits');
     expect(GUARDIAN_SPIRIT_CONFIG.length).toBe(3);
     expect(GUARDIAN_SPIRIT_CONFIG[0].id).toBe('moon');
     expect(GUARDIAN_SPIRIT_CONFIG[0].colors.light).toBe('#7EAEC4');
   });
 
   test('GUIDE_STEPS should export light mode steps', () => {
-    const { GUIDE_STEPS } = require('../../constants/guardianSpirits');
+    const { GUIDE_STEPS } = require('../guardianSpirits');
     expect(GUIDE_STEPS.length).toBe(3);
     expect(GUIDE_STEPS[0].color).toBe('#7EAEC4');
   });

@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, typography, sharedStyles } from '../../../theme';
 import { Button, GuardianSpirit } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
-import { GUIDE_STEPS } from '../../../constants/guardianSpirits';
+import { GUIDE_STEPS, getGuideSteps } from '../../../constants/guardianSpirits';
 
 type GuideScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Guide'>;
 
@@ -27,7 +27,7 @@ const { width } = Dimensions.get('window');
 export default function GuideScreen() {
   const navigation = useNavigation<GuideScreenNavigationProp>();
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -109,7 +109,7 @@ export default function GuideScreen() {
         })}
         scrollEventThrottle={16}
       >
-        {GUIDE_STEPS.map((step, index) => renderStep(step, index))}
+        {getGuideSteps(isDark).map((step, index) => renderStep(step, index))}
       </Animated.ScrollView>
 
       {/* 分页指示器 */}

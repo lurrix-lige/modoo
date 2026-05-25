@@ -40,7 +40,7 @@ import { useBrightness } from '../hooks/useBrightness';
 import { useOrientation } from '../hooks/useOrientation';
 import { Story } from '../../../types';
 import { useAppStore } from '../../../store';
-import { getGuardianSpiritById } from '../../../constants/guardianSpirits';
+import { getGuardianSpiritById, getGuardianSpiritColor } from '../../../constants/guardianSpirits';
 
 type StoryPlayerNavigationProp = NativeStackNavigationProp<ChildrenStackParamList>;
 type StoryPlayerRouteProp = RouteProp<ChildrenStackParamList, 'StoryPlayer'>;
@@ -55,7 +55,7 @@ export default function StoryPlayerScreen() {
   const navigation = useNavigation<StoryPlayerNavigationProp>();
   const route = useRoute<StoryPlayerRouteProp>();
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { width, height } = useWindowDimensions();
   const { child, userState } = useAppStore();
   const { isAuthenticated, isPaid } = userState;
@@ -267,6 +267,7 @@ export default function StoryPlayerScreen() {
           <StoryInfo
             story={story as Story & { isFavorite?: boolean }}
             guardianIcon={currentSpirit?.icon || 'moon'}
+            guardianColor={currentSpirit ? getGuardianSpiritColor(currentSpirit.id, isDark) : colors.primary}
             onPrevStory={handlePrevStory}
             onNextStory={handleNextStory}
             hasPrevStory={true}
