@@ -1,8 +1,9 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { Text } from 'react-native';
-import { NavigationContainer, DefaultTheme, DarkTheme, CommonActions } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNavigationContainerRef } from '@react-navigation/native';
 import {
   EarIcon,
   GraduationCap,
@@ -84,15 +85,38 @@ function AuthNavigator() {
   );
 }
 
-function ChildrenTabNavigator({ route, navigation }: { route: { params?: { screen?: string } }, navigation: any }) {
+function ChildrenTabNavigator({ route, navigation }: { route: { params?: { screen?: string; params?: Record<string, any> } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { pendingNavigation, clearPendingNavigation } = useAppStore();
 
   useEffect(() => {
+    // 处理从路由参数传递的导航
     if (route.params?.screen) {
-      navigation.navigate(route.params.screen);
+      navigation.navigate(route.params.screen, route.params.params);
     }
-  }, [route.params?.screen, navigation]);
+  }, [route.params?.screen, route.params?.params, navigation]);
+
+  useEffect(() => {
+    // 处理从 store 传递的待处理导航
+    if (pendingNavigation) {
+      const { screen, params } = pendingNavigation;
+      const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
+      
+      if (tabScreens.includes(screen)) {
+        // 导航到 tab 屏幕
+        navigation.navigate(screen, params);
+      } else {
+        // 导航到栈屏幕（如 StoryPlayer, CourseDetail）
+        // 使用父导航器导航
+        const parentNavigation = navigation.getParent();
+        if (parentNavigation) {
+          parentNavigation.navigate(screen, params);
+        }
+      }
+      clearPendingNavigation();
+    }
+  }, [pendingNavigation, navigation, clearPendingNavigation]);
 
   return (
     <ChildrenTab.Navigator
@@ -205,15 +229,38 @@ function ChildrenStackNavigator() {
   );
 }
 
-function ParentTabNavigator({ route, navigation }: { route: { params?: { screen?: string } }, navigation: any }) {
+function ParentTabNavigator({ route, navigation }: { route: { params?: { screen?: string; params?: Record<string, any> } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { pendingNavigation, clearPendingNavigation } = useAppStore();
 
   useEffect(() => {
+    // 处理从路由参数传递的导航
     if (route.params?.screen) {
-      navigation.navigate(route.params.screen);
+      navigation.navigate(route.params.screen, route.params.params);
     }
-  }, [route.params?.screen, navigation]);
+  }, [route.params?.screen, route.params?.params, navigation]);
+
+  useEffect(() => {
+    // 处理从 store 传递的待处理导航
+    if (pendingNavigation) {
+      const { screen, params } = pendingNavigation;
+      const tabScreens = ['ParentHome', 'Knowledge', 'Services', 'Profile'];
+      
+      if (tabScreens.includes(screen)) {
+        // 导航到 tab 屏幕
+        navigation.navigate(screen, params);
+      } else {
+        // 导航到栈屏幕（如 ArticleDetail）
+        // 使用父导航器导航
+        const parentNavigation = navigation.getParent();
+        if (parentNavigation) {
+          parentNavigation.navigate(screen, params);
+        }
+      }
+      clearPendingNavigation();
+    }
+  }, [pendingNavigation, navigation, clearPendingNavigation]);
 
   return (
     <ParentTab.Navigator
@@ -336,22 +383,8 @@ function ParentStackNavigator() {
   );
 }
 
-function MainNavigator({ route, navigation }: { route: { params?: { initialScreen?: string; params?: Record<string, any> } }, navigation: any }) {
+function MainNavigator() {
   const { isChildMode } = useAppStore();
-
-  useEffect(() => {
-    const { initialScreen, params } = route.params || {};
-    if (initialScreen) {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [
-            { name: initialScreen, params },
-          ],
-        })
-      );
-    }
-  }, [route.params, navigation]);
 
   if (isChildMode) {
     return <ChildrenStackNavigator />;

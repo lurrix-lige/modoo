@@ -27,6 +27,11 @@ interface PlayerState {
   error: PlayerError | null;
 }
 
+interface PendingNavigation {
+  screen: string;
+  params?: Record<string, any>;
+}
+
 interface AppState {
   // 后向兼容的字段
   isAuthenticated: boolean;
@@ -39,6 +44,9 @@ interface AppState {
   isComfortMode: boolean;
   comfortModeVolume: number;
   themeMode: 'light' | 'dark' | 'system';
+  
+  // 待处理的导航
+  pendingNavigation: PendingNavigation | null;
 
   setAuthenticated: (isAuth: boolean, user?: User) => void;
   setPaidStatus: (isPaid: boolean) => void;
@@ -51,6 +59,10 @@ interface AppState {
   setComfortVolume: (volume: number) => void;
   setThemeMode: (mode: 'light' | 'dark' | 'system') => void;
   logout: () => void;
+  
+  // 导航相关方法
+  setPendingNavigation: (navigation: PendingNavigation | null) => void;
+  clearPendingNavigation: () => void;
 }
 
 interface PlayerActions {
@@ -83,6 +95,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   isComfortMode: false,
   comfortModeVolume: 30,
   themeMode: 'system',
+  
+  // 待处理的导航
+  pendingNavigation: null,
 
   setAuthenticated: (isAuth, user) =>
     set((state) => {
@@ -144,7 +159,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       userState: { ...INITIAL_USER_STATE },
       isChildMode: true,
       isComfortMode: false,
+      pendingNavigation: null,
     }),
+  
+  setPendingNavigation: (navigation) => set({ pendingNavigation: navigation }),
+  clearPendingNavigation: () => set({ pendingNavigation: null }),
 }));
 
 export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => ({

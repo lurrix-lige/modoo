@@ -85,7 +85,7 @@ export default function WelcomeHomeScreen() {
   const navigation = useNavigation<WelcomeHomeNavigationProp>();
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { userState } = useAppStore();
+  const { userState, setPendingNavigation } = useAppStore();
   const { visitCount } = useVisitTracker();
   const { getContentCardWidth, getContentLimit, isTablet } = useResponsive();
 
@@ -185,27 +185,21 @@ export default function WelcomeHomeScreen() {
     // 根据内容类型进行不同的导航
     if (item.type === 'story') {
       // 故事类型：导航到故事播放页面
-      navigation.navigate('Main', {
-        initialScreen: 'StoryPlayer',
-        params: { storyId: item.id },
-      });
+      setPendingNavigation({ screen: 'StoryPlayer', params: { storyId: item.id } });
+      navigation.navigate('Main');
     } else if (item.type === 'course') {
       // 课程类型：导航到课程详情页面
-      navigation.navigate('Main', {
-        initialScreen: 'CourseDetail',
-        params: { courseId: item.id },
-      });
+      setPendingNavigation({ screen: 'CourseDetail', params: { courseId: item.id } });
+      navigation.navigate('Main');
     } else if (item.type === 'article') {
       // 文章类型：导航到文章详情页面
-      navigation.navigate('Main', {
-        initialScreen: 'ArticleDetail',
-        params: { articleId: item.id },
-      });
+      setPendingNavigation({ screen: 'ArticleDetail', params: { articleId: item.id } });
+      navigation.navigate('Main');
     } else {
       // 默认导航到主页面
       navigation.navigate('Main');
     }
-  }, [navigation]);
+  }, [navigation, setPendingNavigation]);
 
   const handleStart = useCallback(() => {
     navigation.navigate('Auth');
@@ -216,25 +210,29 @@ export default function WelcomeHomeScreen() {
     // 根据分类类型导航到对应的页面
     switch (categoryType) {
       case 'story':
+        // 导航到故事页面
+        setPendingNavigation({ screen: 'ChildrenHome' });
+        navigation.navigate('Main');
+        break;
       case 'course':
+        // 导航到课程页面
+        setPendingNavigation({ screen: 'Course' });
+        navigation.navigate('Main');
+        break;
       case 'breathing':
-        // 儿童模式下的分类，导航到对应的 tab 页面
-        navigation.navigate('Main', {
-          initialScreen: 'ChildrenTab',
-          params: { screen: categoryType === 'story' ? 'ChildrenHome' : categoryType === 'course' ? 'Course' : 'Breathing' },
-        });
+        // 导航到呼吸练习页面
+        setPendingNavigation({ screen: 'Breathing' });
+        navigation.navigate('Main');
         break;
       case 'article':
-        // 家长端知识文章页面
-        navigation.navigate('Main', {
-          initialScreen: 'ParentTab',
-          params: { screen: 'Knowledge' },
-        });
+        // 导航到知识文章页面（家长端）
+        setPendingNavigation({ screen: 'Knowledge' });
+        navigation.navigate('Main');
         break;
       default:
         navigation.navigate('Main');
     }
-  }, [navigation]);
+  }, [navigation, setPendingNavigation]);
 
   return (
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
