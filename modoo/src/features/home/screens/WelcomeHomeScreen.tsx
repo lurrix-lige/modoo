@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useTheme, spacing, typography, sharedStyles, responsive, layout } from '../../../theme';
 import { BookOpen, GraduationCap, Leaf, Star } from 'lucide-react-native';
+import { navigate } from '../../../navigation/navigationRef';
 import {
   WelcomeHero,
   ContentCard,
@@ -183,20 +184,27 @@ export default function WelcomeHomeScreen() {
 
   const handleContentPress = useCallback((item: ContentItem) => {
     // 根据内容类型进行不同的导航
+    console.log('=== handleContentPress triggered ===');
+    console.log('Content item:', JSON.stringify(item));
+    
     if (item.type === 'story') {
       // 故事类型：导航到故事播放页面
+      console.log('Setting pending navigation to StoryPlayer with storyId:', item.id);
       setPendingNavigation({ screen: 'StoryPlayer', params: { storyId: item.id } });
       navigation.navigate('Main');
     } else if (item.type === 'course') {
       // 课程类型：导航到课程详情页面
+      console.log('Setting pending navigation to CourseDetail with courseId:', item.id);
       setPendingNavigation({ screen: 'CourseDetail', params: { courseId: item.id } });
       navigation.navigate('Main');
     } else if (item.type === 'article') {
       // 文章类型：导航到文章详情页面
+      console.log('Setting pending navigation to ArticleDetail with articleId:', item.id);
       setPendingNavigation({ screen: 'ArticleDetail', params: { articleId: item.id } });
       navigation.navigate('Main');
     } else {
       // 默认导航到主页面
+      console.log('Unknown content type, navigating to Main');
       navigation.navigate('Main');
     }
   }, [navigation, setPendingNavigation]);
@@ -208,24 +216,31 @@ export default function WelcomeHomeScreen() {
   // 分类卡片点击处理
   const handleCategoryPress = useCallback((categoryId: string, categoryType: string) => {
     // 根据分类类型导航到对应的页面
+    console.log('=== handleCategoryPress triggered ===');
+    console.log('Category:', categoryId, 'Type:', categoryType);
+    
     switch (categoryType) {
       case 'story':
         // 导航到故事页面
+        console.log('Setting pending navigation to ChildrenHome');
         setPendingNavigation({ screen: 'ChildrenHome' });
         navigation.navigate('Main');
         break;
       case 'course':
         // 导航到课程页面
+        console.log('Setting pending navigation to Course');
         setPendingNavigation({ screen: 'Course' });
         navigation.navigate('Main');
         break;
       case 'breathing':
         // 导航到呼吸练习页面
+        console.log('Setting pending navigation to Breathing');
         setPendingNavigation({ screen: 'Breathing' });
         navigation.navigate('Main');
         break;
       case 'article':
         // 导航到知识文章页面（家长端）
+        console.log('Setting pending navigation to Knowledge');
         setPendingNavigation({ screen: 'Knowledge' });
         navigation.navigate('Main');
         break;

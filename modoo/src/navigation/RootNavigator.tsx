@@ -193,18 +193,30 @@ function ChildrenStackNavigator() {
   const navigation = useNavigation() as any;
 
   useEffect(() => {
+    console.log('=== ChildrenStackNavigator useEffect triggered ===');
+    console.log('pendingNavigation:', JSON.stringify(pendingNavigation));
+    console.log('navigation object keys:', Object.keys(navigation || {}));
+    
     if (pendingNavigation) {
-      const { screen, params } = pendingNavigation;
-      const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
+      // 添加延迟确保导航器完全挂载
+      const timer = setTimeout(() => {
+        const { screen, params } = pendingNavigation;
+        console.log('Attempting to navigate to:', screen, 'with params:', JSON.stringify(params));
+        
+        const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
+        
+        if (tabScreens.includes(screen)) {
+          console.log('Navigating to tab screen via ChildrenTab');
+          navigation.navigate('ChildrenTab', { screen, params });
+        } else {
+          console.log('Navigating directly to stack screen:', screen);
+          navigation.navigate(screen, params);
+        }
+        clearPendingNavigation();
+        console.log('Navigation completed, pendingNavigation cleared');
+      }, 100);
       
-      if (tabScreens.includes(screen)) {
-        // 导航到 tab 屏幕：先导航到 ChildrenTab，然后通过 ChildrenTabNavigator 的 useEffect 处理
-        navigation.navigate('ChildrenTab', { screen, params });
-      } else {
-        // 直接导航到栈屏幕（如 StoryPlayer, CourseDetail）
-        navigation.navigate(screen, params);
-      }
-      clearPendingNavigation();
+      return () => clearTimeout(timer);
     }
   }, [pendingNavigation, navigation, clearPendingNavigation]);
 
@@ -333,18 +345,29 @@ function ParentStackNavigator() {
   const navigation = useNavigation() as any;
 
   useEffect(() => {
+    console.log('=== ParentStackNavigator useEffect triggered ===');
+    console.log('pendingNavigation:', JSON.stringify(pendingNavigation));
+    
     if (pendingNavigation) {
-      const { screen, params } = pendingNavigation;
-      const tabScreens = ['ParentHome', 'Knowledge', 'Services', 'Profile'];
+      // 添加延迟确保导航器完全挂载
+      const timer = setTimeout(() => {
+        const { screen, params } = pendingNavigation;
+        console.log('Attempting to navigate to:', screen, 'with params:', JSON.stringify(params));
+        
+        const tabScreens = ['ParentHome', 'Knowledge', 'Services', 'Profile'];
+        
+        if (tabScreens.includes(screen)) {
+          console.log('Navigating to tab screen via ParentTab');
+          navigation.navigate('ParentTab', { screen, params });
+        } else {
+          console.log('Navigating directly to stack screen:', screen);
+          navigation.navigate(screen, params);
+        }
+        clearPendingNavigation();
+        console.log('Navigation completed, pendingNavigation cleared');
+      }, 100);
       
-      if (tabScreens.includes(screen)) {
-        // 导航到 tab 屏幕：先导航到 ParentTab，然后通过 ParentTabNavigator 的 useEffect 处理
-        navigation.navigate('ParentTab', { screen, params });
-      } else {
-        // 直接导航到栈屏幕（如 ArticleDetail）
-        navigation.navigate(screen, params);
-      }
-      clearPendingNavigation();
+      return () => clearTimeout(timer);
     }
   }, [pendingNavigation, navigation, clearPendingNavigation]);
 
