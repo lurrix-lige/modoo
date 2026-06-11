@@ -21,7 +21,7 @@ interface ContentCardProps {
   onPress: () => void;
 }
 
-export function ContentCard({ item, onPress }: ContentCardProps) {
+const ContentCardComponent = ({ item, onPress }: ContentCardProps)  =>{
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -96,6 +96,8 @@ export function ContentCard({ item, onPress }: ContentCardProps) {
     </Card>
   );
 }
+
+export const ContentCard = React.memo(ContentCardComponent);
 
 const styles = StyleSheet.create({
   card: {

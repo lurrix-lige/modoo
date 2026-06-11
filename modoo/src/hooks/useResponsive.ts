@@ -1,39 +1,40 @@
-import { Dimensions } from 'react-native';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { useCallback } from 'react';
+import { useWindowDimensions } from 'react-native';
 
 export function useResponsive() {
-  const isTablet = SCREEN_WIDTH >= 768;
-  const isLandscape = SCREEN_WIDTH > SCREEN_HEIGHT;
-  const isSmallDevice = SCREEN_WIDTH < 375;
-  const isLargeDevice = SCREEN_WIDTH >= 414;
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  
+  const isTablet = screenWidth >= 768;
+  const isLandscape = screenWidth > screenHeight;
+  const isSmallDevice = screenWidth < 375;
+  const isLargeDevice = screenWidth >= 414;
 
-  const getContentCardWidth = () => {
+  const getContentCardWidth = useCallback(() => {
     if (isTablet) return `${31}%`;
     if (isLandscape) return `${31}%`;
     return `${48}%`;
-  };
+  }, [isTablet, isLandscape]);
 
-  const getGridColumns = () => {
+  const getGridColumns = useCallback(() => {
     if (isTablet) return 3;
     if (isLandscape) return 3;
     return 2;
-  };
+  }, [isTablet, isLandscape]);
 
-  const getContentLimit = () => {
+  const getContentLimit = useCallback(() => {
     if (isTablet) return 6;
     return 4;
-  };
+  }, [isTablet]);
 
-  const getSpacingSize = () => {
+  const getSpacingSize = useCallback(() => {
     if (isTablet) return 'xl';
     if (isLargeDevice) return 'lg';
     return 'md';
-  };
+  }, [isTablet, isLargeDevice]);
 
   return {
-    screenWidth: SCREEN_WIDTH,
-    screenHeight: SCREEN_HEIGHT,
+    screenWidth,
+    screenHeight,
     isTablet,
     isLandscape,
     isSmallDevice,

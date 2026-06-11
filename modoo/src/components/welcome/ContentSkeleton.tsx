@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useTheme, spacing, borderRadius } from '../../theme';
 import { useResponsive } from '../../hooks';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 export function ContentSkeleton() {
+  const { width: screenWidth } = useWindowDimensions();
   const { colors } = useTheme();
   const { getContentCardWidth, getContentLimit, isTablet } = useResponsive();
   const skeletonCount = getContentLimit();
@@ -15,7 +14,7 @@ export function ContentSkeleton() {
       <View style={[styles.heroSkeleton, { backgroundColor: colors.surface }]} />
 
       <View style={styles.contentSection}>
-        <View style={[styles.titleSkeleton, { backgroundColor: colors.surface }]} />
+        <View style={[styles.titleSkeleton, { backgroundColor: colors.surface, width: screenWidth * 0.4 }]} />
         <View style={[styles.cardRow, { gap: isTablet ? spacing.lg : spacing.md }]}>
           {Array.from({ length: skeletonCount }).map((_, index) => (
             <View
@@ -92,6 +91,5 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     height: 24,
     marginBottom: spacing.lg,
-    width: SCREEN_WIDTH * 0.4,
   },
 });

@@ -10,7 +10,7 @@ interface GentleInvitationProps {
   onStart: () => void;
 }
 
-export function GentleInvitation({ onStart }: GentleInvitationProps) {
+const GentleInvitationComponent = ({ onStart }: GentleInvitationProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -40,6 +40,8 @@ export function GentleInvitation({ onStart }: GentleInvitationProps) {
     </View>
   );
 }
+
+export const GentleInvitation = React.memo(GentleInvitationComponent);
 
 const styles = StyleSheet.create({
   button: {

@@ -53,6 +53,7 @@ export interface StorageKeys {
   LANGUAGE_PREFERENCE: string;
   VISIT_RECORD: string;
   HEALTH_CHECK: string;
+  CONTENT_CACHE: string;
 }
 
 export interface I18nConfig {
@@ -143,6 +144,7 @@ export const STORAGE_KEYS: StorageKeys = {
   LANGUAGE_PREFERENCE: 'modoo_language_preference',
   VISIT_RECORD: 'modoo_visit_record',
   HEALTH_CHECK: 'modoo_health_check',
+  CONTENT_CACHE: 'modoo_content_cache',
 };
 
 // ============================================

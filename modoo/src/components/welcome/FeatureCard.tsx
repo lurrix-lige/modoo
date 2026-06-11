@@ -12,7 +12,7 @@ interface FeatureCardProps {
   onPress?: () => void;
 }
 
-export function FeatureCard({ icon: Icon, titleKey, descriptionKey, onPress }: FeatureCardProps) {
+const FeatureCardComponent = ({ icon: Icon, titleKey, descriptionKey, onPress }: FeatureCardProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -32,6 +32,8 @@ export function FeatureCard({ icon: Icon, titleKey, descriptionKey, onPress }: F
     </Card>
   );
 }
+
+export const FeatureCard = React.memo(FeatureCardComponent);
 
 const styles = StyleSheet.create({
   card: {

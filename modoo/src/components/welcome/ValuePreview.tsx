@@ -42,7 +42,7 @@ const VALUE_ITEMS: ValueItem[] = [
   },
 ];
 
-export function ValuePreview() {
+const ValuePreviewComponent = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { getContentCardWidth, isTablet } = useResponsive();
@@ -76,7 +76,9 @@ export function ValuePreview() {
       </View>
     </View>
   );
-}
+};
+
+export const ValuePreview = React.memo(ValuePreviewComponent);
 
 const styles = StyleSheet.create({
   container: {
