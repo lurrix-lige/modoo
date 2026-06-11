@@ -192,6 +192,17 @@
     "exploreButton": "开始探索",
     "footer": "让每个夜晚都充满温馨与安心",
     "discoverContent": "探索精彩内容",
+    "featuredContent": "精彩内容",
+    "category": {
+      "story": "睡前故事",
+      "storyDesc": "精选故事伴你入眠",
+      "course": "专业课程",
+      "courseDesc": "科学助眠训练",
+      "breathing": "呼吸练习",
+      "breathingDesc": "放松身心入睡",
+      "article": "育儿知识",
+      "articleDesc": "专业育儿指导"
+    },
     "valueTitle": "会员价值",
     "valueSubtitle": "了解会员能为你带来什么",
     "value": {

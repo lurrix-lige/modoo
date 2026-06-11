@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Text } from 'react-native';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme, CommonActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -84,9 +84,15 @@ function AuthNavigator() {
   );
 }
 
-function ChildrenTabNavigator() {
+function ChildrenTabNavigator({ route, navigation }: { route: { params?: { screen?: string } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (route.params?.screen) {
+      navigation.navigate(route.params.screen);
+    }
+  }, [route.params?.screen, navigation]);
 
   return (
     <ChildrenTab.Navigator
@@ -184,6 +190,7 @@ function ChildrenStackNavigator() {
 
   return (
     <ChildrenStack.Navigator
+      initialRouteName="ChildrenTab"
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
@@ -198,9 +205,15 @@ function ChildrenStackNavigator() {
   );
 }
 
-function ParentTabNavigator() {
+function ParentTabNavigator({ route, navigation }: { route: { params?: { screen?: string } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (route.params?.screen) {
+      navigation.navigate(route.params.screen);
+    }
+  }, [route.params?.screen, navigation]);
 
   return (
     <ParentTab.Navigator
@@ -298,6 +311,7 @@ function ParentStackNavigator() {
 
   return (
     <ParentStack.Navigator
+      initialRouteName="UserDashboard"
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
@@ -322,9 +336,27 @@ function ParentStackNavigator() {
   );
 }
 
-function MainNavigator() {
+function MainNavigator({ route, navigation }: { route: { params?: { initialScreen?: string; params?: Record<string, any> } }, navigation: any }) {
   const { isChildMode } = useAppStore();
-  return isChildMode ? <ChildrenStackNavigator /> : <ParentStackNavigator />;
+
+  useEffect(() => {
+    const { initialScreen, params } = route.params || {};
+    if (initialScreen) {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: initialScreen, params },
+          ],
+        })
+      );
+    }
+  }, [route.params, navigation]);
+
+  if (isChildMode) {
+    return <ChildrenStackNavigator />;
+  }
+  return <ParentStackNavigator />;
 }
 
 export function RootNavigator() {

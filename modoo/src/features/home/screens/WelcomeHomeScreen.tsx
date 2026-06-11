@@ -49,6 +49,38 @@ const FEATURES = [
   },
 ];
 
+// 内容分类数据
+const CONTENT_CATEGORIES = [
+  {
+    id: 'story',
+    icon: BookOpen,
+    titleKey: 'welcome.category.story',
+    descriptionKey: 'welcome.category.storyDesc',
+    type: 'story' as const,
+  },
+  {
+    id: 'course',
+    icon: GraduationCap,
+    titleKey: 'welcome.category.course',
+    descriptionKey: 'welcome.category.courseDesc',
+    type: 'course' as const,
+  },
+  {
+    id: 'breathing',
+    icon: Leaf,
+    titleKey: 'welcome.category.breathing',
+    descriptionKey: 'welcome.category.breathingDesc',
+    type: 'breathing' as const,
+  },
+  {
+    id: 'article',
+    icon: Star,
+    titleKey: 'welcome.category.article',
+    descriptionKey: 'welcome.category.articleDesc',
+    type: 'article' as const,
+  },
+];
+
 export default function WelcomeHomeScreen() {
   const navigation = useNavigation<WelcomeHomeNavigationProp>();
   const { colors } = useTheme();
@@ -60,10 +92,12 @@ export default function WelcomeHomeScreen() {
   const [freeContent, setFreeContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasStoryContent, setHasStoryContent] = useState(false);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const heroAnimation = useFadeIn(0);
   const contentAnimation = useFadeIn(200);
+  const categoryAnimation = useFadeIn(300);
   const featuresAnimation = useFadeIn(400);
   const valueAnimation = useFadeIn(600);
   const invitationAnimation = useFadeIn(800);
@@ -94,6 +128,10 @@ export default function WelcomeHomeScreen() {
 
         setFreeContent(freeItems);
         setError(null);
+        
+        // 验证是否包含故事内容
+        const containsStories = freeItems.some(item => item.type === 'story');
+        setHasStoryContent(containsStories);
 
         // 缓存数据
         await AsyncStorage.setItem(
@@ -123,6 +161,8 @@ export default function WelcomeHomeScreen() {
         const cacheData = JSON.parse(cached);
         if (Date.now() - cacheData.timestamp < CACHE_TTL) {
           setFreeContent(cacheData.items);
+          // 验证是否包含故事内容
+          setHasStoryContent(cacheData.items.some((item: ContentItem) => item.type === 'story'));
           setLoading(false);
           // 后台刷新
           fetchAndCacheContent();
@@ -141,12 +181,59 @@ export default function WelcomeHomeScreen() {
     loadFreeContent();
   }, [loadFreeContent]);
 
-  const handleContentPress = useCallback(() => {
-    navigation.navigate('Main');
+  const handleContentPress = useCallback((item: ContentItem) => {
+    // 根据内容类型进行不同的导航
+    if (item.type === 'story') {
+      // 故事类型：导航到故事播放页面
+      navigation.navigate('Main', {
+        initialScreen: 'StoryPlayer',
+        params: { storyId: item.id },
+      });
+    } else if (item.type === 'course') {
+      // 课程类型：导航到课程详情页面
+      navigation.navigate('Main', {
+        initialScreen: 'CourseDetail',
+        params: { courseId: item.id },
+      });
+    } else if (item.type === 'article') {
+      // 文章类型：导航到文章详情页面
+      navigation.navigate('Main', {
+        initialScreen: 'ArticleDetail',
+        params: { articleId: item.id },
+      });
+    } else {
+      // 默认导航到主页面
+      navigation.navigate('Main');
+    }
   }, [navigation]);
 
   const handleStart = useCallback(() => {
     navigation.navigate('Auth');
+  }, [navigation]);
+
+  // 分类卡片点击处理
+  const handleCategoryPress = useCallback((categoryId: string, categoryType: string) => {
+    // 根据分类类型导航到对应的页面
+    switch (categoryType) {
+      case 'story':
+      case 'course':
+      case 'breathing':
+        // 儿童模式下的分类，导航到对应的 tab 页面
+        navigation.navigate('Main', {
+          initialScreen: 'ChildrenTab',
+          params: { screen: categoryType === 'story' ? 'ChildrenHome' : categoryType === 'course' ? 'Course' : 'Breathing' },
+        });
+        break;
+      case 'article':
+        // 家长端知识文章页面
+        navigation.navigate('Main', {
+          initialScreen: 'ParentTab',
+          params: { screen: 'Knowledge' },
+        });
+        break;
+      default:
+        navigation.navigate('Main');
+    }
   }, [navigation]);
 
   return (
@@ -187,12 +274,33 @@ export default function WelcomeHomeScreen() {
               <View style={[styles.contentGrid, { gap: isTablet ? spacing.lg : spacing.md }]}>
                 {freeContent.map((item, index) => (
                   <View key={`${item.id}-${index}`} style={{ width: getContentCardWidth() }}>
-                    <ContentCard item={item} onPress={handleContentPress} />
+                    <ContentCard item={item} onPress={() => handleContentPress(item)} />
                   </View>
                 ))}
               </View>
             </View>
           ) : null}
+        </Animated.View>
+
+        {/* 精彩内容 - 分类卡片区域 */}
+        <Animated.View style={categoryAnimation}>
+          <View style={styles.categorySection}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {t('welcome.featuredContent')}
+            </Text>
+            <View style={[styles.categoryGrid, { gap: isTablet ? spacing.lg : spacing.md }]}>
+              {CONTENT_CATEGORIES.map((category) => (
+                <View key={category.id} style={{ width: getContentCardWidth() }}>
+                  <FeatureCard
+                    icon={category.icon}
+                    titleKey={category.titleKey}
+                    descriptionKey={category.descriptionKey}
+                    onPress={() => handleCategoryPress(category.id, category.type)}
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
         </Animated.View>
 
         <Animated.View style={featuresAnimation}>
@@ -239,6 +347,15 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   contentSection: {
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xl,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  categorySection: {
     marginBottom: spacing.xl,
     paddingHorizontal: spacing.xl,
   },

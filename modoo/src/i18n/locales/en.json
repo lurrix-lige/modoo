@@ -191,6 +191,17 @@
     "exploreButton": "Action",
     "footer": "Make every night filled with warmth and peace",
     "discoverContent": "Discover Great Content",
+    "featuredContent": "Featured Content",
+    "category": {
+      "story": "Bedtime Stories",
+      "storyDesc": "Curated stories for sleep",
+      "course": "Courses",
+      "courseDesc": "Scientific sleep training",
+      "breathing": "Breathing",
+      "breathingDesc": "Relax and fall asleep",
+      "article": "Parenting",
+      "articleDesc": "Expert parenting guides"
+    },
     "valueTitle": "Membership Benefits",
     "valueSubtitle": "See what membership can bring you",
     "value": {
