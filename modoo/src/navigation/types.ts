@@ -3,7 +3,7 @@ export type RootStackParamList = {
   Guide: undefined;
   Auth: { screen?: string; fromScreen?: string; selectedPlanId?: string } | undefined;
   Membership: { selectedPlanId?: string } | undefined;
-  Main: { initialScreen?: string; params?: Record<string, any> } | undefined;
+  Main: undefined;
   ChildLock: {
     onSuccess: () => void;
   };
