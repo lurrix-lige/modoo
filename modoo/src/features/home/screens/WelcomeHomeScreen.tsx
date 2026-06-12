@@ -200,25 +200,22 @@ export default function WelcomeHomeScreen() {
     
     if (item.type === 'story') {
       // 故事类型：导航到故事播放页面
-      console.log('Setting pending navigation to StoryPlayer with storyId:', item.id);
-      setPendingNavigation({ screen: 'StoryPlayer', params: { storyId: item.id } });
-      navigation.navigate('Main');
+      console.log('Navigating to StoryPlayer with storyId:', item.id);
+      navigate('Main', { screen: 'StoryPlayer', params: { storyId: item.id } });
     } else if (item.type === 'course') {
       // 课程类型：导航到课程详情页面
-      console.log('Setting pending navigation to CourseDetail with courseId:', item.id);
-      setPendingNavigation({ screen: 'CourseDetail', params: { courseId: item.id } });
-      navigation.navigate('Main');
+      console.log('Navigating to CourseDetail with courseId:', item.id);
+      navigate('Main', { screen: 'CourseDetail', params: { courseId: item.id } });
     } else if (item.type === 'article') {
       // 文章类型：导航到文章详情页面
-      console.log('Setting pending navigation to ArticleDetail with articleId:', item.id);
-      setPendingNavigation({ screen: 'ArticleDetail', params: { articleId: item.id } });
-      navigation.navigate('Main');
+      console.log('Navigating to ArticleDetail with articleId:', item.id);
+      navigate('Main', { screen: 'ArticleDetail', params: { articleId: item.id } });
     } else {
       // 默认导航到主页面
       console.log('Unknown content type, navigating to Main');
-      navigation.navigate('Main');
+      navigate('Main');
     }
-  }, [navigation, setPendingNavigation]);
+  }, []);
 
   const handleStart = useCallback(() => {
     navigation.navigate('Auth');
@@ -238,27 +235,24 @@ export default function WelcomeHomeScreen() {
         navigation.navigate('Main');
         break;
       case 'course':
-        // 导航到课程页面
-        console.log('Setting pending navigation to Course');
-        setPendingNavigation({ screen: 'Course' });
-        navigation.navigate('Main');
+        // 导航到课程页面（使用全局导航）
+        console.log('Navigating to Course via navigate');
+        navigate('Main', { screen: 'Course' });
         break;
       case 'breathing':
-        // 导航到呼吸练习页面
-        console.log('Setting pending navigation to Breathing');
-        setPendingNavigation({ screen: 'Breathing' });
-        navigation.navigate('Main');
+        // 导航到呼吸练习页面（使用全局导航）
+        console.log('Navigating to Breathing via navigate');
+        navigate('Main', { screen: 'Breathing' });
         break;
       case 'article':
         // 导航到知识文章页面（家长端）
-        console.log('Setting pending navigation to Knowledge');
-        setPendingNavigation({ screen: 'Knowledge' });
-        navigation.navigate('Main');
+        console.log('Navigating to Knowledge via navigate');
+        navigate('Main', { screen: 'Knowledge' });
         break;
       default:
-        navigation.navigate('Main');
+        navigate('Main');
     }
-  }, [navigation, setPendingNavigation]);
+  }, []);
 
   return (
     <SafeAreaContainer style={{ backgroundColor: colors.background }}>
