@@ -97,8 +97,8 @@ function ChildrenTabNavigator({ route, navigation }: { route: { params?: { scree
     // 处理从 ChildrenStackNavigator 传递的深层链接
     if (route.params?.screen) {
       console.log('Navigating from route.params to:', route.params.screen);
-      // 使用 jumpTo 方法切换到指定的 tab
-      navigation.jumpTo(route.params.screen, route.params.params);
+      // 使用 navigate 方法切换到指定的 tab
+      navigation.navigate(route.params.screen as any, route.params.params);
     }
   }, [route.params?.screen, route.params?.params, navigation]);
 
@@ -112,8 +112,8 @@ function ChildrenTabNavigator({ route, navigation }: { route: { params?: { scree
       
       if (tabScreens.includes(screen)) {
         console.log('Navigating from pendingNavigation to tab:', screen);
-        // 使用 jumpTo 方法切换到指定的 tab
-        navigation.jumpTo(screen, params);
+        // 使用 navigate 方法切换到指定的 tab
+        navigation.navigate(screen as any, params);
         clearPendingNavigation();
       }
     }
