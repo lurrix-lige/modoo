@@ -245,12 +245,16 @@ class StorageService {
         try {
           const { apiService } = await import('../api/ApiService');
           const validation = await apiService.validateAnonymousId(anonymousId);
+          // 验证失败或ID无效，重新生成
           if (!validation || !validation.isValidAndActive) {
-            // ID无效或过期，重新生成
             const result = await apiService.generateAnonymousId();
-            anonymousId = result.anonymousId;
-            await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
-            logger.info('Anonymous ID refreshed due to expiration', { anonymousId });
+            // 添加空值检查
+            if (result && result.anonymousId) {
+              anonymousId = result.anonymousId;
+              await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
+              logger.info('Anonymous ID refreshed due to expiration', { anonymousId });
+            }
+            // 如果API返回无效数据，继续使用现有ID
           }
         } catch (validationError) {
           // 验证失败，继续使用现有ID

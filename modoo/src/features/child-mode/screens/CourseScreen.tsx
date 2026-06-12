@@ -63,7 +63,13 @@ export default function CourseScreen() {
     setLoadError(null);
     try {
       const response = await apiService.getCourses();
-      setCourses(response.courses);
+      // 添加空值检查
+      if (response && response.courses) {
+        setCourses(response.courses);
+      } else {
+        logger.warn('Invalid response from getCourses', { response });
+        setCourses([]);
+      }
     } catch (error) {
       logger.error('Failed to load course data', { error });
       setLoadError(t('common.error'));
@@ -77,7 +83,13 @@ export default function CourseScreen() {
     setLoadError(null);
     try {
       const response = await apiService.getCourses();
-      setCourses(response.courses);
+      // 添加空值检查
+      if (response && response.courses) {
+        setCourses(response.courses);
+      } else {
+        logger.warn('Invalid response from getCourses', { response });
+        setCourses([]);
+      }
     } catch (error) {
       logger.error('Failed to refresh courses', { error });
     } finally {
