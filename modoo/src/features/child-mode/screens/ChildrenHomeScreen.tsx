@@ -163,7 +163,13 @@ export default function ChildrenHomeScreen() {
     setHasError(false);
     try {
       const response = await apiService.getStories();
-      setStories(response.stories);
+      // 添加空值检查
+      if (response && response.stories) {
+        setStories(response.stories);
+      } else {
+        logger.warn('Invalid response from getStories', { response });
+        setStories([]);
+      }
     } catch (error) {
       logger.error('Failed to load data', { error });
       setHasError(true);

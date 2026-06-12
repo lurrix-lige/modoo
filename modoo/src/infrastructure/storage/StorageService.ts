@@ -245,7 +245,7 @@ class StorageService {
         try {
           const { apiService } = await import('../api/ApiService');
           const validation = await apiService.validateAnonymousId(anonymousId);
-          if (!validation.isValidAndActive) {
+          if (!validation || !validation.isValidAndActive) {
             // ID无效或过期，重新生成
             const result = await apiService.generateAnonymousId();
             anonymousId = result.anonymousId;
