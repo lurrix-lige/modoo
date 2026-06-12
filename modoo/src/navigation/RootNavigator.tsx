@@ -88,7 +88,6 @@ function AuthNavigator() {
 function ChildrenTabNavigator({ route, navigation }: { route: { params?: { screen?: string; params?: Record<string, any> } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { pendingNavigation, clearPendingNavigation } = useAppStore();
 
   useEffect(() => {
     console.log('=== ChildrenTabNavigator useEffect (route.params) ===');
@@ -97,27 +96,10 @@ function ChildrenTabNavigator({ route, navigation }: { route: { params?: { scree
     // 处理从 ChildrenStackNavigator 传递的深层链接
     if (route.params?.screen) {
       console.log('Navigating from route.params to:', route.params.screen);
-      // 使用 navigate 方法切换到指定的 tab
+      // 使用 Tab 导航器的 navigate 方法切换 tab
       navigation.navigate(route.params.screen as any, route.params.params);
     }
   }, [route.params?.screen, route.params?.params, navigation]);
-
-  useEffect(() => {
-    console.log('=== ChildrenTabNavigator useEffect (pendingNavigation) ===');
-    console.log('pendingNavigation:', JSON.stringify(pendingNavigation));
-    
-    if (pendingNavigation) {
-      const { screen, params } = pendingNavigation;
-      const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
-      
-      if (tabScreens.includes(screen)) {
-        console.log('Navigating from pendingNavigation to tab:', screen);
-        // 使用 navigate 方法切换到指定的 tab
-        navigation.navigate(screen as any, params);
-        clearPendingNavigation();
-      }
-    }
-  }, [pendingNavigation, navigation, clearPendingNavigation]);
 
   return (
     <ChildrenTab.Navigator
@@ -222,6 +204,7 @@ function ChildrenStackNavigator() {
     if (pendingNavigation) {
       const { screen, params } = pendingNavigation;
       const stackScreens = ['StoryPlayer', 'CourseDetail', 'BreathingPractice', 'CourseLearning'];
+      const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
       
       if (stackScreens.includes(screen)) {
         // 直接导航到栈屏幕
@@ -229,8 +212,13 @@ function ChildrenStackNavigator() {
         navigation.navigate(screen, params);
         clearPendingNavigation();
         console.log('Stack navigation completed, pendingNavigation cleared');
+      } else if (tabScreens.includes(screen)) {
+        // 使用深层链接语法导航到 Tab 屏幕
+        console.log('Navigating to tab screen via ChildrenTab:', screen);
+        navigation.navigate('ChildrenTab', { screen, params });
+        clearPendingNavigation();
+        console.log('Tab navigation completed, pendingNavigation cleared');
       }
-      // Tab 屏幕导航由 ChildrenTabNavigator 处理
     }
   }, [pendingNavigation, navigation, clearPendingNavigation]);
 
