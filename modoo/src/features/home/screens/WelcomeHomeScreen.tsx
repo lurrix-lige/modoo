@@ -112,14 +112,21 @@ export default function WelcomeHomeScreen() {
     const fetchAndCacheContent = async (): Promise<void> => {
       try {
         const recommendations = await apiService.getContentRecommendations();
-        if (!recommendations?.featuredContent || !recommendations?.categoryContent) {
-          logger.warn('Content recommendations returned invalid data', { recommendations });
-          throw new Error('Invalid response data');
+        
+        // 验证数据，允许部分缺失
+        const featuredContent = recommendations?.featuredContent || [];
+        const categoryContent = recommendations?.categoryContent || {};
+        
+        // 如果数据完全为空，记录警告但不抛出错误
+        if (featuredContent.length === 0 && Object.keys(categoryContent).length === 0) {
+          logger.warn('Content recommendations returned empty data', { recommendations });
+          // 使用缓存数据或空数组
+          return;
         }
 
         let freeItems = [
-          ...recommendations.featuredContent,
-          ...Object.values(recommendations.categoryContent).flat(),
+          ...featuredContent,
+          ...Object.values(categoryContent).flat(),
         ]
           .filter((item) => !item.isPremium);
 
@@ -149,7 +156,11 @@ export default function WelcomeHomeScreen() {
           return fetchAndCacheContent();
         }
         logger.error('Failed to load free content after retries', { error: err });
-        setError(t('error.contentLoadFailed'));
+        // 如果有缓存数据，不显示错误
+        const cached = await AsyncStorage.getItem(STORAGE_KEYS.CONTENT_CACHE);
+        if (!cached) {
+          setError(t('error.contentLoadFailed'));
+        }
       } finally {
         setLoading(false);
       }

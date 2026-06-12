@@ -88,13 +88,34 @@ function AuthNavigator() {
 function ChildrenTabNavigator({ route, navigation }: { route: { params?: { screen?: string; params?: Record<string, any> } }, navigation: any }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { pendingNavigation, clearPendingNavigation } = useAppStore();
 
   useEffect(() => {
-    // 处理从 ChildrenStackNavigator 传递的 tab 导航
+    console.log('=== ChildrenTabNavigator useEffect (route.params) ===');
+    console.log('route.params:', JSON.stringify(route.params));
+    
+    // 处理从 ChildrenStackNavigator 传递的深层链接
     if (route.params?.screen) {
+      console.log('Navigating from route.params to:', route.params.screen);
       navigation.navigate(route.params.screen, route.params.params);
     }
   }, [route.params?.screen, route.params?.params, navigation]);
+
+  useEffect(() => {
+    console.log('=== ChildrenTabNavigator useEffect (pendingNavigation) ===');
+    console.log('pendingNavigation:', JSON.stringify(pendingNavigation));
+    
+    if (pendingNavigation) {
+      const { screen, params } = pendingNavigation;
+      const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
+      
+      if (tabScreens.includes(screen)) {
+        console.log('Navigating from pendingNavigation to tab:', screen);
+        navigation.navigate(screen, params);
+        clearPendingNavigation();
+      }
+    }
+  }, [pendingNavigation, navigation, clearPendingNavigation]);
 
   return (
     <ChildrenTab.Navigator
@@ -195,28 +216,19 @@ function ChildrenStackNavigator() {
   useEffect(() => {
     console.log('=== ChildrenStackNavigator useEffect triggered ===');
     console.log('pendingNavigation:', JSON.stringify(pendingNavigation));
-    console.log('navigation object keys:', Object.keys(navigation || {}));
     
     if (pendingNavigation) {
-      // 添加延迟确保导航器完全挂载
-      const timer = setTimeout(() => {
-        const { screen, params } = pendingNavigation;
-        console.log('Attempting to navigate to:', screen, 'with params:', JSON.stringify(params));
-        
-        const tabScreens = ['ChildrenHome', 'Course', 'Breathing', 'CheckIn'];
-        
-        if (tabScreens.includes(screen)) {
-          console.log('Navigating to tab screen via ChildrenTab');
-          navigation.navigate('ChildrenTab', { screen, params });
-        } else {
-          console.log('Navigating directly to stack screen:', screen);
-          navigation.navigate(screen, params);
-        }
-        clearPendingNavigation();
-        console.log('Navigation completed, pendingNavigation cleared');
-      }, 100);
+      const { screen, params } = pendingNavigation;
+      const stackScreens = ['StoryPlayer', 'CourseDetail', 'BreathingPractice', 'CourseLearning'];
       
-      return () => clearTimeout(timer);
+      if (stackScreens.includes(screen)) {
+        // 直接导航到栈屏幕
+        console.log('Navigating directly to stack screen:', screen);
+        navigation.navigate(screen, params);
+        clearPendingNavigation();
+        console.log('Stack navigation completed, pendingNavigation cleared');
+      }
+      // Tab 屏幕导航由 ChildrenTabNavigator 处理
     }
   }, [pendingNavigation, navigation, clearPendingNavigation]);
 

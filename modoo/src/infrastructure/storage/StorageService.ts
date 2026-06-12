@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
+import { Platform } from 'react-native';
 import { Story } from '../../types';
 import { logger } from '../../utils/logger';
 
@@ -53,21 +54,65 @@ interface CheckInRecord {
 }
 
 /**
+ * 检测 SecureStore 是否可用（仅 iOS 和 Android 支持）
+ */
+const isSecureStoreAvailable = (): boolean => {
+  // Web 平台不支持 expo-secure-store
+  if (Platform.OS === 'web') {
+    return false;
+  }
+  // 检查 SecureStore.getItemAsync 是否存在
+  try {
+    return typeof SecureStore.getItemAsync === 'function';
+  } catch {
+    return false;
+  }
+};
+
+const secureStoreAvailable = isSecureStoreAvailable();
+
+/**
  * 🔐 安全存储适配器
- * 注意：需要安装 expo-secure-store 后启用
- * 运行: npx expo install expo-secure-store
+ * - iOS/Android: 使用 expo-secure-store
+ * - Web: 降级到 AsyncStorage
  */
 const secureStorage = {
   async setItem(key: string, value: string): Promise<void> {
-    await SecureStore.setItemAsync(key, value);
+    if (secureStoreAvailable) {
+      try {
+        await SecureStore.setItemAsync(key, value);
+        return;
+      } catch (error) {
+        logger.warn('SecureStore setItem failed, falling back to AsyncStorage', { error });
+      }
+    }
+    // 降级到 AsyncStorage
+    await AsyncStorage.setItem(key, value);
   },
 
   async getItem(key: string): Promise<string | null> {
-    return await SecureStore.getItemAsync(key);
+    if (secureStoreAvailable) {
+      try {
+        return await SecureStore.getItemAsync(key);
+      } catch (error) {
+        logger.warn('SecureStore getItem failed, falling back to AsyncStorage', { error });
+      }
+    }
+    // 降级到 AsyncStorage
+    return await AsyncStorage.getItem(key);
   },
 
   async deleteItem(key: string): Promise<void> {
-    await SecureStore.deleteItemAsync(key);
+    if (secureStoreAvailable) {
+      try {
+        await SecureStore.deleteItemAsync(key);
+        return;
+      } catch (error) {
+        logger.warn('SecureStore deleteItem failed, falling back to AsyncStorage', { error });
+      }
+    }
+    // 降级到 AsyncStorage
+    await AsyncStorage.removeItem(key);
   },
 };
 
@@ -128,13 +173,15 @@ class StorageService {
 
   /**
    * 获取用户数据
+   * 如果查不到用户，返回 null（使用匿名用户）
    */
   async getUser(): Promise<any | null> {
     try {
       const data = await secureStorage.getItem(SECURE_KEYS.USER);
       return data ? JSON.parse(data) : null;
     } catch (error) {
-      logger.error('Failed to get user', { error });
+      // 查不到用户是正常情况，使用匿名用户，不报错
+      logger.warn('User not found in storage, will use anonymous mode', { error });
       return null;
     }
   }
@@ -147,9 +194,27 @@ class StorageService {
    * 生成本地匿名用户ID（降级方案）
    */
   private generateLocalAnonymousId(): string {
-    // 使用 expo-crypto 的 randomUUID 生成密码学安全的匿名ID
-    const uuid = Crypto.randomUUID().replace(/-/g, '');
+    let uuid: string;
+    
+    // 优先使用 expo-crypto 的 randomUUID
+    try {
+      uuid = Crypto.randomUUID().replace(/-/g, '');
+    } catch {
+      // 降级方案：使用时间戳 + 随机数生成唯一ID
+      uuid = this.fallbackUuidGenerator();
+    }
+    
     return `anonymous_${uuid}`;
+  }
+
+  /**
+   * 备用UUID生成器（当 Crypto.randomUUID 不可用时使用）
+   */
+  private fallbackUuidGenerator(): string {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 15);
+    const random2 = Math.random().toString(36).substring(2, 15);
+    return `${timestamp}${random}${random2}`.substring(0, 32);
   }
 
   /**
