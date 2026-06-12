@@ -9,8 +9,8 @@ config.server = {
   ...config.server,
   enhanceMiddleware: (middleware) => {
     return async (req, res, next) => {
-      // 如果请求路径以 /api/ 开头，代理到后端API服务器
-      if (req.url?.startsWith('/api/')) {
+      // 如果请求路径以 /api/ 或 /health 开头，代理到后端API服务器
+      if (req.url?.startsWith('/api/') || req.url?.startsWith('/health')) {
         const proxy = createProxyMiddleware({
           target: process.env.EXPO_PUBLIC_API_URL || 'http://47.94.165.219:3000',
           changeOrigin: true,
