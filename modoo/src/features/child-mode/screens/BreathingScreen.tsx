@@ -43,7 +43,12 @@ export default function BreathingScreen() {
 
     try {
       const breathingResponse = await apiService.getBreathingExercises();
-      setExercises(breathingResponse.exercises);
+      // 添加空值检查
+      if (breathingResponse && breathingResponse.exercises) {
+        setExercises(breathingResponse.exercises);
+      } else {
+        setExercises([]);
+      }
     } catch (error) {
       const errorMessage = errorHandler.getErrorMessage(
         error instanceof Error ? error.message : 'UNKNOWN_ERROR',

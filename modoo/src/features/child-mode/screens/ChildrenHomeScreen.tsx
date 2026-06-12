@@ -167,7 +167,6 @@ export default function ChildrenHomeScreen() {
       if (response && response.stories) {
         setStories(response.stories);
       } else {
-        logger.warn('Invalid response from getStories', { response });
         setStories([]);
       }
     } catch (error) {

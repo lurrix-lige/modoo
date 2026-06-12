@@ -1,1 +1,12 @@
 export * from './ApiService';
+export { storyApi } from './modules/StoryApi';
+export { courseApi } from './modules/CourseApi';
+export { articleApi } from './modules/ArticleApi';
+export { dialogueApi } from './modules/DialogueApi';
+export { breathingApi } from './modules/BreathingApi';
+export { expertApi } from './modules/ExpertApi';
+export { checkInApi } from './modules/CheckInApi';
+export { membershipApi } from './modules/MembershipApi';
+export { userApi } from './modules/UserApi';
+export { anonymousApi } from './modules/AnonymousApi';
+export { analyticsApi } from './modules/AnalyticsApi';

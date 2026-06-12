@@ -7,7 +7,7 @@ export * from './NotificationService';
 export * from './ShareService';
 export { wechatAuthService } from './WechatAuthService';
 export { wechatPayService } from './WechatPayService';
-export { appleAuthService } from './AppleAuthService';
+export { appleService } from './AppleService';
 export { applePayService } from './ApplePayService';
 
 // Re-export from infrastructure layer for backward compatibility

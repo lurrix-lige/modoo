@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { getWechatModule, isWechatInstalled } from './WechatCore';
 import { apiService } from '../infrastructure/api/ApiService';
 
 export interface WechatPayParams {
@@ -73,8 +73,6 @@ interface PayConfigResponse {
 
 class WechatPayService {
   private static instance: WechatPayService;
-  private wechatModule: any = null;
-  private initialized = false;
 
   private constructor() {}
 
@@ -85,34 +83,11 @@ class WechatPayService {
     return WechatPayService.instance;
   }
 
-  private ensureInitialized() {
-    if (this.initialized) return;
-    this.initialized = true;
-    this.initWechat();
-  }
-
-  private initWechat() {
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      try {
-        this.wechatModule = require('react-native-wechat');
-      } catch (e) {
-        this.wechatModule = null;
-      }
-    }
-  }
-
   isInstalled(): boolean {
-    this.ensureInitialized();
-    if (!this.wechatModule) return false;
-    try {
-      return this.wechatModule.isWXAppInstalled();
-    } catch {
-      return false;
-    }
+    return isWechatInstalled();
   }
 
   async requestPayment(params: WechatPayParams): Promise<PayResult> {
-    this.ensureInitialized();
     if (!this.isInstalled()) {
       return {
         success: false,
@@ -121,7 +96,8 @@ class WechatPayService {
       };
     }
 
-    if (!this.wechatModule) {
+    const wechatModule = getWechatModule();
+    if (!wechatModule) {
       return {
         success: false,
         error: '微信支付SDK未安装',
@@ -139,7 +115,7 @@ class WechatPayService {
         sign: params.paySign,
       };
 
-      const result = await this.wechatModule.pay(payParams);
+      const result = await wechatModule.pay(payParams);
 
       if (result.errCode === 0) {
         return { success: true };

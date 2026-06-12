@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { wechatPayService, PayResult, RefundResult } from '../services/WechatPayService';
+import i18n from '../i18n';
 
 export interface UseWechatPayResult {
   purchaseWithWechat: (planId: string, planName?: string) => Promise<PayResult>;
@@ -27,14 +28,14 @@ export function useWechatPay(): UseWechatPayResult {
 
     const installed = checkWechat();
     if (!installed) {
-      setError('微信未安装，请先安装微信');
+      setError(i18n.t('errors.wechatNotInstalled'));
     }
   }, []);
 
   const purchaseWithWechat = useCallback(
     async (planId: string, planName?: string): Promise<PayResult> => {
       if (!wechatPayService.isInstalled()) {
-        const errorMsg = '微信未安装，请先安装微信';
+        const errorMsg = i18n.t('errors.wechatNotInstalled');
         setError(errorMsg);
         return { success: false, error: errorMsg, errorCode: 'NOT_INSTALLED' };
       }
@@ -46,12 +47,12 @@ export function useWechatPay(): UseWechatPayResult {
         const result = await wechatPayService.createAndPay(planId);
 
         if (!result.success) {
-          setError(result.error || '支付失败');
+          setError(result.error || i18n.t('errors.wechatPayFailed'));
         }
 
         return result;
       } catch (err: any) {
-        const errorMessage = err.message || '支付过程中出现错误';
+        const errorMessage = err.message || i18n.t('errors.wechatPayError');
         setError(errorMessage);
         return { success: false, error: errorMessage, errorCode: 'UNKNOWN' };
       } finally {
@@ -74,12 +75,12 @@ export function useWechatPay(): UseWechatPayResult {
         const result = await wechatPayService.applyRefund(orderId, refundAmount, refundReason);
 
         if (!result.success) {
-          setError(result.error || '退款申请失败');
+          setError(result.error || i18n.t('errors.refundFailed'));
         }
 
         return result;
       } catch (err: any) {
-        const errorMessage = err.message || '退款申请失败';
+        const errorMessage = err.message || i18n.t('errors.refundError');
         setError(errorMessage);
         return { success: false, error: errorMessage };
       } finally {
@@ -97,7 +98,7 @@ export function useWechatPay(): UseWechatPayResult {
       const order = await wechatPayService.queryOrder(orderId);
       return order;
     } catch (err: any) {
-      const errorMessage = err.message || '查询订单失败';
+      const errorMessage = err.message || i18n.t('errors.queryOrderFailed');
       setError(errorMessage);
       throw err;
     } finally {

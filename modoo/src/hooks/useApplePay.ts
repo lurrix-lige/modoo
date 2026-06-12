@@ -6,6 +6,7 @@ import {
   ApplePayErrorCode,
   ApplePayOrderInfo,
 } from '../services/ApplePayService';
+import i18n from '../i18n';
 
 export interface UseApplePayResult {
   purchaseWithApple: (planId: string, planName?: string) => Promise<ApplePayResult>;
@@ -26,7 +27,7 @@ export function useApplePay(): UseApplePayResult {
       const available = await applePayService.isSupported();
       setIsApplePayAvailable(available);
       if (!available) {
-        setError('当前设备不支持 Apple Pay');
+        setError(i18n.t('errors.applePayNotSupported'));
       }
     };
 
@@ -36,7 +37,7 @@ export function useApplePay(): UseApplePayResult {
   const purchaseWithApple = useCallback(
     async (planId: string, planName?: string): Promise<ApplePayResult> => {
       if (!isApplePayAvailable) {
-        const errorMsg = '当前设备不支持 Apple Pay';
+        const errorMsg = i18n.t('errors.applePayNotSupported');
         setError(errorMsg);
         return { success: false, error: errorMsg, errorCode: ApplePayErrorCode.NOT_SUPPORTED };
       }
@@ -48,7 +49,7 @@ export function useApplePay(): UseApplePayResult {
         const createResult = await applePayService.createOrder(planId);
 
         if (!createResult.success) {
-          setError(createResult.error || '创建订单失败');
+          setError(createResult.error || i18n.t('errors.orderCreateFailed'));
           return createResult;
         }
 
@@ -57,10 +58,10 @@ export function useApplePay(): UseApplePayResult {
         const orderInfo = createResult.orderInfo;
 
         if (!orderInfo || !orderNo || !orderId) {
-          setError('订单信息不完整');
+          setError(i18n.t('errors.orderInfoIncomplete'));
           return {
             success: false,
-            error: '订单信息不完整',
+            error: i18n.t('errors.orderInfoIncomplete'),
             errorCode: ApplePayErrorCode.ORDER_CREATE_FAILED,
           };
         }
@@ -68,7 +69,7 @@ export function useApplePay(): UseApplePayResult {
         const paymentResult = await performApplePay(orderInfo);
 
         if (!paymentResult.success) {
-          setError(paymentResult.error || '支付失败');
+          setError(paymentResult.error || i18n.t('errors.applePayFailed'));
           return {
             success: false,
             error: paymentResult.error,
@@ -82,12 +83,12 @@ export function useApplePay(): UseApplePayResult {
         );
 
         if (!verifyResult.success) {
-          setError(verifyResult.error || '支付验证失败');
+          setError(verifyResult.error || i18n.t('errors.paymentVerificationFailed'));
         }
 
         return verifyResult;
       } catch (err: any) {
-        const errorMessage = err.message || '支付过程中出现错误';
+        const errorMessage = err.message || i18n.t('errors.paymentError');
         setError(errorMessage);
         return { success: false, error: errorMessage, errorCode: ApplePayErrorCode.VERIFY_FAILED };
       } finally {
@@ -102,14 +103,14 @@ export function useApplePay(): UseApplePayResult {
   ): Promise<{ success: boolean; paymentData?: string; error?: string }> => {
     try {
       if (Platform.OS !== 'ios') {
-        return { success: false, error: 'Apple Pay 仅支持 iOS 设备' };
+        return { success: false, error: i18n.t('errors.applePayIOSOnly') };
       }
 
       // @ts-ignore: Dynamic import of Apple Pay module
       const applePayModule = await import('react-native-apple-pay').catch(() => null);
 
       if (!applePayModule || !applePayModule.ApplePay) {
-        return { success: false, error: 'Apple Pay 模块未安装' };
+        return { success: false, error: i18n.t('errors.applePayModuleNotInstalled') };
       }
 
       const paymentRequest = {
@@ -138,14 +139,14 @@ export function useApplePay(): UseApplePayResult {
       } else {
         return {
           success: false,
-          error: result.error || '支付失败',
+          error: result.error || i18n.t('errors.applePayFailed'),
         };
       }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('cancel')) {
-        return { success: false, error: '用户取消支付' };
+        return { success: false, error: i18n.t('errors.applePayCancelled') };
       }
-      return { success: false, error: error.message || 'Apple Pay 调用失败' };
+      return { success: false, error: error.message || i18n.t('errors.applePayError') };
     }
   };
 
@@ -157,7 +158,7 @@ export function useApplePay(): UseApplePayResult {
       const response = await applePayService.getPaymentConfig();
       return response;
     } catch (err: any) {
-      const errorMessage = err.message || '查询订单失败';
+      const errorMessage = err.message || i18n.t('errors.queryOrderFailed');
       setError(errorMessage);
       throw err;
     } finally {

@@ -117,10 +117,8 @@ export default function WelcomeHomeScreen() {
         const featuredContent = recommendations?.featuredContent || [];
         const categoryContent = recommendations?.categoryContent || {};
         
-        // 如果数据完全为空，记录警告但不抛出错误
+        // 如果数据完全为空，使用缓存数据或空数组
         if (featuredContent.length === 0 && Object.keys(categoryContent).length === 0) {
-          logger.warn('Content recommendations returned empty data', { recommendations });
-          // 使用缓存数据或空数组
           return;
         }
 

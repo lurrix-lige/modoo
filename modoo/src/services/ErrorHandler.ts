@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'success';
 
@@ -285,23 +286,23 @@ class ErrorHandler {
 
   getErrorMessage(code: string, defaultMessage: string): string {
     const errorMessages: Record<string, string> = {
-      UNAUTHORIZED: '登录已过期，请重新登录',
-      INVALID_TOKEN: '登录凭证无效，请重新登录',
-      TOKEN_EXPIRED: '登录已过期，请重新登录',
-      REFRESH_TOKEN_FAILED: '登录已过期，请重新登录',
-      AUTH_TOKEN_MISSING: '请先登录',
-      AUTH_TOKEN_INVALID: '登录凭证无效，请重新登录',
-      AUTH_TOKEN_EXPIRED: '登录已过期，请重新登录',
-      AUTH_REFRESH_TOKEN_INVALID: '登录凭证无效，请重新登录',
-      AUTH_REFRESH_TOKEN_EXPIRED: '登录已过期，请重新登录',
-      NETWORK_ERROR: '网络连接失败，请检查网络设置',
-      TIMEOUT: '请求超时，请稍后重试',
-      SERVICE_UNAVAILABLE: '服务暂时不可用，请稍后重试',
-      USER_NOT_FOUND: '用户不存在',
-      CHILD_NOT_FOUND: '未找到宝宝信息，请先创建宝宝档案',
-      NOT_FOUND: '请求的资源不存在',
-      VALIDATION_ERROR: '输入数据验证失败',
-      INTERNAL_ERROR: '服务器内部错误，请稍后重试',
+      UNAUTHORIZED: i18n.t('errors.unauthorized'),
+      INVALID_TOKEN: i18n.t('errors.invalidToken'),
+      TOKEN_EXPIRED: i18n.t('errors.tokenExpired'),
+      REFRESH_TOKEN_FAILED: i18n.t('errors.refreshTokenFailed'),
+      AUTH_TOKEN_MISSING: i18n.t('errors.authTokenMissing'),
+      AUTH_TOKEN_INVALID: i18n.t('errors.authTokenInvalid'),
+      AUTH_TOKEN_EXPIRED: i18n.t('errors.authTokenExpired'),
+      AUTH_REFRESH_TOKEN_INVALID: i18n.t('errors.authRefreshTokenInvalid'),
+      AUTH_REFRESH_TOKEN_EXPIRED: i18n.t('errors.authRefreshTokenExpired'),
+      NETWORK_ERROR: i18n.t('errors.networkError'),
+      TIMEOUT: i18n.t('errors.timeout'),
+      SERVICE_UNAVAILABLE: i18n.t('errors.serviceUnavailable'),
+      USER_NOT_FOUND: i18n.t('errors.userNotFound'),
+      CHILD_NOT_FOUND: i18n.t('errors.childNotFound'),
+      NOT_FOUND: i18n.t('errors.notFound'),
+      VALIDATION_ERROR: i18n.t('errors.validationError'),
+      INTERNAL_ERROR: i18n.t('errors.internalError'),
     };
 
     return errorMessages[code] || defaultMessage;

@@ -1,7 +1,4 @@
-import { Platform, Alert } from 'react-native';
-import { CONFIG } from '../config/env';
-
-const WECHAT_APP_ID = CONFIG.wechat.APP_ID;
+import { getWechatModule, isWechatInstalled, getWechatAppId } from './WechatCore';
 
 export interface WechatAuthResult {
   code: string;
@@ -20,8 +17,6 @@ export class WechatAuthError extends Error {
 
 class WechatAuthService {
   private static instance: WechatAuthService;
-  private wechatModule: any = null;
-  private initialized = false;
 
   private constructor() {}
 
@@ -32,44 +27,22 @@ class WechatAuthService {
     return WechatAuthService.instance;
   }
 
-  private ensureInitialized() {
-    if (this.initialized) return;
-    this.initialized = true;
-    this.initWechat();
-  }
-
-  private initWechat() {
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      try {
-        this.wechatModule = require('react-native-wechat');
-      } catch (e) {
-        this.wechatModule = null;
-      }
-    }
-  }
-
   isInstalled(): boolean {
-    this.ensureInitialized();
-    if (!this.wechatModule) return false;
-    try {
-      return this.wechatModule.isWXAppInstalled();
-    } catch {
-      return false;
-    }
+    return isWechatInstalled();
   }
 
   async checkAvailability(): Promise<boolean> {
-    this.ensureInitialized();
     if (!this.isInstalled()) {
       return false;
     }
 
-    if (!this.wechatModule) {
+    const wechatModule = getWechatModule();
+    if (!wechatModule) {
       return false;
     }
 
     try {
-      const isSupported = await this.wechatModule.isSupportAPI();
+      const isSupported = await wechatModule.isSupportAPI();
       return isSupported;
     } catch {
       return false;
@@ -77,16 +50,20 @@ class WechatAuthService {
   }
 
   async login(): Promise<WechatAuthResult> {
-    this.ensureInitialized();
     if (!this.isInstalled()) {
       throw new WechatAuthError('未安装微信', 'NOT_INSTALLED');
+    }
+
+    const wechatModule = getWechatModule();
+    if (!wechatModule) {
+      throw new WechatAuthError('微信SDK未安装', 'SDK_NOT_FOUND');
     }
 
     const scope = 'snsapi_userinfo';
     const state = `wechat_${Date.now()}`;
 
     try {
-      const result = await this.wechatModule.sendAuthRequest(scope, state);
+      const result = await wechatModule.sendAuthRequest(scope, state);
 
       if (!result || !result.code) {
         throw new WechatAuthError('获取授权码失败', 'NO_CODE');
@@ -118,13 +95,13 @@ class WechatAuthService {
     avatar: string;
     unionid?: string;
   }> {
-    this.ensureInitialized();
-    if (!this.wechatModule) {
+    const wechatModule = getWechatModule();
+    if (!wechatModule) {
       throw new WechatAuthError('微信SDK未安装', 'SDK_NOT_FOUND');
     }
 
     try {
-      const userInfo = await this.wechatModule.getUserInfo(accessToken, openid);
+      const userInfo = await wechatModule.getUserInfo(accessToken, openid);
 
       return {
         nickname: userInfo.nickname || '微信用户',
@@ -140,14 +117,15 @@ class WechatAuthService {
   }
 
   registerApp(): boolean {
-    this.ensureInitialized();
-    if (!this.wechatModule) {
+    const wechatModule = getWechatModule();
+    if (!wechatModule) {
       return false;
     }
 
     try {
-      if (WECHAT_APP_ID) {
-        this.wechatModule.registerApp(WECHAT_APP_ID);
+      const appId = getWechatAppId();
+      if (appId) {
+        wechatModule.registerApp(appId);
         return true;
       }
       return false;
