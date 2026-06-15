@@ -6,9 +6,9 @@ export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 /**
  * 全局导航函数 - 用于从任何地方发起导航
  */
-export function navigate(name: keyof RootStackParamList, params?: RootStackParamList[keyof RootStackParamList]) {
+export function navigate(name: string, params?: Record<string, any>) {
   if (navigationRef.isReady()) {
-    navigationRef.navigate(name, params as any);
+    navigationRef.navigate(name as any, params as any);
   }
 }
 

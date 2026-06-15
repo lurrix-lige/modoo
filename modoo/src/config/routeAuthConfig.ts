@@ -21,7 +21,7 @@ export const AUTH_EXEMPT_ROUTES: RouteAuthConfig[] = [
 
 export function isRouteAuthExempt(screenName: string): boolean {
   const route = AUTH_EXEMPT_ROUTES.find((r) => r.screenName === screenName);
-  return route ? !route.authRequired : false;
+  return route ? !route.authRequired : true;
 }
 
 export function isRoutePaidRequired(screenName: string): boolean {
