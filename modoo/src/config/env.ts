@@ -102,9 +102,12 @@ export const APP_CONFIG: AppConfig = {
 // ============================================
 // API Configuration
 // ============================================
-// 原生 App 直接连接后端，Metro 代理仅对 Web 有效
+// Web 端通过 Metro 代理转发（相对路径），原生 App 直连后端（完整 URL）
+import { Platform } from 'react-native';
+const isWeb = Platform.OS === 'web';
+const BACKEND_URL = process.env.EXPO_PUBLIC_API_URL || 'http://47.94.165.219:3000';
 export const API_CONFIG: ApiConfig = {
-  BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://47.94.165.219:3000',
+  BASE_URL: isWeb ? '' : BACKEND_URL,
   VERSION: '/api/v1',
   TIMEOUT:
     APP_CONFIG.ENV === 'development'
