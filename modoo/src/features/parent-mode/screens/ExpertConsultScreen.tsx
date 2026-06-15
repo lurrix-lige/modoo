@@ -29,7 +29,8 @@ import { ParentStackParamList } from '../../../navigation/types';
 
 import { useAppStore } from '../../../store';
 
-import { apiService, Expert } from '../../../services';
+import { Expert } from '../../../services';
+import { expertApi, userApi } from '../../../infrastructure/api';
 
 import { useNotifications } from '../../../hooks/useNotifications';
 
@@ -73,7 +74,7 @@ export default function ExpertConsultScreen() {
     setIsLoading(true);
 
     try {
-      const response = await apiService.getExperts();
+      const response = await expertApi.getExperts();
 
       setExperts(response.experts);
     } catch (err) {
@@ -302,7 +303,7 @@ export default function ExpertConsultScreen() {
 
                 const fullDate = dates[selectedDate || 0].fullDate;
 
-                const response = await apiService.createBooking({
+                const response = await expertApi.createBooking({
                   expertId: selectedExpert!,
 
                   date: fullDate,
@@ -310,7 +311,7 @@ export default function ExpertConsultScreen() {
                   time: selectedTime!,
                 });
 
-                const notificationSettings = await apiService.getNotificationSettings();
+                const notificationSettings = await userApi.getNotificationSettings();
 
                 if (notificationSettings.expertReminder) {
                   const expertName = expert?.name || t(expert?.nameKey || '');

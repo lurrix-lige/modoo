@@ -70,7 +70,8 @@ import {
   ResponsiveGrid,
 } from '../../../components';
 import { ChildrenStackParamList } from '../../../navigation/types';
-import { apiService, Story } from '../../../services';
+import { Story } from '../../../services';
+import { storyApi } from '../../../infrastructure/api';
 import { logger } from '../../../utils/logger';
 import { GUARDIAN_SPIRIT_CONFIG, getGuardianSpiritById, getGuardianSpiritColor } from '../../../constants/guardianSpirits';
 
@@ -162,7 +163,7 @@ export default function ChildrenHomeScreen() {
     }
     setHasError(false);
     try {
-      const response = await apiService.getStories();
+      const response = await storyApi.getStories();
       // 添加空值检查
       if (response && response.stories) {
         setStories(response.stories);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
-import { apiService } from '../../services';
+import { checkInApi } from '../../infrastructure/api';
 import { logger } from '../../utils/logger';
 import { useTranslation } from 'react-i18next';
 
@@ -84,7 +84,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
       logger.debug('[CheckIn] Loading check-in data...');
 
       try {
-        const streakData = await apiService.getStreak();
+        const streakData = await checkInApi.getStreak();
         setStreak(streakData.streak || 0);
         logger.debug('[CheckIn] Streak response', { streakData });
       } catch (error) {
@@ -93,7 +93,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
       }
 
       try {
-        const todayCheck = await apiService.getTodayCheckIn();
+        const todayCheck = await checkInApi.getTodayCheckIn();
         if (todayCheck) {
           logger.debug('[CheckIn] Today check-in', { todayCheck });
           setTodayChecked(true);
@@ -109,7 +109,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
       }
 
       try {
-        const historyData = await apiService.getCheckInHistory();
+        const historyData = await checkInApi.getCheckInHistory();
         logger.debug('[CheckIn] History', { historyData });
         const historySet = new Set(historyData.map((item: any) => item.date));
         setCheckInHistory(historySet);
@@ -174,7 +174,7 @@ export function useCheckIn(options: UseCheckInOptions = {}) {
         wakeTime,
         quality,
       });
-      await apiService.checkIn({
+      await checkInApi.checkIn({
         date: checkInDate,
         sleepTime,
         wakeTime,

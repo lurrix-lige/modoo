@@ -45,7 +45,8 @@ import {
 import { useAppStore } from '../../../store';
 import { Button } from '../../../components';
 import { AuthStackParamList, RootStackParamList } from '../../../navigation/types';
-import { authService, apiService } from '../../../services';
+import { authService } from '../../../services';
+import { userApi } from '../../../infrastructure/api';
 import { loginNavigationStrategyFactory } from '../../../services/LoginNavigationStrategy';
 import { appleService } from '../../../services/AppleService';
 import { wechatAuthService } from '../../../services/WechatAuthService';
@@ -143,7 +144,7 @@ export default function LoginScreen() {
     const existingChildProfile = await authService.getChild();
     if (existingChildProfile) return;
 
-    const apiChildProfile = await apiService.getChildProfile();
+    const apiChildProfile = await userApi.getChildProfile();
     if (!apiChildProfile) return;
 
     const childData = {

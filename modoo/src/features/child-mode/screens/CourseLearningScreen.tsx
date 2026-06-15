@@ -36,7 +36,8 @@ import {
 } from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { useCourseAudio, CourseAudioTrack } from '../../../providers/CourseAudioProvider';
-import { apiService, Lesson } from '../../../services';
+import { Lesson } from '../../../services';
+import { courseApi } from '../../../infrastructure/api';
 import { storageService } from '../../../infrastructure/storage';
 import { logger } from '../../../utils/logger';
 
@@ -242,7 +243,7 @@ export default function CourseLearningScreen() {
   useEffect(() => {
     if (duration > 0 && progress >= duration - 0.5 && currentLesson && !hasCompletedRef.current) {
       hasCompletedRef.current = true;
-      apiService.completeLesson(currentLesson.id).catch((err) => {
+      courseApi.completeLesson(currentLesson.id).catch((err) => {
         logger.error('Failed to complete lesson', { err, lessonId: currentLesson.id });
         hasCompletedRef.current = false;
       });
@@ -292,7 +293,7 @@ export default function CourseLearningScreen() {
     try {
       const lessonId = paramLessonId || '1';
       const courseId = paramCourseId || '1';
-      const course = await apiService.getCourse(courseId);
+      const course = await courseApi.getCourse(courseId);
       const lessons = course.lessons || [];
       const lessonData = lessons.find((l: Lesson) => l.id === lessonId) || lessons[0];
       if (lessonData) {

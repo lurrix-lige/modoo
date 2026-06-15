@@ -1,7 +1,8 @@
-import { apiService, CoursesResponse, Course } from '../ApiService';
+import { apiService } from '../ApiService';
+import type { CoursesResponse, Course } from '../types';
 
 export const courseApi = {
-  getCourses: (): Promise<CoursesResponse> => apiService.getCourses(),
-  getCourse: (courseId: string): Promise<Course> => apiService.getCourse(courseId),
-  completeLesson: (lessonId: string): Promise<void> => apiService.completeLesson(lessonId),
+  getCourses: () => apiService.get<CoursesResponse>('/courses'),
+  getCourse: (courseId: string) => apiService.get<Course>(`/courses/${courseId}`),
+  completeLesson: (lessonId: string) => apiService.post<void>(`/courses/lessons/${lessonId}/complete`),
 };

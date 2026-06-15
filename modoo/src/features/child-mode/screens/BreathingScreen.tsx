@@ -16,7 +16,8 @@ import {
   iconSizes,
 } from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
-import { apiService, BreathingExercise } from '../../../services';
+import { BreathingExercise } from '../../../services';
+import { breathingApi } from '../../../infrastructure/api';
 import { errorHandler } from '../../../services/ErrorHandler';
 import { useError } from '../../../contexts/ErrorContext';
 
@@ -42,7 +43,7 @@ export default function BreathingScreen() {
     setLoadError(null);
 
     try {
-      const breathingResponse = await apiService.getBreathingExercises();
+      const breathingResponse = await breathingApi.getBreathingExercises();
       // 添加空值检查
       if (breathingResponse && breathingResponse.exercises) {
         setExercises(breathingResponse.exercises);

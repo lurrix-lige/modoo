@@ -51,7 +51,8 @@ import { useAppStore } from '../../../store';
 import { Button, DatePickerModal } from '../../../components';
 import { RootStackParamList, ChildProfileParams } from '../../../navigation/types';
 import { useNavigationCallback } from '../../../contexts';
-import { apiService, authService } from '../../../services';
+import { authService } from '../../../services';
+import { userApi } from '../../../infrastructure/api';
 import {
   normalizeSleepProblems,
   parseGender,
@@ -203,7 +204,7 @@ export default function ChildProfileScreen() {
 
       if (isCreateMode) {
         logger.debug('Calling createChildProfile');
-        child = await apiService.createChildProfile({
+        child = await userApi.createChildProfile({
           nickname,
           birthday: apiBirthday,
           gender,
@@ -212,7 +213,7 @@ export default function ChildProfileScreen() {
         });
       } else {
         logger.debug('Calling updateChildProfile');
-        child = await apiService.updateChildProfile({
+        child = await userApi.updateChildProfile({
           nickname,
           birthday: apiBirthday,
           gender,
@@ -259,7 +260,7 @@ export default function ChildProfileScreen() {
       //  profile UI
       logger.debug('Fetching user profile in background');
       try {
-        const userProfile = await apiService.getUserProfile();
+        const userProfile = await userApi.getUserProfile();
         setAuthenticated(true, {
           id: userProfile.id,
           phone: userProfile.phone,

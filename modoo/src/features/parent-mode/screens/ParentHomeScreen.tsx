@@ -36,7 +36,8 @@ import {
 import { useAppStore } from '../../../store';
 import { DataCard, SettingsPopover, ResponsiveGrid, ErrorToast } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, authService, type SleepStatsResponse } from '../../../services';
+import { authService, type SleepStatsResponse } from '../../../services';
+import { articleApi, checkInApi } from '../../../infrastructure/api';
 import { DateLabelUtils } from '../../../utils/date';
 import { logger } from '../../../utils/logger';
 
@@ -87,8 +88,8 @@ export default function ParentHomeScreen() {
   const loadInitialData = async () => {
     try {
       const [articlesResponse, sleepStatsResponse] = await Promise.all([
-        apiService.getArticles(),
-        apiService.getSleepStats(chartTab),
+        articleApi.getArticles(),
+        checkInApi.getSleepStats(chartTab),
       ]);
 
       setArticles(articlesResponse.articles);
@@ -112,8 +113,8 @@ export default function ParentHomeScreen() {
     setRefreshing(true);
     try {
       const [articlesResponse, sleepStatsResponse] = await Promise.all([
-        apiService.getArticles(),
-        apiService.getSleepStats(chartTab),
+        articleApi.getArticles(),
+        checkInApi.getSleepStats(chartTab),
       ]);
 
       setArticles(articlesResponse.articles);
@@ -143,7 +144,7 @@ export default function ParentHomeScreen() {
     setIsChartLoading(true);
 
     try {
-      const sleepStatsResponse = await apiService.getSleepStats(chartTab);
+      const sleepStatsResponse = await checkInApi.getSleepStats(chartTab);
 
       chartCache.current[chartTab] = sleepStatsResponse;
       lastFetchTime.current[chartTab] = Date.now();

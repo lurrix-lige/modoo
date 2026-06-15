@@ -25,7 +25,8 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, Dialogue } from '../../../services';
+import { Dialogue } from '../../../services';
+import { dialogueApi } from '../../../infrastructure/api';
 import { LoadingState, ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -84,7 +85,7 @@ export default function DialogueScreen({
     setIsLoading(true);
     setError({ visible: false, message: '' });
     try {
-      const response = await apiService.getDialogues();
+      const response = await dialogueApi.getDialogues();
       setDialogues(response.dialogues);
       const favorites: FavoriteState = {};
       response.dialogues.forEach((d) => {
@@ -165,10 +166,10 @@ export default function DialogueScreen({
     try {
       const currentState = favoriteStates[dialogueId] || false;
       if (currentState) {
-        await apiService.unfavoriteDialogue(dialogueId);
+        await dialogueApi.unfavoriteDialogue(dialogueId);
         setFavoriteStates((prev) => ({ ...prev, [dialogueId]: false }));
       } else {
-        await apiService.favoriteDialogue(dialogueId);
+        await dialogueApi.favoriteDialogue(dialogueId);
         setFavoriteStates((prev) => ({ ...prev, [dialogueId]: true }));
       }
     } catch (error) {
@@ -179,7 +180,7 @@ export default function DialogueScreen({
 
   const handleUse = async (dialogueId: string) => {
     try {
-      await apiService.useDialogue(dialogueId);
+      await dialogueApi.useDialogue(dialogueId);
       setDialogues((prev) =>
         prev.map((d) => (d.id === dialogueId ? { ...d, useCount: (d.useCount || 0) + 1 } : d)),
       );

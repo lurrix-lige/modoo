@@ -23,7 +23,8 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, Article, Story, Dialogue } from '../../../services';
+import { Article, Story, Dialogue } from '../../../services';
+import { articleApi, storyApi, dialogueApi } from '../../../infrastructure/api';
 import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -67,9 +68,9 @@ export default function FavoritesScreen() {
     setIsLoading(true);
     try {
       const [articlesResult, storiesResult, dialoguesResult] = await Promise.all([
-        apiService.getFavoriteArticles(),
-        apiService.getFavoriteStories(),
-        apiService.getFavoriteDialogues(),
+        articleApi.getFavoriteArticles(),
+        storyApi.getFavoriteStories(),
+        dialogueApi.getFavoriteDialogues(),
       ]);
 
       const articleFavorites: FavoriteItem[] = articlesResult.articles.map((article: Article) => ({

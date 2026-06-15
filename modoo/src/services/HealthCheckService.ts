@@ -62,9 +62,8 @@ export const useHealthStore = create<HealthStore>((set, get) => ({
     try {
       set({ connectionStatus: 'checking' });
 
-      // 开发环境使用相对路径，通过 Metro 代理转发
-      const isDevelopment = process.env.EXPO_PUBLIC_ENV === 'development';
-      const healthUrl = isDevelopment ? '/health' : `${API_CONFIG.BASE_URL}/health`;
+      // 原生 App 直接连接后端
+      const healthUrl = `${API_CONFIG.BASE_URL}/health`;
       logger.debug(`[HealthCheck] Making request to: ${healthUrl}`);
 
       const response = await fetchWithTimeout(healthUrl, {

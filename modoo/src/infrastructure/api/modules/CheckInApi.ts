@@ -1,10 +1,17 @@
-import { apiService, CheckInRequest, CheckInResponse, StreakResponse, SleepStatsResponse } from '../ApiService';
+import { apiService } from '../ApiService';
+import type { CheckInRequest, CheckInResponse, StreakResponse, SleepStatsResponse } from '../types';
 
 export const checkInApi = {
-  checkIn: (data: CheckInRequest): Promise<CheckInResponse> => apiService.checkIn(data),
-  getStreak: (): Promise<StreakResponse> => apiService.getStreak(),
-  getCheckInHistory: (): Promise<CheckInResponse[]> => apiService.getCheckInHistory(),
-  getTodayCheckIn: (): Promise<CheckInResponse | null> => apiService.getTodayCheckIn(),
-  getSleepStats: (period: 'week' | 'month' = 'week'): Promise<SleepStatsResponse> =>
-    apiService.getSleepStats(period),
+  checkIn: (data: CheckInRequest) => apiService.post<CheckInResponse>('/checkin', data),
+  getStreak: () => apiService.get<StreakResponse>('/checkin/streak', true),
+  getCheckInHistory: () => apiService.get<CheckInResponse[]>('/checkin/history', true),
+  getTodayCheckIn: async (): Promise<CheckInResponse | null> => {
+    try {
+      return await apiService.get<CheckInResponse>('/checkin/today', true);
+    } catch {
+      return null;
+    }
+  },
+  getSleepStats: (period: 'week' | 'month' = 'week') =>
+    apiService.get<SleepStatsResponse>(`/checkin/stats?period=${period}`),
 };

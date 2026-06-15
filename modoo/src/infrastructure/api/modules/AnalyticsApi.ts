@@ -1,16 +1,29 @@
-import { apiService, AnalyticsEventRequest, AnalyticsSessionRequest, AnalyticsProfileRequest, AnalyticsUserProfile, AnalyticsFeatureUsageRequest, AnalyticsFeatureUsage, AnalyticsErrorRequest } from '../ApiService';
+import { apiService } from '../ApiService';
+import type {
+  AnalyticsEventRequest,
+  AnalyticsSessionRequest,
+  AnalyticsProfileRequest,
+  AnalyticsUserProfile,
+  AnalyticsFeatureUsageRequest,
+  AnalyticsFeatureUsage,
+  AnalyticsErrorRequest,
+} from '../types';
 
 export const analyticsApi = {
-  reportEvent: (data: AnalyticsEventRequest): Promise<{ eventId: string }> =>
-    apiService.reportAnalyticsEvent(data),
-  reportBatchEvents: (batchId: string, deviceId: string, events: AnalyticsEventRequest[]): Promise<{ batchId: string; eventsProcessed: number }> =>
-    apiService.reportAnalyticsBatchEvents(batchId, deviceId, events),
-  reportSession: (data: AnalyticsSessionRequest): Promise<{ sessionId: string }> =>
-    apiService.reportAnalyticsSession(data),
-  reportProfile: (data: AnalyticsProfileRequest): Promise<AnalyticsUserProfile> =>
-    apiService.reportAnalyticsProfile(data),
-  reportFeatureUsage: (data: AnalyticsFeatureUsageRequest): Promise<AnalyticsFeatureUsage> =>
-    apiService.reportAnalyticsFeatureUsage(data),
-  reportError: (data: AnalyticsErrorRequest): Promise<{ errorId: string }> =>
-    apiService.reportAnalyticsError(data),
+  reportEvent: (data: AnalyticsEventRequest) =>
+    apiService.post<{ eventId: string }>('/analytics/events', data),
+  reportBatchEvents: (batchId: string, deviceId: string, events: AnalyticsEventRequest[]) =>
+    apiService.post<{ batchId: string; eventsProcessed: number }>('/analytics/events/batch', {
+      batchId,
+      deviceId,
+      events,
+    }),
+  reportSession: (data: AnalyticsSessionRequest) =>
+    apiService.post<{ sessionId: string }>('/analytics/sessions', data),
+  reportProfile: (data: AnalyticsProfileRequest) =>
+    apiService.post<AnalyticsUserProfile>('/analytics/profile', data),
+  reportFeatureUsage: (data: AnalyticsFeatureUsageRequest) =>
+    apiService.post<AnalyticsFeatureUsage>('/analytics/feature-usage', data),
+  reportError: (data: AnalyticsErrorRequest) =>
+    apiService.post<{ errorId: string }>('/analytics/errors', data),
 };

@@ -20,7 +20,8 @@ import {
 } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
 import { useVisitTracker, useFadeIn, useParallax, useResponsive } from '../../../hooks';
-import { apiService, ContentItem } from '../../../services';
+import { ContentItem } from '../../../services';
+import { contentApi } from '../../../infrastructure/api';
 import { useAppStore } from '../../../store';
 import { logger } from '../../../utils/logger';
 import { STORAGE_KEYS } from '../../../config/env';
@@ -86,7 +87,7 @@ export default function WelcomeHomeScreen() {
   const navigation = useNavigation<WelcomeHomeNavigationProp>();
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { userState, setPendingNavigation } = useAppStore();
+  const { userState } = useAppStore();
   const { visitCount } = useVisitTracker();
   const { getContentCardWidth, getContentLimit, isTablet } = useResponsive();
 
@@ -111,7 +112,7 @@ export default function WelcomeHomeScreen() {
 
     const fetchAndCacheContent = async (): Promise<void> => {
       try {
-        const recommendations = await apiService.getContentRecommendations();
+        const recommendations = await contentApi.getContentRecommendations();
         
         // 验证数据，允许部分缺失
         const featuredContent = recommendations?.featuredContent || [];
@@ -227,10 +228,9 @@ export default function WelcomeHomeScreen() {
     
     switch (categoryType) {
       case 'story':
-        // 导航到故事页面
-        console.log('Setting pending navigation to ChildrenHome');
-        setPendingNavigation({ screen: 'ChildrenHome' });
-        navigation.navigate('Main');
+        // 导航到故事页面（使用全局导航）
+        console.log('Navigating to ChildrenHome via navigate');
+        navigate('Main', { screen: 'ChildrenHome' });
         break;
       case 'course':
         // 导航到课程页面（使用全局导航）

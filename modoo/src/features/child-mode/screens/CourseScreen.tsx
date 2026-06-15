@@ -27,7 +27,8 @@ import {
 import { ChildrenStackParamList } from '../../../navigation/types';
 import { AuthModal } from '../../../features/auth';
 import { useAppStore } from '../../../store';
-import { apiService, Course } from '../../../services';
+import { Course } from '../../../services';
+import { courseApi } from '../../../infrastructure/api';
 import { useCourseLocalization } from '../hooks/useCourseLocalization';
 import { logger } from '../../../utils/logger';
 
@@ -62,7 +63,7 @@ export default function CourseScreen() {
     setIsLoading(true);
     setLoadError(null);
     try {
-      const response = await apiService.getCourses();
+      const response = await courseApi.getCourses();
       // 添加空值检查
       if (response && response.courses) {
         setCourses(response.courses);
@@ -82,7 +83,7 @@ export default function CourseScreen() {
     setIsRefreshing(true);
     setLoadError(null);
     try {
-      const response = await apiService.getCourses();
+      const response = await courseApi.getCourses();
       // 添加空值检查
       if (response && response.courses) {
         setCourses(response.courses);

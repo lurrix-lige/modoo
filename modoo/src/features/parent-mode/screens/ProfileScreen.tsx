@@ -40,7 +40,8 @@ import {
 import { useAppStore } from '../../../store';
 import { ParentStackParamList } from '../../../navigation/types';
 import { ErrorToast } from '../../../components';
-import { apiService, authService } from '../../../services';
+import { authService } from '../../../services';
+import { userApi } from '../../../infrastructure/api';
 import { errorHandler } from '../../../services/ErrorHandler';
 import { normalizeSleepProblems, parseGender, parseGuardianIP } from '../../../utils/childProfile';
 import { logger } from '../../../utils/logger';
@@ -117,7 +118,7 @@ export default function ProfileScreen() {
     setIsLoading(true);
     setProfileError({ visible: false, message: '' });
     try {
-      const profileData = await apiService.getUserProfile();
+      const profileData = await userApi.getUserProfile();
       // 同步付费状态到 store，确保会员徽章显示正确
       if (profileData.isPaid !== undefined) {
         useAppStore.getState().setPaidStatus(profileData.isPaid);
@@ -144,7 +145,7 @@ export default function ProfileScreen() {
 
   const handleChildProfilePress = async () => {
     try {
-      const existingChild = await apiService.getChildProfile();
+      const existingChild = await userApi.getChildProfile();
       existingChild &&
         navigation.navigate('ChildProfile', {
           mode: 'view',

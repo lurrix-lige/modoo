@@ -1,4 +1,5 @@
-export * from './ApiService';
+export { apiService, ApiError } from './ApiService';
+export type * from './types';
 export { storyApi } from './modules/StoryApi';
 export { courseApi } from './modules/CourseApi';
 export { articleApi } from './modules/ArticleApi';
@@ -10,3 +11,5 @@ export { membershipApi } from './modules/MembershipApi';
 export { userApi } from './modules/UserApi';
 export { anonymousApi } from './modules/AnonymousApi';
 export { analyticsApi } from './modules/AnalyticsApi';
+export { contentApi } from './modules/ContentApi';
+export { serviceApi } from './modules/ServiceApi';

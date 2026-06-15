@@ -4,7 +4,7 @@ import { logger } from '../utils/logger';
 interface NavigationCallback {
   id: string;
   callback: () => void;
-  timeout?: number;
+  timeout?: ReturnType<typeof setTimeout>;
 }
 
 interface NavigationCallbackContextType {
@@ -30,7 +30,7 @@ export const NavigationCallbackProvider: React.FC<{ children: React.ReactNode }>
         clearTimeout(existing.timeout);
       }
 
-      const timeoutId = window.setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         callbacks.current.delete(id);
       }, timeout);
 
@@ -106,6 +106,11 @@ const noopCallback: NavigationCallbackContextType = {
 export const useNavigationCallback = () => {
   const context = useContext(NavigationCallbackContext);
   if (!context) {
+    if (__DEV__) {
+      throw new Error(
+        'useNavigationCallback must be used within NavigationCallbackProvider',
+      );
+    }
     logger.warn(
       'useNavigationCallback used outside NavigationCallbackProvider, using no-op fallback',
     );

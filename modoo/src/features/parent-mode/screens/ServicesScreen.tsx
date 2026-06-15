@@ -1,8 +1,8 @@
 /**
  * 服务页面组件
  *
- * 数据来源说明�? * - 使用 apiService.getServices() 获取服务列表
- * - 使用 apiService.getMembershipPlans() 获取会员套餐
+ * 数据来源说明�? * - 使用 serviceApi.getServices() 获取服务列表
+ * - 使用 membershipApi.getMembershipPlans() 获取会员套餐
  */
 
 import React, { useState, useEffect } from 'react';
@@ -43,7 +43,8 @@ import {
   responsive,
   iconSizes,
 } from '../../../theme';
-import { apiService, Service, MembershipPlan } from '../../../services';
+import { Service, MembershipPlan } from '../../../services';
+import { serviceApi, membershipApi } from '../../../infrastructure/api';
 import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -67,8 +68,8 @@ export default function ServicesScreen() {
     setIsLoading(true);
     try {
       const [servicesData, plansData] = await Promise.all([
-        apiService.getServices(),
-        apiService.getMembershipPlans(),
+        serviceApi.getServices(),
+        membershipApi.getMembershipPlans(),
       ]);
       setServices(servicesData);
       setPlans(plansData);

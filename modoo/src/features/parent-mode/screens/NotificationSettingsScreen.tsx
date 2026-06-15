@@ -27,7 +27,7 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService } from '../../../services';
+import { userApi } from '../../../infrastructure/api';
 import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -78,7 +78,7 @@ export default function NotificationSettingsScreen() {
     const loadSettings = async () => {
       setLoading(true);
       try {
-        const savedSettings = await apiService.getNotificationSettings();
+        const savedSettings = await userApi.getNotificationSettings();
         setSettings(savedSettings);
       } catch (err) {
         logger.error('Failed to load notification settings', { error: err });
@@ -97,7 +97,7 @@ export default function NotificationSettingsScreen() {
 
     setLoading(true);
     try {
-      await apiService.updateNotificationSettings(newSettings);
+      await userApi.updateNotificationSettings(newSettings);
     } catch (err) {
       logger.error('Failed to update notification settings', { error: err });
       setSettings(settings);

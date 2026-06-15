@@ -227,8 +227,8 @@ class StorageService {
       if (!anonymousId) {
         // 优先使用后端API生成匿名ID
         try {
-          const { apiService } = await import('../api/ApiService');
-          const result = await apiService.generateAnonymousId();
+          const { anonymousApi } = await import('../api');
+          const result = await anonymousApi.generateAnonymousId();
           anonymousId = result.anonymousId;
           await AsyncStorage.setItem(STORAGE_KEYS.ANONYMOUS_ID, anonymousId);
           logger.info('Anonymous ID generated from backend', { anonymousId });
@@ -243,11 +243,11 @@ class StorageService {
       } else {
         // 验证现有匿名ID是否有效
         try {
-          const { apiService } = await import('../api/ApiService');
-          const validation = await apiService.validateAnonymousId(anonymousId);
+          const { anonymousApi } = await import('../api');
+          const validation = await anonymousApi.validateAnonymousId(anonymousId);
           // 验证失败或ID无效，重新生成
           if (!validation || !validation.isValidAndActive) {
-            const result = await apiService.generateAnonymousId();
+            const result = await anonymousApi.generateAnonymousId();
             // 添加空值检查
             if (result && result.anonymousId) {
               anonymousId = result.anonymousId;

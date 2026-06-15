@@ -102,10 +102,9 @@ export const APP_CONFIG: AppConfig = {
 // ============================================
 // API Configuration
 // ============================================
-// 开发环境使用相对路径，通过 Metro 代理转发到后端（避免 CORS 问题）
-const isDevelopment = (process.env.EXPO_PUBLIC_ENV as AppConfig['ENV']) === 'development';
+// 原生 App 直接连接后端，Metro 代理仅对 Web 有效
 export const API_CONFIG: ApiConfig = {
-  BASE_URL: isDevelopment ? '' : (process.env.EXPO_PUBLIC_API_URL || 'http://192.168.124.13:3000'),
+  BASE_URL: process.env.EXPO_PUBLIC_API_URL || 'http://47.94.165.219:3000',
   VERSION: '/api/v1',
   TIMEOUT:
     APP_CONFIG.ENV === 'development'

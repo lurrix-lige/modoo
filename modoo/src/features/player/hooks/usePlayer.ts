@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '../../../utils/logger';
-import { apiService } from '../../../services';
+import { storyApi } from '../../../infrastructure/api';
 import { usePlayerStore, useAppStore } from '../../../store';
 import { useAudio } from '../../../providers/AudioProvider';
 import { Story } from '../../../types';
@@ -108,15 +108,15 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
         if (storyId) {
           try {
             logger.debug('Loading story with ID', { storyId });
-            storyData = await apiService.getStory(storyId);
+            storyData = await storyApi.getStory(storyId);
           } catch (err) {
             logger.error('Failed to load single story, falling back to list', { err });
-            const storiesResponse = await apiService.getStories();
+            const storiesResponse = await storyApi.getStories();
             storyData = storiesResponse.stories?.[0];
           }
         } else {
           logger.debug('No story ID provided, loading first story');
-          const storiesResponse = await apiService.getStories();
+          const storiesResponse = await storyApi.getStories();
           storyData = storiesResponse.stories?.[0];
         }
 
@@ -233,7 +233,7 @@ export function usePlayer(storyId: string | undefined): UsePlayerReturn {
       const duration = Math.floor(audioDuration || story.duration || 0);
       const completed = duration > 0 && progress / duration >= 0.95;
 
-      await apiService.updateStoryProgress(story.id, progress, completed);
+      await storyApi.updateStoryProgress(story.id, progress, completed);
       logger.debug('Play progress saved', { progress, completed });
     } catch (error) {
       logger.error('Failed to save progress', { error });

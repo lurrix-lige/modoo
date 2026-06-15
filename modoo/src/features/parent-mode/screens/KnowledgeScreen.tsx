@@ -27,7 +27,8 @@ import {
   iconSizes,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, Article } from '../../../services';
+import { Article } from '../../../services';
+import { articleApi } from '../../../infrastructure/api';
 import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -62,7 +63,7 @@ export default function KnowledgeScreen() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.getArticles();
+      const response = await articleApi.getArticles();
       setArticles(response.articles);
     } catch (err) {
       logger.error('Failed to load knowledge articles', { error: err });

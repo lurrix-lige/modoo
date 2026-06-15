@@ -24,7 +24,7 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService } from '../../../services';
+import { userApi } from '../../../infrastructure/api';
 import { ErrorToast } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -68,7 +68,7 @@ export default function PrivacySettingsScreen() {
     const loadSettings = async () => {
       setLoading(true);
       try {
-        const savedSettings = await apiService.getPrivacySettings();
+        const savedSettings = await userApi.getPrivacySettings();
         setSettings(savedSettings);
       } catch (err) {
         logger.error('Failed to load privacy settings', { error: err });
@@ -87,7 +87,7 @@ export default function PrivacySettingsScreen() {
 
     setLoading(true);
     try {
-      await apiService.updatePrivacySettings(newSettings);
+      await userApi.updatePrivacySettings(newSettings);
     } catch (err) {
       logger.error('Failed to update privacy settings', { error: err });
       setSettings(settings);
@@ -106,7 +106,7 @@ export default function PrivacySettingsScreen() {
         text: t('common.confirm'),
         onPress: async () => {
           try {
-            await apiService.exportUserData();
+            await userApi.exportUserData();
             Alert.alert(t('common.success'), t('settings.exportSuccess'));
           } catch (error) {
             Alert.alert(t('common.error'), t('settings.exportFailed'));
@@ -133,7 +133,7 @@ export default function PrivacySettingsScreen() {
               onPress: async () => {
                 setIsDeleting(true);
                 try {
-                  await apiService.deleteAccount();
+                  await userApi.deleteAccount();
                   Alert.alert(t('common.success'), t('settings.deleteSuccess'));
                 } catch (error) {
                   Alert.alert(t('common.error'), t('settings.deleteFailed'));

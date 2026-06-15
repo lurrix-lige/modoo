@@ -27,7 +27,8 @@ import {
 } from '../../../theme';
 import { Button, ErrorToast, LoadingState } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, Article as ArticleType } from '../../../services';
+import { Article as ArticleType } from '../../../services';
+import { articleApi } from '../../../infrastructure/api';
 import { logger } from '../../../utils/logger';
 import { useShare } from '../../../services/ShareService';
 
@@ -65,7 +66,7 @@ export default function ArticleDetailScreen() {
     try {
       const articleId = route.params?.articleId;
       if (articleId) {
-        const fetchedArticle = await apiService.getArticle(articleId);
+        const fetchedArticle = await articleApi.getArticle(articleId);
         setArticle(fetchedArticle);
         setIsFavorited(fetchedArticle.isFavorited || false);
       }
@@ -99,10 +100,10 @@ export default function ArticleDetailScreen() {
 
     try {
       if (isFavorited) {
-        await apiService.unfavoriteArticle(article.id);
+        await articleApi.unfavoriteArticle(article.id);
         setIsFavorited(false);
       } else {
-        await apiService.favoriteArticle(article.id);
+        await articleApi.favoriteArticle(article.id);
         setIsFavorited(true);
       }
     } catch (error) {
@@ -124,7 +125,7 @@ export default function ArticleDetailScreen() {
       const result = await shareNative(shareOptions);
 
       if (result.success) {
-        await apiService.shareArticle(article.id);
+        await articleApi.shareArticle(article.id);
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 2000);
       }

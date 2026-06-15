@@ -27,7 +27,8 @@ import {
 import { Button, Card } from '../../../components';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
-import { authService, apiService, ContentItem } from '../../../services';
+import { authService, ContentItem } from '../../../services';
+import { contentApi } from '../../../infrastructure/api';
 import { logger } from '../../../utils/logger';
 
 type UserDashboardNavigationProp = NativeStackNavigationProp<ParentStackParamList>;
@@ -126,7 +127,7 @@ export default function UserDashboardScreen() {
 
   const loadContent = async () => {
     try {
-      const recommendations = await apiService.getContentRecommendations();
+      const recommendations = await contentApi.getContentRecommendations();
       setContent({
         featured: recommendations.featuredContent,
         categories: recommendations.categoryContent,

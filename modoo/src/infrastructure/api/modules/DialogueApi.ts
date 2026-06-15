@@ -1,13 +1,24 @@
-import { apiService, DialoguesResponse, Dialogue } from '../ApiService';
+import { apiService } from '../ApiService';
+import type { DialoguesResponse, Dialogue } from '../types';
+
+const cleanId = (id: string) => id.replace(/^\/|\/$/g, '');
 
 export const dialogueApi = {
-  getDialogues: (): Promise<DialoguesResponse> => apiService.getDialogues(),
-  getDialogue: (dialogueId: string): Promise<Dialogue> => apiService.getDialogue(dialogueId),
-  favoriteDialogue: (dialogueId: string): Promise<{ success: boolean; isFavorite: boolean }> =>
-    apiService.favoriteDialogue(dialogueId),
-  unfavoriteDialogue: (dialogueId: string): Promise<{ success: boolean; isFavorite: boolean }> =>
-    apiService.unfavoriteDialogue(dialogueId),
-  useDialogue: (dialogueId: string): Promise<{ success: boolean; useCount: number }> =>
-    apiService.useDialogue(dialogueId),
-  getFavoriteDialogues: (): Promise<DialoguesResponse> => apiService.getFavoriteDialogues(),
+  getDialogues: () => apiService.get<DialoguesResponse>('/dialogues'),
+  getDialogue: (dialogueId: string) => apiService.get<Dialogue>(`/dialogues/${cleanId(dialogueId)}`),
+  favoriteDialogue: (dialogueId: string) =>
+    apiService.post<{ success: boolean; isFavorite: boolean }>(
+      `/dialogues/${cleanId(dialogueId)}/favorite`,
+      {},
+    ),
+  unfavoriteDialogue: (dialogueId: string) =>
+    apiService.delete<{ success: boolean; isFavorite: boolean }>(
+      `/dialogues/${cleanId(dialogueId)}/favorite`,
+    ),
+  useDialogue: (dialogueId: string) =>
+    apiService.post<{ success: boolean; useCount: number }>(
+      `/dialogues/${cleanId(dialogueId)}/use`,
+      {},
+    ),
+  getFavoriteDialogues: () => apiService.get<DialoguesResponse>('/dialogues/favorites', true),
 };

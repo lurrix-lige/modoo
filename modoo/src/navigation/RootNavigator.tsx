@@ -22,6 +22,8 @@ import {
   ChildrenTabParamList,
   ParentTabParamList,
   AuthStackParamList,
+  ChildrenStackParamList,
+  ParentStackParamList,
 } from './types';
 
 import { WelcomeHomeScreen } from '../features/home';
@@ -65,8 +67,8 @@ import StoryPlayerScreen from '../features/player/screens/StoryPlayerScreen';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const ChildrenStack = createNativeStackNavigator();
-const ParentStack = createNativeStackNavigator();
+const ChildrenStack = createNativeStackNavigator<ChildrenStackParamList>();
+const ParentStack = createNativeStackNavigator<ParentStackParamList>();
 const ChildrenTab = createBottomTabNavigator<ChildrenTabParamList>();
 const ParentTab = createBottomTabNavigator<ParentTabParamList>();
 
@@ -218,6 +220,10 @@ function ChildrenStackNavigator() {
         navigation.navigate('ChildrenTab', { screen, params });
         clearPendingNavigation();
         console.log('Tab navigation completed, pendingNavigation cleared');
+      } else {
+        // 未知屏幕，清除 pendingNavigation 防止重复触发
+        console.warn('Unknown screen in pendingNavigation:', screen);
+        clearPendingNavigation();
       }
     }
   }, [pendingNavigation, navigation, clearPendingNavigation]);

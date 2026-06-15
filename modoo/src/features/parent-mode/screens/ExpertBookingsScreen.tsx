@@ -34,7 +34,8 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
-import { apiService, Booking, Expert } from '../../../services';
+import { Booking, Expert } from '../../../services';
+import { expertApi } from '../../../infrastructure/api';
 import { LoadingState, ErrorToast, Button } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -96,13 +97,13 @@ export default function ExpertBookingsScreen() {
   }, []);
 
   const fetchBookingsWithExperts = async (): Promise<BookingWithExpert[]> => {
-    const response = await apiService.getBookings();
+    const response = await expertApi.getBookings();
     const uniqueExpertIds = [...new Set(response.bookings.map((b: Booking) => b.expertId))];
     const expertMap = new Map<string, Expert>();
     await Promise.all(
       uniqueExpertIds.map(async (expertId) => {
         try {
-          const expertResponse = await apiService.getExpert(expertId);
+          const expertResponse = await expertApi.getExpert(expertId);
           expertMap.set(expertId, expertResponse);
         } catch {
           expertMap.set(expertId, undefined as unknown as Expert);
@@ -161,7 +162,7 @@ export default function ExpertBookingsScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            await apiService.cancelBooking(bookingId);
+            await expertApi.cancelBooking(bookingId);
             setBookings((prev) =>
               prev.map((b) => (b.id === bookingId ? { ...b, status: 'CANCELLED' as const } : b)),
             );

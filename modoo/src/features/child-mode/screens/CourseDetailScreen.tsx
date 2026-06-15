@@ -35,7 +35,8 @@ import {
   sharedStyles,
 } from '../../../theme';
 import { ChildrenStackParamList } from '../../../navigation/types';
-import { apiService, Course, Lesson } from '../../../services';
+import { Course, Lesson } from '../../../services';
+import { courseApi } from '../../../infrastructure/api';
 import { useCourseLocalization } from '../hooks/useCourseLocalization';
 import { logger } from '../../../utils/logger';
 
@@ -61,7 +62,7 @@ export default function CourseDetailScreen() {
   const loadCourseData = async () => {
     setIsLoading(true);
     try {
-      const courseData = await apiService.getCourse(route.params?.courseId || '1');
+      const courseData = await courseApi.getCourse(route.params?.courseId || '1');
       setCourse(courseData);
       setLessons(courseData.lessons || []);
     } catch (error) {
@@ -75,7 +76,7 @@ export default function CourseDetailScreen() {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      const courseData = await apiService.getCourse(route.params?.courseId || '1');
+      const courseData = await courseApi.getCourse(route.params?.courseId || '1');
       setCourse(courseData);
       setLessons(courseData.lessons || []);
     } catch (error) {

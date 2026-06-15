@@ -50,7 +50,8 @@ import { Button, EmptyState, LoadingState } from '../../../components';
 import { MembershipPlanCard } from '../../../components/MembershipPlanCard';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
-import { apiService, MembershipPlan } from '../../../services';
+import { MembershipPlan } from '../../../services';
+import { membershipApi } from '../../../infrastructure/api';
 import { useWechatPay, useApplePay } from '../../../hooks';
 import { formatCurrency } from '../../../utils/currency';
 import { logger } from '../../../utils/logger';
@@ -131,7 +132,7 @@ export default function MembershipScreen() {
   const loadPlans = async () => {
     setIsLoading(true);
     try {
-      const plans = await apiService.getMembershipPlans();
+      const plans = await membershipApi.getMembershipPlans();
       setPlans(plans);
       // 默认选中板块用户已选择的，默认选中第一个
       if (plans.length > 0 && !plans.find((p) => p.id === selectedPlan)) {

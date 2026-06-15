@@ -239,17 +239,17 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     if (!currentStory) return;
 
     try {
-      const { apiService } = await import('../services');
+      const { storyApi } = await import('../infrastructure/api');
 
       if (currentStory.isFavorite) {
-        await apiService.unfavoriteStory(currentStory.id);
+        await storyApi.unfavoriteStory(currentStory.id);
         set((state) =>
           state.currentStory
             ? { ...state, currentStory: { ...state.currentStory, isFavorite: false } }
             : state,
         );
       } else {
-        await apiService.favoriteStory(currentStory.id);
+        await storyApi.favoriteStory(currentStory.id);
         set((state) =>
           state.currentStory
             ? { ...state, currentStory: { ...state.currentStory, isFavorite: true } }
@@ -266,8 +266,8 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     if (!currentStory) return;
 
     try {
-      const { apiService } = await import('../services');
-      await apiService.shareStory(currentStory.id, platform);
+      const { storyApi } = await import('../infrastructure/api');
+      await storyApi.shareStory(currentStory.id, platform);
     } catch (error) {
       logger.error('Failed to share story', { error });
     }

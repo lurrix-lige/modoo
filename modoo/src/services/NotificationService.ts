@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { apiService } from '../infrastructure/api';
+import { userApi } from '../infrastructure/api';
 import { logger } from '../utils/logger';
 import { CONFIG } from '../config/env';
 
@@ -64,7 +64,7 @@ export class NotificationService {
 
     try {
       const platform = Platform.OS === 'ios' ? 'ios' : 'android';
-      await apiService.registerPushToken({
+      await userApi.registerPushToken({
         token: this.token,
         platform,
       });

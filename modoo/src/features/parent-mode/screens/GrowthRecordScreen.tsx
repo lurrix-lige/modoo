@@ -27,7 +27,8 @@ import {
 } from '../../../theme';
 import { ParentStackParamList } from '../../../navigation/types';
 import { useAppStore } from '../../../store';
-import { apiService, type StoryStatsResponse, type CheckInResponse } from '../../../services';
+import { type StoryStatsResponse, type CheckInResponse } from '../../../services';
+import { checkInApi, courseApi, storyApi } from '../../../infrastructure/api';
 import { LoadingState } from '../../../components';
 import { logger } from '../../../utils/logger';
 
@@ -94,10 +95,10 @@ export default function GrowthRecordScreen() {
 
       try {
         const [streakResponse, history, coursesResponse, storyStats] = await Promise.all([
-          apiService.getStreak(),
-          apiService.getCheckInHistory(),
-          apiService.getCourses(),
-          apiService.getStoryStats(),
+          checkInApi.getStreak(),
+          checkInApi.getCheckInHistory(),
+          courseApi.getCourses(),
+          storyApi.getStoryStats(),
         ]);
 
         const coursesProgress = (coursesResponse?.courses || []).map((course) => ({

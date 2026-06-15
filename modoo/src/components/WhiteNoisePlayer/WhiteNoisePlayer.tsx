@@ -39,7 +39,8 @@ import {
   responsive,
   iconSizes,
 } from '../../theme';
-import { apiService, WhiteNoise } from '../../services';
+import { WhiteNoise } from '../../services';
+import { breathingApi } from '../../infrastructure/api';
 import { errorHandler } from '../../services/ErrorHandler';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { useSleepTimer } from '../../features/player/hooks/useSleepTimer';
@@ -137,7 +138,7 @@ export default function WhiteNoisePlayer({
     setLoadError(null);
 
     try {
-      const response = await apiService.getWhiteNoises();
+      const response = await breathingApi.getWhiteNoises();
       setNoises(response.noises);
     } catch (error) {
       const message = errorHandler.getErrorMessage(
