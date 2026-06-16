@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import * as Brightness from 'expo-brightness';
 import { logger } from '../../../utils/logger';
 
@@ -13,12 +13,14 @@ export function useBrightness(): UseBrightnessReturn {
   const [brightness, setBrightnessState] = useState(1);
   const [isNightMode, setIsNightMode] = useState(false);
   const originalBrightnessRef = useRef(1);
+  const hasModifiedRef = useRef(false);
 
   const setBrightness = useCallback(async (value: number) => {
     try {
       await Brightness.setBrightnessAsync(value);
       setBrightnessState(value);
       setIsNightMode(value < 0.5);
+      hasModifiedRef.current = true;
     } catch (error) {
       logger.error('Failed to set brightness', { error });
     }
@@ -31,6 +33,7 @@ export function useBrightness(): UseBrightnessReturn {
         await Brightness.setBrightnessAsync(0.3);
         setBrightnessState(0.3);
         setIsNightMode(true);
+        hasModifiedRef.current = true;
         logger.info('Switched to night mode');
       } else {
         await Brightness.setBrightnessAsync(originalBrightnessRef.current);
@@ -42,6 +45,14 @@ export function useBrightness(): UseBrightnessReturn {
       logger.error('Failed to toggle brightness', { error });
     }
   }, [isNightMode]);
+
+  useEffect(() => {
+    return () => {
+      if (hasModifiedRef.current) {
+        Brightness.setBrightnessAsync(originalBrightnessRef.current).catch(() => {});
+      }
+    };
+  }, []);
 
   return {
     brightness,

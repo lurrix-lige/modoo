@@ -165,7 +165,7 @@ export default function StoryPlayerScreen() {
     try {
       /* 分享标题包含标题和描述 TODO: 考虑实现分享内容的富媒体格式*/
       await shareNative({
-        title: story?.title || '' + ' \n ' + story?.description || '',
+        title: `${story?.title || ''} \n ${story?.description || ''}`,
         url: story?.audioUrl || '',
       });
       setShareSuccess(true);
@@ -270,8 +270,8 @@ export default function StoryPlayerScreen() {
             guardianColor={currentSpirit ? getGuardianSpiritColor(currentSpirit.id, isDark) : colors.primary}
             onPrevStory={handlePrevStory}
             onNextStory={handleNextStory}
-            hasPrevStory={true}
-            hasNextStory={true}
+            hasPrevStory={false}
+            hasNextStory={false}
           />
 
           <View style={styles.progressSection}>

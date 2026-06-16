@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -34,6 +34,65 @@ import { RootStackParamList } from '../../../navigation/types';
 type ComfortModeNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ComfortMode'>;
 
 const { width, height } = Dimensions.get('window');
+
+function ComfortOptionCard({
+  id,
+  icon,
+  title,
+  description,
+  isSelected,
+  onSelect,
+  colors,
+  semiTransparentWhite,
+}: {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  colors: any;
+  semiTransparentWhite: string;
+}) {
+  const IconComp = comfortIconMap[icon] || Music;
+  return (
+    <TouchableOpacity
+      style={[
+        styles.optionCard,
+        {
+          backgroundColor: isSelected ? colors.primary : colors.surface,
+          borderColor: isSelected ? colors.primary : 'transparent',
+        },
+      ]}
+      onPress={() => onSelect(id)}
+    >
+      <View
+        style={[
+          styles.optionIcon,
+          { backgroundColor: isSelected ? commonColors.white : colors.primary },
+        ]}
+      >
+        <IconComp size={28} color={isSelected ? colors.primary : commonColors.white} />
+      </View>
+      <Text
+        style={[
+          styles.optionTitle,
+          { color: isSelected ? commonColors.white : colors.textPrimary },
+        ]}
+      >
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.optionDesc,
+          { color: isSelected ? semiTransparentWhite : colors.textSecondary },
+        ]}
+      >
+        {description}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function ComfortModeScreen() {
   const navigation = useNavigation<ComfortModeNavigationProp>();
@@ -127,77 +186,32 @@ export default function ComfortModeScreen() {
     });
   };
 
-  const handleOptionSelect = (optionId: string) => {
+  const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedOption(optionId);
-
     exitComfortMode();
-    switch (optionId) {
-      case 'story':
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
-        break;
-      case 'breathing':
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
-        break;
-      case 'whitenoise':
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
-        break;
-      default:
-        navigation.goBack();
+
+    const targetScreens: Record<string, { screen: string; params?: Record<string, any> }> = {
+      story: { screen: 'ChildrenHome' },
+      breathing: { screen: 'Breathing' },
+      whitenoise: { screen: 'RelaxSpace' },
+    };
+
+    const target = targetScreens[optionId];
+    if (target) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
+      setTimeout(() => {
+        const mainNav = navigation.getParent();
+        if (mainNav) {
+          mainNav.navigate(target.screen as never, target.params as never);
+        }
+      }, 100);
+    } else {
+      navigation.goBack();
     }
-  };
-
-  const renderComfortOption = (id: string, icon: string, title: string, description: string) => {
-    const isSelected = selectedOption === id;
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const optionDescColor = useMemo(() => {
-      return isSelected ? semiTransparentWhite : colors.textSecondary;
-    }, [isSelected, semiTransparentWhite, colors.textSecondary]);
-
-    return (
-      <TouchableOpacity
-        key={id}
-        style={[
-          styles.optionCard,
-          {
-            backgroundColor: isSelected ? colors.primary : colors.surface,
-            borderColor: isSelected ? colors.primary : 'transparent',
-          },
-        ]}
-        onPress={() => handleOptionSelect(id)}
-      >
-        <View
-          style={[
-            styles.optionIcon,
-            { backgroundColor: isSelected ? commonColors.white : colors.primary },
-          ]}
-        >
-          {(() => {
-            const IconComp = comfortIconMap[icon] || Music;
-            return <IconComp size={28} color={isSelected ? colors.primary : commonColors.white} />;
-          })()}
-        </View>
-        <Text
-          style={[
-            styles.optionTitle,
-            { color: isSelected ? commonColors.white : colors.textPrimary },
-          ]}
-        >
-          {title}
-        </Text>
-        <Text style={[styles.optionDesc, { color: optionDescColor }]}>{description}</Text>
-      </TouchableOpacity>
-    );
-  };
+  }, [exitComfortMode, navigation]);
 
   return (
     <Animated.View
@@ -222,19 +236,24 @@ export default function ComfortModeScreen() {
 
         <View style={styles.content}>
           <View style={styles.optionsGrid}>
-            {renderComfortOption('story', 'book', t('comfort.story'), t('comfort.storyDesc'))}
-            {renderComfortOption(
-              'breathing',
-              'leaf',
-              t('comfort.breathing'),
-              t('comfort.breathingDesc'),
-            )}
-            {renderComfortOption(
-              'whitenoise',
-              'water',
-              t('comfort.whitenoise'),
-              t('comfort.whitenoiseDesc'),
-            )}
+            <ComfortOptionCard
+              id="story" icon="book"
+              title={t('comfort.story')} description={t('comfort.storyDesc')}
+              isSelected={selectedOption === 'story'} onSelect={handleOptionSelect}
+              colors={colors} semiTransparentWhite={semiTransparentWhite}
+            />
+            <ComfortOptionCard
+              id="breathing" icon="leaf"
+              title={t('comfort.breathing')} description={t('comfort.breathingDesc')}
+              isSelected={selectedOption === 'breathing'} onSelect={handleOptionSelect}
+              colors={colors} semiTransparentWhite={semiTransparentWhite}
+            />
+            <ComfortOptionCard
+              id="whitenoise" icon="water"
+              title={t('comfort.whitenoise')} description={t('comfort.whitenoiseDesc')}
+              isSelected={selectedOption === 'whitenoise'} onSelect={handleOptionSelect}
+              colors={colors} semiTransparentWhite={semiTransparentWhite}
+            />
           </View>
         </View>
 

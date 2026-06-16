@@ -73,6 +73,8 @@ export default function CourseLearningScreen() {
   const [isTrackLoaded, setIsTrackLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const hasCompletedRef = useRef(false);
+  const currentLessonRef = useRef<Lesson | null>(null);
+  const progressRef = useRef(0);
 
   // --- D1: Background volume slider ---
   const bgVolumeValRef = useRef(backgroundVolume);
@@ -206,6 +208,15 @@ export default function CourseLearningScreen() {
         })
       : 0;
 
+  // Keep refs in sync with state
+  useEffect(() => {
+    currentLessonRef.current = currentLesson;
+  }, [currentLesson]);
+
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
   // B5: Sequential init — settings must resolve before lesson data triggers audio load
   useEffect(() => {
     const init = async () => {
@@ -215,8 +226,8 @@ export default function CourseLearningScreen() {
     init();
 
     return () => {
-      if (currentLesson && progress > 0) {
-        storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+      if (currentLessonRef.current && progressRef.current > 0) {
+        storageService.saveCoursePlaybackProgress(currentLessonRef.current.id, progressRef.current);
       }
       stop();
     };
@@ -232,12 +243,12 @@ export default function CourseLearningScreen() {
   useEffect(() => {
     if (!isPlaying || !currentLesson) return;
     const interval = setInterval(() => {
-      if (progress > 0) {
-        storageService.saveCoursePlaybackProgress(currentLesson.id, progress);
+      if (progressRef.current > 0) {
+        storageService.saveCoursePlaybackProgress(currentLesson.id, progressRef.current);
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isPlaying, currentLesson?.id, progress]);
+  }, [isPlaying, currentLesson?.id]);
 
   // D7: Auto-complete lesson when playback finishes
   useEffect(() => {

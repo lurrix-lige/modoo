@@ -57,6 +57,7 @@ export default function BreathingPracticeScreen() {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isActiveRef = useRef(false);
 
   const phases = BREATHING_PATTERN[selectedPattern];
 
@@ -66,6 +67,7 @@ export default function BreathingPracticeScreen() {
   };
 
   useEffect(() => {
+    isActiveRef.current = isActive;
     if (isActive) {
       runBreathingCycle();
     } else {
@@ -80,6 +82,7 @@ export default function BreathingPracticeScreen() {
     }
 
     return () => {
+      isActiveRef.current = false;
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
@@ -93,7 +96,7 @@ export default function BreathingPracticeScreen() {
     let phaseIndex = 0;
 
     const runPhase = () => {
-      if (!isActive) return;
+      if (!isActiveRef.current) return;
 
       try {
         setCurrentPhase(phaseIndex);

@@ -43,6 +43,10 @@ export function useSleepTimer(onExpire: () => void) {
         }
         const next = prev - 1;
         if (next <= 0) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           onExpireRef.current();
           logger.info('Sleep timer expired');
         }
