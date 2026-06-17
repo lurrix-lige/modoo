@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { authenticate, AuthenticatedRequest } from '../utils/database';
+import { authenticate, AuthenticatedRequest, prisma } from '../utils/database';
 import { customError } from '../utils/errors';
 import { successResponse, ErrorCodes } from '../utils/apiResponse';
 import {
@@ -244,23 +244,43 @@ export async function membershipRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post('/orders/:orderId/pay', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = (request as AuthenticatedRequest).userId!;
     const { orderId } = request.params as { orderId: string };
     const { transactionId, paymentMethod } = request.body as { transactionId: string; paymentMethod: string };
+
+    const order = await prisma.order.findUnique({ where: { id: orderId }, select: { userId: true } });
+    if (!order || order.userId !== userId) {
+      throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权操作此订单', 403);
+    }
 
     const result = await markOrderAsPaid(orderId, transactionId, paymentMethod as any);
     return successResponse({ order: result });
   });
 
   fastify.post('/orders/:orderId/cancel', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = (request as AuthenticatedRequest).userId!;
     const { orderId } = request.params as { orderId: string };
     const { reason } = request.body as { reason?: string };
+
+    const order = await prisma.order.findUnique({ where: { id: orderId }, select: { userId: true } });
+    if (!order || order.userId !== userId) {
+      throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权操作此订单', 403);
+    }
+
     await cancelOrder(orderId, reason);
     return successResponse(null);
   });
 
   fastify.post('/orders/:orderId/refund', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = (request as AuthenticatedRequest).userId!;
     const { orderId } = request.params as { orderId: string };
     const { amount, reason } = request.body as { amount: number; reason?: string };
+
+    const order = await prisma.order.findUnique({ where: { id: orderId }, select: { userId: true } });
+    if (!order || order.userId !== userId) {
+      throw customError(ErrorCodes.RESOURCE_FORBIDDEN, '无权操作此订单', 403);
+    }
+
     const result = await refundOrder(orderId, amount, reason);
     return successResponse({ order: result });
   });

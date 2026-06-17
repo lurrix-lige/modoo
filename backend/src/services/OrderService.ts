@@ -81,47 +81,50 @@ export async function createOrder(options: CreateOrderOptions): Promise<any> {
 
   const orderNo = generateOrderNo();
 
-  const order = await prisma.order.create({
-    data: {
-      orderNo,
-      userId,
-      status: 'PENDING',
-      totalAmount,
-      discountAmount,
-      finalAmount,
-      paymentMethod,
-      metadata: metadata ? JSON.stringify(metadata) : undefined,
-      items: {
-        create: {
-          planId,
-          planSnapshot: JSON.stringify({
-            id: plan.id,
-            planKey: plan.planKey,
-            nameKey: plan.nameKey,
-            price: plan.currentPrice,
-            durationDays: plan.durationDays,
-          }),
-          quantity,
-          unitPrice: plan.currentPrice,
-          discountAmount,
-          finalPrice: finalAmount,
+  const order = await prisma.$transaction(async (tx) => {
+    const newOrder = await tx.order.create({
+      data: {
+        orderNo,
+        userId,
+        status: 'PENDING',
+        totalAmount,
+        discountAmount,
+        finalAmount,
+        paymentMethod,
+        metadata: metadata ? JSON.stringify(metadata) : undefined,
+        items: {
+          create: {
+            planId,
+            planSnapshot: JSON.stringify({
+              id: plan.id,
+              planKey: plan.planKey,
+              nameKey: plan.nameKey,
+              price: plan.currentPrice,
+              durationDays: plan.durationDays,
+            }),
+            quantity,
+            unitPrice: plan.currentPrice,
+            discountAmount,
+            finalPrice: finalAmount,
+          },
         },
       },
-    },
-    include: { items: true },
-  });
+      include: { items: true },
+    });
 
-  if (promotion && promotion.usageLimit && promotion.usageCount >= promotion.usageLimit) {
-    await prisma.promotion.update({
-      where: { id: promotion.id },
-      data: { isActive: false },
-    });
-  } else if (promotion) {
-    await prisma.promotion.update({
-      where: { id: promotion.id },
-      data: { usageCount: { increment: 1 } },
-    });
-  }
+    if (promotion) {
+      const currentPromo = await tx.promotion.findUnique({ where: { id: promotion.id } });
+      if (currentPromo?.usageLimit && currentPromo.usageCount >= currentPromo.usageLimit) {
+        throw customError('PROMOTION_EXHAUSTED', '优惠码已被使用完毕', 400);
+      }
+      await tx.promotion.update({
+        where: { id: promotion.id },
+        data: { usageCount: { increment: 1 } },
+      });
+    }
+
+    return newOrder;
+  });
 
   return {
     ...order,

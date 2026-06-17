@@ -129,10 +129,15 @@ export async function expertRoutes(fastify: FastifyInstance) {
   fastify.put('/bookings/:id', { preHandler: [authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const { status } = request.body as { status: string };
+    const userId = (request as AuthenticatedRequest).userId!;
 
     const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) {
       throw customError('NOT_FOUND', '预约不存在', 404);
+    }
+
+    if (booking.userId !== userId) {
+      throw customError('FORBIDDEN', '无权修改此预约', 403);
     }
 
     const updated = await prisma.booking.update({

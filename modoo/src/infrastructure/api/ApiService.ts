@@ -1,5 +1,5 @@
 import i18n from '../../i18n';
-import { authService } from '../auth/AuthService';
+import { getTokenProvider } from '../auth/tokenProvider';
 import { storageService } from '../storage/StorageService';
 import { errorHandler, ApiError } from '../../services/ErrorHandler';
 import { ErrorCodes } from '../../types/api';
@@ -83,15 +83,15 @@ class ApiService {
       headers['Content-Type'] = 'application/json';
     }
 
-    if (authService.isAuthenticated() && authService.isSessionTimedOut()) {
-      await authService.clearAuth();
+    if (getTokenProvider().isAuthenticated() && getTokenProvider().isSessionTimedOut()) {
+      await getTokenProvider().clearAuth();
       return { headers, shouldProceed: false };
     }
 
     if (
-      authService.isAuthenticated() &&
+      getTokenProvider().isAuthenticated() &&
       endpoint !== '/auth/refresh' &&
-      authService.isTokenExpiringSoon()
+      getTokenProvider().isTokenExpiringSoon()
     ) {
       const newToken = await this.tryRefreshToken();
       if (newToken) {
@@ -100,13 +100,13 @@ class ApiService {
         return { headers, shouldProceed: false };
       }
     } else {
-      const accessToken = authService.getAccessToken();
+      const accessToken = getTokenProvider().getAccessToken();
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
     }
 
-    if (!authService.isAuthenticated() && !endpoint.startsWith('/anonymous')) {
+    if (!getTokenProvider().isAuthenticated() && !endpoint.startsWith('/anonymous')) {
       try {
         const anonymousId = await storageService.getOrCreateAnonymousId();
         headers['x-anonymous-id'] = anonymousId;
@@ -135,7 +135,7 @@ class ApiService {
 
     if (
       response.status === 401 &&
-      authService.isAuthenticated() &&
+      getTokenProvider().isAuthenticated() &&
       refreshAttempts < MAX_REFRESH_RETRIES
     ) {
       logger.debug(
@@ -199,7 +199,7 @@ class ApiService {
       });
     }
 
-    if (!authService.getRefreshToken()) {
+    if (!getTokenProvider().getRefreshToken()) {
       return null;
     }
 
@@ -207,7 +207,7 @@ class ApiService {
 
     try {
       logger.debug(`[ApiService] Starting token refresh`);
-      const newToken = await authService.refreshAccessToken();
+      const newToken = await getTokenProvider().refreshAccessToken();
       logger.debug(`[ApiService] Token refresh successful`);
 
       this.refreshSubscribers.forEach((callback) => callback(newToken));
@@ -217,7 +217,7 @@ class ApiService {
     } catch (error: any) {
       logger.error(`[ApiService] Token refresh failed`, { error });
 
-      await authService.clearAuth();
+      await getTokenProvider().clearAuth();
 
       this.refreshSubscribers.forEach((callback) => callback(null));
       this.refreshSubscribers = [];
@@ -328,12 +328,12 @@ class ApiService {
   }
 
   private throttledRecordActivity(): void {
-    if (!authService.isAuthenticated()) return;
+    if (!getTokenProvider().isAuthenticated()) return;
 
     const now = Date.now();
     if (now - this.lastActivityRecorded >= this.ACTIVITY_THROTTLE) {
       this.lastActivityRecorded = now;
-      authService.recordActivity();
+      getTokenProvider().recordActivity();
     }
   }
 

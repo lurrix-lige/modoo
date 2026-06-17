@@ -154,7 +154,13 @@ export default function UserDashboardScreen() {
   };
 
   const handleContentPress = (item: ContentItem) => {
-    logger.debug('Content pressed', { item });
+    if (item.type === 'story') {
+      navigation.navigate('StoryPlayer', { storyId: item.id });
+    } else if (item.type === 'article') {
+      navigation.navigate('ArticleDetail', { articleId: item.id });
+    } else {
+      logger.debug('Content type not navigable from parent', { type: item.type });
+    }
   };
 
   const handleUpgradePress = () => {

@@ -9,6 +9,7 @@ import {
   Platform,
   Modal,
   Pressable,
+  Linking,
 } from 'react-native';
 import { SafeAreaContainer } from '../../../components';
 import {
@@ -291,7 +292,7 @@ export default function MembershipScreen() {
           <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
             {t('membership.agreement.prefix')}
           </Text>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.dozoo.com/terms')}>
             <Text style={[styles.linkText, { color: colors.primary }]}>
               {t('membership.agreement.terms')}
             </Text>
@@ -299,7 +300,7 @@ export default function MembershipScreen() {
           <Text style={[styles.agreementText, { color: colors.textSecondary }]}>
             {t('membership.agreement.and')}
           </Text>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.dozoo.com/privacy')}>
             <Text style={[styles.linkText, { color: colors.primary }]}>
               {t('membership.agreement.privacy')}
             </Text>

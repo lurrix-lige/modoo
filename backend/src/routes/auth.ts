@@ -5,6 +5,7 @@ import { config } from "../config";
 import { sendVerificationCode } from "../services/verificationService";
 import { validateAccount } from "../services/accountValidationService";
 import { strictRateLimiter } from "../middleware/rateLimiter";
+import { verifyAppleIdToken } from "../services/AppleAuthService";
 import {
   loginWithPhone,
   loginWithApple,
@@ -115,24 +116,17 @@ export async function authRoutes(fastify: FastifyInstance) {
         throw customError("CONFIG_ERROR", "Apple登录配置不完整，请联系管理员", 500);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const jwt = require("jsonwebtoken");
+      // Use proper Apple ID token verification with JWKS signature validation
+      const payload = await verifyAppleIdToken(identityToken);
 
-      const appleIdToken = jwt.decode(identityToken, { complete: true });
-      if (!appleIdToken) {
-        throw customError("INVALID_TOKEN", "无效的Apple Identity Token", 400);
-      }
-
-      const { sub: appleUserId, email } = appleIdToken.payload;
+      const appleUserId = payload.sub;
       if (!appleUserId) {
         throw customError("INVALID_TOKEN", "Apple Identity Token缺少用户标识", 400);
       }
 
-      const nickname = appleIdToken.payload.fullName
-        ? `${appleIdToken.payload.fullName.givenName || ""} ${appleIdToken.payload.fullName.familyName || ""}`.trim()
-        : undefined;
+      const email = payload.email || undefined;
 
-      const result = await loginWithApple(fastify, appleUserId, email, nickname);
+      const result = await loginWithApple(fastify, appleUserId, email, undefined);
 
       return {
         success: true,

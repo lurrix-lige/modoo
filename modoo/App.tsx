@@ -13,8 +13,11 @@ import { AudioProvider } from './src/providers/AudioProvider';
 import { CourseAudioProvider } from './src/providers/CourseAudioProvider';
 import { UnifiedAudioProvider } from './src/providers/UnifiedAudioProvider';
 import { NavigationCallbackProvider } from './src/contexts';
+import { setTokenProvider } from './src/infrastructure/auth/tokenProvider';
 import { logger } from './src/utils/logger';
 import './src/i18n';
+
+setTokenProvider(authService);
 
 function AppContent() {
   const { logout } = useAppStore();

@@ -39,6 +39,10 @@ export function useSleepTimer(onExpire: () => void) {
     timerRef.current = setInterval(() => {
       setTimerRemainingSeconds((prev) => {
         if (prev === null || prev <= 0) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           return null;
         }
         const next = prev - 1;
@@ -47,8 +51,10 @@ export function useSleepTimer(onExpire: () => void) {
             clearInterval(timerRef.current);
             timerRef.current = null;
           }
-          onExpireRef.current();
-          logger.info('Sleep timer expired');
+          setTimeout(() => {
+            onExpireRef.current();
+            logger.info('Sleep timer expired');
+          }, 0);
         }
         return next;
       });
@@ -61,12 +67,6 @@ export function useSleepTimer(onExpire: () => void) {
       }
     };
   }, [timerDuration]);
-
-  useEffect(() => {
-    if (timerRemainingSeconds !== null && timerRemainingSeconds <= 0) {
-      clearTimer();
-    }
-  }, [timerRemainingSeconds, clearTimer]);
 
   const formatTimerRemaining = useCallback(
     (formatter: (seconds: number) => string): string | null => {

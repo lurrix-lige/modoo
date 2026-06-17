@@ -12,11 +12,31 @@ export interface UseBrightnessReturn {
 export function useBrightness(): UseBrightnessReturn {
   const [brightness, setBrightnessState] = useState(1);
   const [isNightMode, setIsNightMode] = useState(false);
-  const originalBrightnessRef = useRef(1);
+  const originalBrightnessRef = useRef<number | null>(null);
   const hasModifiedRef = useRef(false);
+
+  useEffect(() => {
+    Brightness.getBrightnessAsync()
+      .then((val) => { originalBrightnessRef.current = val; })
+      .catch(() => {});
+    return () => {
+      if (hasModifiedRef.current && originalBrightnessRef.current !== null) {
+        Brightness.setBrightnessAsync(originalBrightnessRef.current).catch(() => {});
+      }
+    };
+  }, []);
+
+  const saveOriginalIfNeeded = useCallback(async () => {
+    if (originalBrightnessRef.current === null) {
+      try {
+        originalBrightnessRef.current = await Brightness.getBrightnessAsync();
+      } catch {}
+    }
+  }, []);
 
   const setBrightness = useCallback(async (value: number) => {
     try {
+      await saveOriginalIfNeeded();
       await Brightness.setBrightnessAsync(value);
       setBrightnessState(value);
       setIsNightMode(value < 0.5);
@@ -24,35 +44,28 @@ export function useBrightness(): UseBrightnessReturn {
     } catch (error) {
       logger.error('Failed to set brightness', { error });
     }
-  }, []);
+  }, [saveOriginalIfNeeded]);
 
   const toggleBrightness = useCallback(async () => {
     try {
       if (!isNightMode) {
-        originalBrightnessRef.current = await Brightness.getBrightnessAsync();
+        await saveOriginalIfNeeded();
         await Brightness.setBrightnessAsync(0.3);
         setBrightnessState(0.3);
         setIsNightMode(true);
         hasModifiedRef.current = true;
         logger.info('Switched to night mode');
       } else {
-        await Brightness.setBrightnessAsync(originalBrightnessRef.current);
-        setBrightnessState(originalBrightnessRef.current);
+        const restoreTo = originalBrightnessRef.current ?? 1;
+        await Brightness.setBrightnessAsync(restoreTo);
+        setBrightnessState(restoreTo);
         setIsNightMode(false);
         logger.info('Switched to day mode');
       }
     } catch (error) {
       logger.error('Failed to toggle brightness', { error });
     }
-  }, [isNightMode]);
-
-  useEffect(() => {
-    return () => {
-      if (hasModifiedRef.current) {
-        Brightness.setBrightnessAsync(originalBrightnessRef.current).catch(() => {});
-      }
-    };
-  }, []);
+  }, [isNightMode, saveOriginalIfNeeded]);
 
   return {
     brightness,

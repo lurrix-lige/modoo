@@ -2,20 +2,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import i18n from '../../i18n';
 import { storageService } from '../storage/StorageService';
+import { apiService } from '../api/ApiService';
+import { membershipApi } from '../api/modules/MembershipApi';
+import { anonymousApi } from '../api/modules/AnonymousApi';
 import { AUTH_CONFIG, STORAGE_KEYS } from '../../config/env';
 import { logger } from '../../utils/logger';
 
 const { TOKEN_EXPIRY_BUFFER, SESSION_TIMEOUT, CHECK_INTERVAL, ACTIVITY_THROTTLE_MS } = AUTH_CONFIG;
-
-let apiServiceInstance: any = null;
-
-async function getApiService() {
-  if (!apiServiceInstance) {
-    const { apiService } = await import('../api/ApiService');
-    apiServiceInstance = apiService;
-  }
-  return apiServiceInstance;
-}
 
 interface AuthTokens {
   accessToken: string;
@@ -102,9 +95,8 @@ class AuthService {
 
   async checkPaidStatus(): Promise<boolean> {
     try {
-      const apiService = await getApiService();
-      const data = await apiService.getCurrentMembership();
-      this.isPaid = data?.active || data?.isPaid || false;
+      const data = await membershipApi.getCurrentMembership();
+      this.isPaid = data?.active || false;
       await AsyncStorage.setItem(STORAGE_KEYS.IS_PAID, this.isPaid.toString());
       return this.isPaid;
     } catch {
@@ -226,8 +218,7 @@ class AuthService {
 
   private async doRefreshToken(): Promise<string> {
     try {
-      const apiService = await getApiService();
-      const data = await apiService.post('/auth/refresh', { refreshToken: this.refreshToken });
+      const data = await apiService.post<{ accessToken: string; refreshToken?: string; expiresIn: number }>('/auth/refresh', { refreshToken: this.refreshToken });
 
       await this.setTokens({
         accessToken: data.accessToken,
@@ -312,8 +303,12 @@ class AuthService {
   }
 
   async login(phone: string, code: string): Promise<StoredUser> {
-    const apiService = await getApiService();
-    const data = await apiService.post('/auth/login', { phone, code });
+    const data = await apiService.post<{
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+      user: { id: string; phone: string; nickname: string; avatar?: string; createdAt?: string };
+    }>('/auth/login', { phone, code });
 
     await this.setTokens({
       accessToken: data.accessToken,
@@ -345,8 +340,7 @@ class AuthService {
     try {
       const anonymousId = await storageService.getAnonymousId();
       if (anonymousId) {
-        const apiService = await getApiService();
-        const result = await apiService.migrateAnonymousData(anonymousId);
+        const result = await anonymousApi.migrateAnonymousData(anonymousId);
         logger.info('Anonymous data migrated successfully', { migratedRecords: result.data });
       }
     } catch (error) {
@@ -356,13 +350,16 @@ class AuthService {
   }
 
   async sendVerificationCode(phone: string): Promise<void> {
-    const apiService = await getApiService();
-    await apiService.post('/auth/send-code', { phone });
+    await apiService.post<void>('/auth/send-code', { phone });
   }
 
   async register(phone: string, code: string): Promise<StoredUser> {
-    const apiService = await getApiService();
-    const data = await apiService.post('/auth/register', { phone, code });
+    const data = await apiService.post<{
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+      user: { id: string; phone: string; nickname: string; avatar?: string; createdAt?: string };
+    }>('/auth/register', { phone, code });
 
     await this.setTokens({
       accessToken: data.accessToken,
@@ -386,8 +383,7 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      const apiService = await getApiService();
-      await apiService.post('/auth/logout');
+      await apiService.post<void>('/auth/logout');
     } catch {
       // Logout API failure is non-critical; clear local auth state regardless
     }
@@ -395,8 +391,13 @@ class AuthService {
   }
 
   async appleLogin(authorizationCode: string, identityToken: string): Promise<StoredUser> {
-    const apiService = await getApiService();
-    const data = await apiService.post('/auth/apple', { authorizationCode, identityToken });
+    const data = await apiService.post<{
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+      user: { id: string; phone?: string; nickname?: string; avatar?: string; createdAt?: string };
+      appleAvatar?: string;
+    }>('/auth/apple', { authorizationCode, identityToken });
 
     await this.setTokens({
       accessToken: data.accessToken,
@@ -422,8 +423,14 @@ class AuthService {
   }
 
   async wechatLogin(code: string): Promise<StoredUser> {
-    const apiService = await getApiService();
-    const data = await apiService.post('/auth/wechat', { code });
+    const data = await apiService.post<{
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+      user: { id: string; phone?: string; nickname?: string; avatar?: string; createdAt?: string };
+      wechatNickname?: string;
+      wechatAvatar?: string;
+    }>('/auth/wechat', { code });
 
     await this.setTokens({
       accessToken: data.accessToken,

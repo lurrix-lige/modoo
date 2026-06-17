@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../utils/database';
 import { customError } from '../utils/errors';
+import { requireAuth } from '../middleware/authorization';
 
 export async function i18nRoutes(fastify: FastifyInstance) {
   fastify.get('/export', async (request, reply) => {
@@ -85,7 +86,7 @@ export async function i18nRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.post('/resources', async (request, reply) => {
+  fastify.post('/resources', { preHandler: [requireAuth] }, async (request, reply) => {
     const { resourceKey, language, value, type = 'TEXT', status = 'DRAFT', author, notes } = request.body as {
       resourceKey: string;
       language: string;
@@ -125,7 +126,7 @@ export async function i18nRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.put('/resources/:id', async (request, reply) => {
+  fastify.put('/resources/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const data = request.body as any;
 
@@ -158,7 +159,7 @@ export async function i18nRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.delete('/resources/:id', async (request, reply) => {
+  fastify.delete('/resources/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {

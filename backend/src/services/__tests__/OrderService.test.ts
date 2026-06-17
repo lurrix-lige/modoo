@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../utils/database', () => ({
-  prisma: {
+vi.mock('../../utils/database', () => {
+  const mockPrisma = {
     pricingPlan: {
       findUnique: vi.fn(),
     },
@@ -15,6 +15,7 @@ vi.mock('../../utils/database', () => ({
     orderItem: {},
     promotion: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       update: vi.fn(),
     },
     subscription: {
@@ -30,8 +31,10 @@ vi.mock('../../utils/database', () => ({
       findMany: vi.fn(),
       update: vi.fn(),
     },
-  },
-}));
+  };
+  mockPrisma.$transaction = vi.fn(async (fn: any) => fn(mockPrisma));
+  return { prisma: mockPrisma };
+});
 
 vi.mock('../../utils/errors', () => {
   const actual = vi.importActual('../../utils/errors');

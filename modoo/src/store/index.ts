@@ -157,7 +157,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       user: null,
       child: null,
       userState: { ...INITIAL_USER_STATE },
-      isChildMode: true,
+  isChildMode: false,
       isComfortMode: false,
       pendingNavigation: null,
     }),
